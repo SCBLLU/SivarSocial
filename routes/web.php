@@ -13,4 +13,4 @@ Route::get('/', function () {
 Route::get('/register', [UserController::class, 'index']) ->name('register');
 Route::post('/register', [UserController::class, 'store']);
 
-Route::get('/muro', [PostController::class, 'index']) ->name('muro');
+Route::get('/muro', [PostController::class, 'index']) ->name('posts.index');
