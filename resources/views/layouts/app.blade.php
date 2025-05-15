@@ -11,6 +11,8 @@
 </head>
 
 <body style="background-color: #0f02a4; color: white;">
+
+    {{-- olas animadas --}}
     <div class="wave-background">
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
             style="margin: auto; background: rgba(255, 255, 255,0); display: block; shape-rendering: auto;"
@@ -69,17 +71,34 @@
             </g>
         </svg>
     </div>
+    {{-- termina olas animadas --}}
+
+    {{-- Contenedor principal --}}
+
+
 
     <div class="content-wrapper">
         <header class="bg-white shadow-violet-700/100 rounded-b-xl">
             <div class="container mx-auto flex justify-between items-center p-5">
                 <img srcset="https://res.cloudinary.com/dj848z4er/image/upload/v1746637613/alsg65gfmwwcfxdcg464.png 4x"
                     alt="LOGO">
+                @auth
+                    <nav class="flex gap-5 items-center">
+                        <a href="#" class="font-bold uppercase text-blue-700 text-sm">
+                            Hola: <span class="lowercase font-semibold">{{ Auth::user()->username }}</span></a>
+                        <a href="{{ url('/register') }}" class="font-bold uppercase text-blue-700 text-sm">
+                            Cerrar Sesión</a>
+                    </nav>
+                @endauth
 
-                <nav class="flex gap-5 items-center">
-                    <a href="#" class="font-bold uppercase text-blue-700 text-sm">Login</a>
-                    <a href="{{ url('/register') }}" class="font-bold uppercase text-blue-700 text-sm">Crear Cuenta</a>
-                </nav>
+                @guest
+                    <nav class="flex gap-5 items-center">
+                        <a href="#" class="font-bold uppercase text-blue-700 text-sm">
+                            Login</a>
+                        <a href="{{ url('/register') }}" class="font-bold uppercase text-blue-700 text-sm">
+                            Crear Cuenta</a>
+                    </nav>
+                @endguest
             </div>
         </header>
 

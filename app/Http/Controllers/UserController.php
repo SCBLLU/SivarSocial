@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class UserController extends Controller
 {
@@ -43,7 +44,18 @@ class UserController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        return response()->json($user, 201);
+/*         return response()->json($user, 201);
+ */
+        /* AUTENTICACION */
+        Auth::attempt([
+            'email' => $request->email,
+            'password' => $request->password,
+        ]);
+        
+        /* redireccionamiento */
+        return redirect()
+            ->route('posts.index')
+            ->with('status', 'Usuario creado correctamente');
     }
 
     /**
