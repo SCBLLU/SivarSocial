@@ -34,6 +34,9 @@ class UserController extends Controller
             'username' => 'required|string|max:15|unique:users',
             'email' => 'required|string|email|max:45|unique:users',
             'password' => 'required|string|min:6|confirmed',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gender' => 'required|in:Male,Female',
+            'profession' => 'required|string|max:50',
         ]);
 
         /* CREACION DE USUARIO */
@@ -42,6 +45,9 @@ class UserController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'password' => bcrypt($request->password),
+            'image' => $request->file('image')->store('images', 'public'),
+            'gender' => $request->gender,
+            'profession' => $request->profession,
         ]);
 
 /*         return response()->json($user, 201);
@@ -55,7 +61,7 @@ class UserController extends Controller
         /* redireccionamiento */
         return redirect()
             ->route('posts.index')
-            ->with('status', 'Usuario creado correctamente');
+            ->with('success', '¡Registro exitoso! Bienvenido a SivarSocial.');
     }
 
     /**

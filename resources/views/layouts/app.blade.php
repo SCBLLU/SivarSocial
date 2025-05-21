@@ -116,6 +116,7 @@
             <p class="text-stone-300">Todos los Derechos reservados | SivarSocial &copy; {{ now()->year }}</p>
         </footer>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </body>
 
 </html>
