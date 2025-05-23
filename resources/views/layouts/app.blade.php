@@ -86,9 +86,13 @@
                     <nav class="flex gap-5 items-center">
                         <a href="#" class="font-bold uppercase text-blue-700 text-sm">
                             Hola: <span class="lowercase font-semibold">{{ Auth::user()->username }}</span></a>
-                        <a href="{{ url('/logout') }}" class="font-bold uppercase text-blue-700 text-sm">
-                            Cerrar Sesión</a>
+                        <form method="POST" action="{{ url('/logout') }}">
+                            @csrf
+                            <button type="submit" class="font-bold uppercase text-blue-700 text-sm">
+                                Cerrar Sesión</a>
+                            </button>
                     </nav>
+                    </form>
                 @endauth
 
                 @guest

@@ -89,12 +89,20 @@
                         </div>
                         <div class="mb-5">
                             <label class="font-bold mb-1 text-white block">Nombre</label>
+                            <template x-if="errors.name">
+                                <div class="bg-red-500 text-white my-2 rounded-lg text-sm p-2 text-center"
+                                    x-text="errors.name"></div>
+                            </template>
                             <input type="text" name="name"
                                 class="w-full px-4 py-3 rounded-lg shadow-sm text-blue-900 font-medium bg-white border border-white"
-                                placeholder="Tu nombre..." maxlength="30" required value="{{ old('name') }}">
+                                placeholder="Tu nombre..." maxlength="10" required value="{{ old('name') }}">
                         </div>
                         <div class="mb-5">
                             <label class="font-bold mb-1 text-white block">Nombre de usuario</label>
+                            <template x-if="errors.username">
+                                <div class="bg-red-500 text-white my-2 rounded-lg text-sm p-2 text-center"
+                                    x-text="errors.username"></div>
+                            </template>
                             <input type="text" name="username"
                                 class="w-full px-4 py-3 rounded-lg shadow-sm text-blue-900 font-medium bg-white border border-white"
                                 placeholder="Tu nombre de usuario..." maxlength="15" required
@@ -102,6 +110,10 @@
                         </div>
                         <div class="mb-5">
                             <label class="font-bold mb-1 text-white block">Correo electrónico</label>
+                            <template x-if="errors.email">
+                                <div class="bg-red-500 text-white my-2 rounded-lg text-sm p-2 text-center"
+                                    x-text="errors.email"></div>
+                            </template>
                             <input type="email" name="email"
                                 class="w-full px-4 py-3 rounded-lg shadow-sm text-blue-900 font-medium bg-white border border-white"
                                 placeholder="Tu correo electrónico..." maxlength="45" required
@@ -123,6 +135,13 @@
                                     <li>caracteres especiales</li>
                                 </ul>
                             </div>
+                            <template x-if="errors.password">
+                                <div class="bg-red-500 text-white my-2 rounded-lg text-sm p-2 text-center"
+                                    x-text="errors.password"></div>
+                            </template>
+                            @error('password')
+                                <div class="bg-red-500 text-white my-2 rounded-lg text-sm p-2 text-center">{{ $message }}</div>
+                            @enderror
                             <div class="relative">
                                 <input :type="togglePassword ? 'text' : 'password'" @keydown="checkPasswordStrength()"
                                     x-model="form.password" name="password"
@@ -163,6 +182,13 @@
                         </div>
                         <div class="mb-5">
                             <label class="font-bold mb-1 text-white block">Confirmar contraseña</label>
+                            <template x-if="errors.password_confirmation">
+                                <div class="bg-red-500 text-white my-2 rounded-lg text-sm p-2 text-center"
+                                    x-text="errors.password_confirmation"></div>
+                            </template>
+                            @error('password_confirmation')
+                                <div class="bg-red-500 text-white my-2 rounded-lg text-sm p-2 text-center">{{ $message }}</div>
+                            @enderror
                             <input type="password" name="password_confirmation"
                                 class="w-full px-4 py-3 rounded-lg shadow-sm text-blue-900 font-medium bg-white border border-white"
                                 placeholder="Repite tu contraseña..." required>
@@ -174,6 +200,10 @@
                     <div class="py-10 min-h-[350px]" x-show="step === 3" key="step3">
                         <div class="mb-5">
                             <label class="font-bold mb-1 text-white block">Género</label>
+                            <template x-if="errors.gender">
+                                <div class="bg-red-500 text-white my-2 rounded-lg text-sm p-2 text-center"
+                                    x-text="errors.gender"></div>
+                            </template>
                             <div class="flex">
                                 <label
                                     class="flex justify-start items-center text-truncate rounded-lg bg-blue-700 pl-4 pr-6 py-3 shadow-sm mr-4 border border-white">
@@ -197,6 +227,10 @@
                         </div>
                         <div class="mb-5">
                             <label class="font-bold mb-1 text-white block">Profesión</label>
+                            <template x-if="errors.profession">
+                                <div class="bg-red-500 text-white my-2 rounded-lg text-sm p-2 text-center"
+                                    x-text="errors.profession"></div>
+                            </template>
                             <input type="text" name="profession"
                                 class="w-full px-4 py-3 rounded-lg shadow-sm text-blue-900 font-medium bg-white border border-white"
                                 placeholder="Ej. Desarrollador Web" maxlength="50" required
@@ -229,7 +263,50 @@
             form: {
                 password: ''
             },
+            errors: {},
             nextStep() {
+                this.errors = {};
+                if (this.step === 1) {
+                    // Validación Paso 1
+                    const name = this.getInputValue('name');
+                    const username = this.getInputValue('username');
+                    const email = this.getInputValue('email');
+                    if (!name || name.length > 10) {
+                        this.errors.name = 'El nombre es obligatorio y máximo 10 caracteres';
+                    }
+                    if (!username || username.length > 15) {
+                        this.errors.username = 'El usuario es obligatorio y máximo 15 caracteres';
+                    }
+                    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || email.length > 45) {
+                        this.errors.email = 'Correo electrónico inválido o muy largo';
+                    }
+                    if (Object.keys(this.errors).length) return;
+                }
+                if (this.step === 2) {
+                    // Validación Paso 2
+                    if (!this.form.password || this.form.password.length < 6) {
+                        this.errors.password = 'La contraseña debe tener al menos 6 caracteres';
+                    }
+                    const confirm = this.getInputValue('password_confirmation');
+                    if (!confirm) {
+                        this.errors.password_confirmation = 'Debes confirmar la contraseña';
+                    } else if (this.form.password !== confirm) {
+                        this.errors.password_confirmation = 'Las contraseñas no coinciden';
+                    }
+                    if (Object.keys(this.errors).length) return;
+                }
+                if (this.step === 3) {
+                    // Validación Paso 3
+                    const gender = this.getInputValue('gender');
+                    const profession = this.getInputValue('profession');
+                    if (!gender) {
+                        this.errors.gender = 'Selecciona un género';
+                    }
+                    if (!profession || profession.length > 50) {
+                        this.errors.profession = 'La profesión es obligatoria y máximo 50 caracteres';
+                    }
+                    if (Object.keys(this.errors).length) return;
+                }
                 if (this.step < 3) this.step++;
             },
             prevStep() {
@@ -256,7 +333,11 @@
                     document.getElementById('registerForm').appendChild(stepInput);
                 }
                 stepInput.value = this.step;
-            }
+            },
+            getInputValue(name) {
+                const el = document.querySelector(`[name="${name}"]`);
+                return el ? el.value : '';
+            },
         }
     }
 </script>
