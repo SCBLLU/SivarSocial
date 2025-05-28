@@ -22,7 +22,8 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        if (!Auth::attempt($request->only('email', 'password'), $request->remember)) {
+            // Si las credenciales no coinciden, redirigir de vuelta con un mensaje de error
             return back()
                 ->with('status', 'Las credenciales no coinciden')
                 ->withInput($request->only('email'));

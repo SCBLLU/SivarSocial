@@ -81,11 +81,13 @@
                             </label>
                             <div class="mx-auto w-48 text-white text-xs text-center mt-1">Haz clic para agregar una foto
                                 de perfil</div>
-                            <input name="image" id="fileInput" accept="image/*" class="hidden" type="file"
+                            <input 
+                                name="image" id="fileInput" accept="image/*" class="hidden" type="file"
                                 @change="let file = $event.target.files[0];
-                            var reader = new FileReader();
-                            reader.onload = (e) => image = e.target.result;
-                            reader.readAsDataURL(file);">
+                                    var reader = new FileReader();
+                                    reader.onload = (e) => image = e.target.result;
+                                    reader.readAsDataURL(file);"
+                            >
                         </div>
                         <div class="mb-5">
                             <label class="font-bold mb-1 text-white block">Nombre</label>
@@ -257,7 +259,7 @@
     function registerWizard() {
         return {
             step: {{ old('step', 1) }},
-            image: 'https://placehold.co/300x300/e2e8f0/cccccc',
+            image: @json(session('temp_image') ? asset('storage/' . session('temp_image')) : 'https://placehold.co/300x300/e2e8f0/cccccc'),
             passwordStrengthText: '',
             togglePassword: false,
             form: {

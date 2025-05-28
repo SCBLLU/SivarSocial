@@ -23,23 +23,34 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        /* VALIDACIONES */
-        /* validacion con el slug helper */
-        $request ->request->add([
-            'username' => Str::slug($request->username),
-        ]);
-        /* validaciones */
-        $request->validate([
-            'name' => 'required|string|max:10',
-            'username' => 'required|string|max:15|unique:users',
-            'email' => 'required|string|email|max:45|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'gender' => 'required|in:Male,Female',
-            'profession' => 'required|string|max:50',
-        ]);
+        // Validar y guardar imagen temporal si hay errores
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            // Guardar temporalmente la imagen en storage/app/public/temp
+            $imagePath = $image->store('temp', 'public');
+        }
 
-        /* CREACION DE USUARIO */
+        // Validaciones
+        try {
+            $request->validate([
+                'name' => 'required|string|max:10',
+                'username' => 'required|string|max:15|unique:users',
+                'email' => 'required|string|email|max:45|unique:users',
+                'password' => 'required|string|min:6|confirmed',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'gender' => 'required|in:Male,Female',
+                'profession' => 'required|string|max:50',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Si hay error, guardar la ruta temporal en la sesión
+            if ($imagePath) {
+                session()->flash('temp_image', $imagePath);
+            }
+            throw $e;
+        }
+
+        // CREACION DE USUARIO
         $user = User::create([
             'name' => $request->name,
             'username' => $request->username,
@@ -50,15 +61,10 @@ class UserController extends Controller
             'profession' => $request->profession,
         ]);
 
-/*         return response()->json($user, 201);
- */
-        /* AUTENTICACION */
         Auth::attempt([
             'email' => $request->email,
             'password' => $request->password,
         ]);
-        
-        /* redireccionamiento */
         return redirect()
             ->route('posts.index')
             ->with('success', '¡Registro exitoso! Bienvenido a SivarSocial.');
