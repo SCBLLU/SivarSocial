@@ -65,8 +65,7 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => $request->password,
         ]);
-        return redirect()
-            ->route('posts.index')
+        return redirect()->route('posts.index', ['user' => $user->username])
             ->with('success', '¡Registro exitoso! Bienvenido a SivarSocial.');
     }
 

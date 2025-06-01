@@ -22,4 +22,9 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function getRouteKeyName()
+    {
+        return 'username'; // indica a laravel usar este campo para el binding
+    }
 }

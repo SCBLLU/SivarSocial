@@ -29,8 +29,6 @@ class LoginController extends Controller
                 ->withInput($request->only('email'));
         }
 
-        return redirect()
-            ->route('posts.index')
-            ->with('status', 'Bienvenido de nuevo');
+        return redirect()->route('posts.index', Auth::user()); // redirigir al muro del usuario autenticado
     }
 }

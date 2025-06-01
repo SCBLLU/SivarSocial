@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class PostController extends \Illuminate\Routing\Controller
 {
@@ -19,5 +18,10 @@ class PostController extends \Illuminate\Routing\Controller
         return view('layouts.dashboard', [
             'user' => $user,
         ]);
+    }
+
+    public function create()
+    {
+        return view('posts.create');
     }
 }
