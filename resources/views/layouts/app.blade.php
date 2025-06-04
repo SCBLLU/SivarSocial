@@ -109,7 +109,7 @@
 
                 @guest
                     <nav class="flex gap-5 items-center">
-                        <a href="#" class="font-bold uppercase text-blue-700 text-sm">
+                        <a href="{{ route('login')}}" class="font-bold uppercase text-blue-700 text-sm">
                             Login</a>
                         <a href="{{ url('/register') }}" class="font-bold uppercase text-blue-700 text-sm">
                             Crear Cuenta</a>

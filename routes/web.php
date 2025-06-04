@@ -24,5 +24,6 @@ Route::get('/{user:username}', [PostController::class, 'index'])->name('posts.in
 
 Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
 Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+Route::get('/{user:username}/posts/{post}', [PostController::class, 'show'])->name('posts.show');
 
 Route::post('/imagenes', [ImagenController::class, 'store'])->name('imagenes.store');

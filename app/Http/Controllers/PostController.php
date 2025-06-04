@@ -12,7 +12,7 @@ class PostController extends \Illuminate\Routing\Controller
     /* para proteger que no se pueda abrir el muro en otra página */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->except(['index', 'show']);
     }
 
     public function index(User $user)
@@ -51,5 +51,17 @@ class PostController extends \Illuminate\Routing\Controller
         return redirect()->route('posts.index', ['user' => Auth::user()])
             ->with('success', 'Post creado correctamente');
     }
+
+    public function show(User $user, Post $post)
+    {
+        // Verifica si el post pertenece al usuario autenticado
+        if ($post->user_id !== Auth::id()) {
+            abort(403, 'No tienes permiso para ver este post');
+        }
+
+        return view('posts.show', [
+            'post' => $post,
+        ]);
+    }   
 }
 

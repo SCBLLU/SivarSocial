@@ -60,7 +60,7 @@
             {{-- se utiliza el operador de acceso a propiedades -> para acceder a las propiedades del objeto user --}}
             @foreach ($posts as $post)
                 <div>
-                    <a href="">
+                    <a href="{{ route('posts.show', ['post' => $post, 'user' => $user]) }}">
                         <img src="{{ asset('uploads') . '/' . $post->imagen }}" alt="Imagen del post {{ $post->titulo }}">
                     </a>
 
@@ -78,5 +78,3 @@
         @endif
     </section>
 @endsection
-
-@php($dashboardBg = true)
