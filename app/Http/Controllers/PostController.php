@@ -17,8 +17,14 @@ class PostController extends \Illuminate\Routing\Controller
 
     public function index(User $user)
     {
+
+        
+        $posts = Post::where('user_id', $user->id)->paginate(8)->onEachSide(2);
+
+        // Verifica si el usuario autenticado es el mismo que el del muro
         return view('layouts.dashboard', [
             'user' => $user,
+            'posts' => $posts,
         ]);
     }
 

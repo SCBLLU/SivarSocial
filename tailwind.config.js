@@ -2,7 +2,7 @@
 
 module.exports = {
     content: [
-        "./resources/**/*.{html,js,jsx,ts,tsx,vue}", // Busca todos los archivos relevantes dentro de resources
+        "./resources/**/*.blade.php", "./resources/**/*/*.js", "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php" // Busca todos los archivos relevantes dentro de resources
     ],
     purge: [],
     darkMode: false, // or 'media' or 'class'
