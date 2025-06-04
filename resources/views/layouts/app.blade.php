@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @stack('styles')
-    <script src="{{ asset('js/app.js') }}" defer></script>
     <title>SivarSocial - @yield('titulo')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body style="background-color: #0f02a4; color: white;">
