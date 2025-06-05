@@ -17,7 +17,36 @@
                     <span class="font-bold">{{ $post->user->username }}</span>
                     <span class="text-gray-300 text-sm sm:ml-2">{{ $post->created_at->diffForHumans() }}</span>
                 </div>
-                <span class="text-right font-medium">0 Likes</span>
+                <span class="text-right font-medium">
+                    @auth
+                        @if ($post->checkLike(Auth::user()))
+                            <form action="{{ route('posts.likes.destroy', $post) }}" method="POST" class="flex items-center gap-2 my-4">
+                                @method('DELETE')
+                                @csrf
+                                <button type="submit" class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                    </svg>
+                                    <span class="ml-2 font-bold text-white">{{ $post->likes->count() }} <span class="font-normal">Likes</span></span>
+                                </button>
+                            </form>
+                        @else
+                            <form action="{{ route('posts.likes.store', $post) }}" method="POST" class="flex items-center gap-2 my-4">
+                                @csrf
+                                <button type="submit" class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                    </svg>
+                                    <span class="ml-2 font-bold text-gray-700">{{ $post->likes->count() }} <span class="font-normal">Likes</span></span>
+                                </button>
+                            </form>
+                        @endif
+                    @endauth
+                </span>
             </div>
 
             <!-- Descripción del post -->
@@ -43,7 +72,7 @@
                 @auth
 
 
-                    <p class="text-xl font-extrabold text-center mb-4 text-blue-800">Agrega un comentario</p>
+
 
                     @if (session('success'))
                         <div class="bg-green-500 text-white p-2 rounded-lg mb-4 text-center">
