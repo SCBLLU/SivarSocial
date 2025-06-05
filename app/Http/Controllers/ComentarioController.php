@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
+use App\Models\User;
 use App\Models\Comentario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ComentarioController extends Controller
 {
@@ -26,9 +29,22 @@ class ComentarioController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, User $user, Post $post)
     {
-        //
+        // Validar los datos del comentario
+        $request->validate([
+            'comentario' => 'required|string|max:255',
+            'post_id' => 'required|exists:posts,id',
+        ]);
+        // almacenar el comentario
+        Comentario::create([
+            'user_id' => Auth::id(),
+            'post_id' => $request->post_id,
+            'comentario' => $request->comentario,
+
+        ]);
+        // imprimir el comentario en la vista
+        return back()->with('success', 'Comentario agregado correctamente');
     }
 
     /**

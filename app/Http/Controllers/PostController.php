@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class PostController extends \Illuminate\Routing\Controller
+class PostController extends Controller
 {
     /* para proteger que no se pueda abrir el muro en otra página */
     public function __construct()
@@ -54,14 +54,28 @@ class PostController extends \Illuminate\Routing\Controller
 
     public function show(User $user, Post $post)
     {
-        // Verifica si el post pertenece al usuario autenticado
-        if ($post->user_id !== Auth::id()) {
-            abort(403, 'No tienes permiso para ver este post');
-        }
-
         return view('posts.show', [
             'post' => $post,
+            'user' => $user,
         ]);
-    }   
+    }
+
+    public function destroy(Post $post)
+    {
+        $this->authorize('delete', $post);
+
+        $post->delete();
+
+        //eliminar la imagen
+        $imagePath = public_path('uploads/' . $post->imagen);
+
+        if (file_exists($imagePath)){
+            unlink($imagePath);
+        }
+        
+        // Redirigir al muro del usuario autenticado
+        return redirect()->route('posts.index', ['user' => Auth::user()])
+            ->with('success', 'Post eliminado correctamente');
+    }
 }
 
