@@ -366,6 +366,9 @@
         color: #1d4ed8 !important; /* azul al pasar el mouse */
         text-decoration: underline;
     }
+    #dropzone-register, #dropzone-register * {
+        cursor: pointer !important;
+    }
 </style>
 @endpush
 

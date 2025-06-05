@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Follower;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class FollowerController extends Controller
 {
@@ -26,9 +28,11 @@ class FollowerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(User $user)
     {
-        //
+        // El usuario autenticado sigue al usuario recibido
+        $user->followers()->attach(Auth::id());
+        return back();
     }
 
     /**
@@ -58,8 +62,10 @@ class FollowerController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Follower $follower)
+    public function destroy(User $user)
     {
-        //
+        // El usuario autenticado deja de seguir al usuario recibido
+        $user->followers()->detach(Auth::id());
+        return back();
     }
 }

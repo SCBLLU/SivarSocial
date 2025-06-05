@@ -33,7 +33,7 @@
 
                 <div class="mb-5">
                     <label for="imagen" class="block text-gray-700">Imagen de perfil</label>
-                    <input accept=".jpg, .jpeg, .png" type="file" name="imagen" id="imagen" class="w-full mt-1 border border-gray-500 p-2 rounded text-gray-700 file:bg-[#4b00fd] file:text-white file:border-0 file:rounded file:px-4 file:py-2 bg-white">
+                    <input accept=".jpg, .jpeg, .png, .gif" type="file" name="imagen" id="imagen" class="w-full mt-1 border border-gray-500 p-2 rounded text-gray-700 file:bg-[#4b00fd] file:text-white file:border-0 file:rounded file:px-4 file:py-2 bg-white cursor-pointer">
                     @error('imagen')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror

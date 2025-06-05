@@ -28,18 +28,17 @@ class ImagenController extends Controller
         $imagenServidor->cover(1000, 1000); // Redimensionar manteniendo aspecto
         
         // Crear directorio si no existe
-        $directorioPerfiles = public_path('perfiles');
-        if (!file_exists($directorioPerfiles)) {
-            mkdir($directorioPerfiles, 0755, true);
+        $directorioUploads = public_path('uploads');
+        if (!file_exists($directorioUploads)) {
+            mkdir($directorioUploads, 0755, true);
         }
-        
-        // Guardar imagen en public/perfiles
-        $imagenPath = $directorioPerfiles . '/' . $nombreImagen;
+        // Guardar imagen en public/uploads
+        $imagenPath = $directorioUploads . '/' . $nombreImagen;
         $imagenServidor->save($imagenPath);
         
         return response()->json([
             'imagen' => $nombreImagen,
-            'url' => asset('perfiles/' . $nombreImagen)
+            'url' => asset('uploads/' . $nombreImagen)
         ]);
     }
     
@@ -48,7 +47,7 @@ class ImagenController extends Controller
         $imagen = $request->get('imagen');
         
         if ($imagen) {
-            $imagenPath = public_path('perfiles') . '/' . $imagen;
+            $imagenPath = public_path('uploads') . '/' . $imagen;
             if (file_exists($imagenPath)) {
                 unlink($imagenPath);
             }
