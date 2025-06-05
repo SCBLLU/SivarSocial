@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class UserController extends Controller
 {
@@ -50,13 +52,15 @@ class UserController extends Controller
             throw $e;
         }
 
+        // Procesar imagen con Intervention Image
+        $nombreImagen = $request->imagen;
         // CREACION DE USUARIO
         $user = User::create([
             'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'image' => $request->file('image')->store('images', 'public'),
+            'imagen' => $nombreImagen,
             'gender' => $request->gender,
             'profession' => $request->profession,
         ]);

@@ -60,34 +60,18 @@
                 <transition name="fade-slide" mode="out-in">
                     <div class="py-10 min-h-[350px]" x-show="step === 1" key="step1">
                         <div class="mb-5 text-center">
-                            <div
-                                class="mx-auto w-36 h-36 border-4 border-white rounded-full relative bg-gradient-to-br from-blue-200 to-blue-400 mb-4 shadow-lg flex items-center justify-center overflow-hidden">
-                                <img id="image"
-                                    class="object-cover w-full h-full rounded-full transition-all duration-300"
-                                    :src="image" />
+                            <div class="flex justify-center">
+                                <div id="dropzone-register" class="dropzone w-36 h-28 border-4 border-blue-400 bg-transparent overflow-hidden p-0 rounded-2xl flex items-center justify-center">
+                                    <div class="dz-message text-gray-500 flex flex-col items-center justify-center w-full h-full m-0">
+                                        <i class="fas fa-cloud-upload-alt text-4xl mb-2"></i>
+                                        <p class="text-xs">Sube tu imagen de perfil</p>
+                                    </div>
+                                </div>
                             </div>
-                            <label for="fileInput" type="button"
-                                class="cursor-pointer inline-flex justify-between items-center focus:outline-none border border-white py-2 px-4 rounded-lg shadow-sm text-left text-white bg-blue-700 hover:bg-blue-800 font-medium">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="inline-flex flex-shrink-0 w-6 h-6 -mt-1 mr-1" viewBox="0 0 24 24"
-                                    stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <rect x="0" y="0" width="24" height="24" stroke="none"></rect>
-                                    <path
-                                        d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" />
-                                    <circle cx="12" cy="13" r="3" />
-                                </svg>
-                                Subir Foto
-                            </label>
-                            <div class="mx-auto w-48 text-white text-xs text-center mt-1">Haz clic para agregar una foto
-                                de perfil</div>
-                            <input 
-                                name="image" id="fileInput" accept="image/*" class="hidden" type="file"
-                                @change="let file = $event.target.files[0];
-                                    var reader = new FileReader();
-                                    reader.onload = (e) => image = e.target.result;
-                                    reader.readAsDataURL(file);"
-                            >
+                            <input type="hidden" name="imagen" id="imagen" value="{{ old('imagen') }}">
+                            @error('imagen')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="mb-5">
                             <label class="font-bold mb-1 text-white block">Nombre</label>
@@ -145,7 +129,7 @@
                                 <div class="bg-red-500 text-white my-2 rounded-lg text-sm p-2 text-center">{{ $message }}</div>
                             @enderror
                             <div class="relative">
-                                <input :type="togglePassword ? 'text' : 'password'" @keydown="checkPasswordStrength()"
+                                <input :type="togglePassword ? 'text' : 'password'" @keyup="checkPasswordStrength()"
                                     x-model="form.password" name="password"
                                     class="w-full px-4 py-3 rounded-lg shadow-sm focus:outline-none focus:shadow-outline text-blue-900 font-medium bg-white border border-white"
                                     placeholder="Tu contraseña segura..." minlength="6" required>
@@ -273,6 +257,8 @@
                     const name = this.getInputValue('name');
                     const username = this.getInputValue('username');
                     const email = this.getInputValue('email');
+                    const imagen = this.getInputValue('imagen');
+                    
                     if (!name || name.length > 10) {
                         this.errors.name = 'El nombre es obligatorio y máximo 10 caracteres';
                     }
@@ -281,6 +267,17 @@
                     }
                     if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || email.length > 45) {
                         this.errors.email = 'Correo electrónico inválido o muy largo';
+                    }
+                    if (!imagen) {
+                        this.errors.imagen = 'Debes subir una imagen de perfil';
+                        // Mostrar error en el dropzone también
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'text-red-500 text-sm mt-2';
+                        errorDiv.textContent = 'Debes subir una imagen de perfil';
+                        const dropzoneContainer = document.querySelector('#dropzone-register').parentNode;
+                        const existingError = dropzoneContainer.querySelector('.text-red-500');
+                        if (existingError) existingError.remove();
+                        dropzoneContainer.appendChild(errorDiv);
                     }
                     if (Object.keys(this.errors).length) return;
                 }
@@ -326,6 +323,15 @@
                 }
             },
             handleSubmit(e) {
+                // Validar que hay imagen antes de enviar
+                const imagen = this.getInputValue('imagen');
+                if (!imagen) {
+                    e.preventDefault();
+                    this.step = 1;
+                    this.errors.imagen = 'Debes subir una imagen de perfil';
+                    return false;
+                }
+                
                 // Guarda el paso actual en un input oculto para restaurar tras error
                 let stepInput = document.querySelector('input[name="step"]');
                 if (!stepInput) {
@@ -337,9 +343,77 @@
                 stepInput.value = this.step;
             },
             getInputValue(name) {
+                if (name === 'gender') {
+                    const radio = document.querySelector(`[name="${name}"]:checked`);
+                    return radio ? radio.value : '';
+                }
                 const el = document.querySelector(`[name="${name}"]`);
                 return el ? el.value : '';
             },
         }
     }
 </script>
+
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+<style>
+    /* Forzar el color negro en el enlace de eliminar archivo de Dropzone */
+    .dropzone .dz-remove {
+        color: #111 !important;
+        font-weight: 600;
+    }
+    .dropzone .dz-remove:hover {
+        color: #1d4ed8 !important; /* azul al pasar el mouse */
+        text-decoration: underline;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+<script>
+    Dropzone.autoDiscover = false;
+    window.addEventListener('DOMContentLoaded', function() {
+        if (window.dropzoneRegisterInstance) {
+            window.dropzoneRegisterInstance.destroy();
+        }
+        setTimeout(function() {
+            const dropzoneRegister = new Dropzone('#dropzone-register', {
+                url: '/imagenes',
+                dictDefaultMessage: 'Arrastra aquí tu imagen de perfil o haz clic',
+                acceptedFiles: '.jpg,.jpeg,.png,.gif',
+                addRemoveLinks: true,
+                dictRemoveFile: 'Eliminar archivo',
+                maxFiles: 1,
+                maxFilesize: 2, // MB
+                uploadMultiple: false,
+                paramName: 'imagen',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                init: function () {
+                    this.on('maxfilesexceeded', function(file) {
+                        this.removeAllFiles();
+                        this.addFile(file);
+                    });
+                    const imagenInput = document.querySelector('[name="imagen"]');
+                    if(imagenInput && imagenInput.value.trim()) {
+                        const mockFile = { name: imagenInput.value, size: 1234 };
+                        this.emit('addedfile', mockFile);
+                        this.emit('thumbnail', mockFile, `/perfiles/${mockFile.name}`);
+                        this.emit('complete', mockFile);
+                        mockFile.previewElement && mockFile.previewElement.classList.add('dz-success', 'dz-complete');
+                    }
+                }
+            });
+            window.dropzoneRegisterInstance = dropzoneRegister;
+            dropzoneRegister.on('success', function(file, response) {
+                document.querySelector('[name=imagen]').value = response.imagen;
+            });
+            dropzoneRegister.on('removedfile', function(file) {
+                document.querySelector('[name=imagen]').value = '';
+            });
+        }, 100);
+    });
+</script>
+@endpush
