@@ -9,6 +9,7 @@
     <title>SivarSocial - @yield('titulo')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @livewireStyles()
 </head>
 
 <body style="background-color: #0f02a4; color: white;">
@@ -81,8 +82,11 @@
     <div class="content-wrapper">
         <header class="bg-white shadow-violet-700/100 rounded-b-xl">
             <div class="container mx-auto flex justify-between items-center p-5">
-                <img srcset="https://res.cloudinary.com/dj848z4er/image/upload/v1748745136/tokhsr71m0thpsjaduyc.png 3x"
+                <a href="{{ route('home') }}" class="cursor-pointer">
+                    <img srcset="https://res.cloudinary.com/dj848z4er/image/upload/v1748745136/tokhsr71m0thpsjaduyc.png 3x"
                     alt="LOGO">
+                </a>
+                
                 @auth
                     <nav class="flex gap-5 items-center">
                         <a
@@ -133,6 +137,7 @@
         </footer>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    @livewireScripts()
 </body>
 
 </html>
