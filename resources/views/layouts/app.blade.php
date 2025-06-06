@@ -10,6 +10,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @livewireStyles()
+    <!-- Alpine.js - Cargar ANTES del contenido -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
 <body style="background-color: #0f02a4; color: white;">
@@ -76,49 +78,70 @@
     {{-- termina olas animadas --}}
 
     {{-- Contenedor principal --}}
-
-
-
     <div class="content-wrapper">
         <header class="bg-white shadow-violet-700/100 rounded-b-xl">
             <div class="container mx-auto flex justify-between items-center p-5">
-                <a href="{{ route('home') }}" class="cursor-pointer">
+                <a href="{{ route('home') }}" class="cursor-pointer z-20">
                     <img srcset="https://res.cloudinary.com/dj848z4er/image/upload/v1748745136/tokhsr71m0thpsjaduyc.png 3x"
-                    alt="LOGO">
+                        alt="LOGO">
                 </a>
-                
-                @auth
-                    <nav class="flex gap-5 items-center">
-                        <a
-                            href="{{ route('posts.create', ['user' => Auth::user()->username])}}"
-                            class="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 transition-colors border p-2 text-white rounded text-sm uppercase font-bold cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="size-6">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                            </svg>
-                            Crear
-                        </a>
-                        <a href="{{ route('posts.index', ['user' => Auth::user()->username]) }}" class="font-bold uppercase text-blue-700 text-sm">
-                            Hola: <span class="lowercase font-semibold">{{ Auth::user()->username }}</span>
-                        </a>
-                        <form method="POST" action="{{ url('/logout') }}">
-                            @csrf
-                            <button type="submit" class="font-bold uppercase text-blue-700 text-sm cursor-pointer">
-                                Cerrar Sesión</a>
-                            </button>
+                <!-- Menú hamburguesa SIEMPRE a la derecha dentro del navbar -->
+                <div x-data="{ open: false }" class="ml-auto relative">
+                    <button @click="open = !open"
+                        class="md:hidden flex items-center px-3 py-2 border rounded text-blue-700 border-blue-700 focus:outline-none bg-white shadow-lg hover:bg-gray-50 transition-colors">
+                        <svg class="fill-current h-6 w-6" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <title>Menu</title>
+                            <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+                        </svg>
+                    </button>
+                    <!-- Menú animado y responsivo -->
+                    <nav x-show="open || window.innerWidth >= 768" x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-150"
+                        x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                        class="absolute md:static right-0 top-12 md:top-0 bg-white md:bg-transparent rounded-lg md:rounded-none w-56 md:w-auto z-50 flex flex-col md:flex-row gap-8 items-center md:flex transition-all duration-300 ease-in-out"
+                        @click.outside="open = false">
+                        <div :class="{'shadow-2xl': open && window.innerWidth < 768}" class="flex flex-col md:flex-row md:gap-8 md:items-center p-4 md:p-0 bg-white md:bg-transparent rounded-lg md:rounded-none w-full md:w-auto">
+                            @auth
+                                <a href="{{ route('posts.create', ['user' => Auth::user()->username]) }}"
+                                    class="flex items-center gap-3 bg-blue-700 hover:bg-blue-800 transition-colors border p-3 text-white rounded text-base uppercase font-bold cursor-pointer my-2 md:my-0 justify-center md:justify-start"
+                                    @click="open = false">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                                    </svg>
+                                    Crear
+                                </a>
+                                <a href="{{ route('posts.index', ['user' => Auth::user()->username]) }}"
+                                    class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
+                                    @click="open = false">
+                                    Hola: <span class="lowercase font-semibold">{{ Auth::user()->username }}</span>
+                                </a>
+                                <form method="POST" action="{{ url('/logout') }}" class="my-2 md:my-0">
+                                    @csrf
+                                    <button type="submit"
+                                        class="font-bold uppercase text-blue-700 text-base cursor-pointer block w-full text-center md:text-left hover:underline"
+                                        @click="open = false">
+                                        Cerrar Sesión
+                                    </button>
+                                </form>
+                            @endauth
+                            @guest
+                                <a href="{{ route('login') }}"
+                                    class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
+                                    @click="open = false">
+                                    Login
+                                </a>
+                                <a href="{{ url('/register') }}"
+                                    class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
+                                    @click="open = false">
+                                    Crear Cuenta
+                                </a>
+                            @endguest
+                        </div>
                     </nav>
-                    </form>
-                @endauth
-
-                @guest
-                    <nav class="flex gap-5 items-center">
-                        <a href="{{ route('login')}}" class="font-bold uppercase text-blue-700 text-sm">
-                            Login</a>
-                        <a href="{{ url('/register') }}" class="font-bold uppercase text-blue-700 text-sm">
-                            Crear Cuenta</a>
-                    </nav>
-                @endguest
+                </div>
             </div>
         </header>
 
@@ -136,7 +159,6 @@
             <p class="text-stone-300">Todos los Derechos reservados | SivarSocial &copy; {{ now()->year }}</p>
         </footer>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     @livewireScripts()
 </body>
 
