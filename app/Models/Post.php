@@ -20,7 +20,8 @@ class Post extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class) -> select(['name', 'username']);
+        // Debe incluir también el campo 'imagen' para mostrar la foto de perfil
+        return $this->belongsTo(User::class)->select(['id', 'name', 'username', 'imagen']);
     }
 
     public function comentarios()

@@ -20,7 +20,7 @@
                 
                 <span class="text-right font-medium">
                     @auth
-                        <livewire:like-post :post="$post" />
+                        <livewire:like-post :post="$post" color="white" />
                     @endauth 
                 </span>
             </div>
