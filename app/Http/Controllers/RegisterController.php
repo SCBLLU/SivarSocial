@@ -42,13 +42,25 @@ class RegisterController extends Controller
             'profession.max' => 'La profesión no puede tener más de 50 caracteres',
         ]);
 
+        // Mover la imagen de uploads a perfiles si existe
+        $nombreImagen = $request->imagen;
+        $origen = public_path('uploads/' . $nombreImagen);
+        $destino = public_path('perfiles/' . $nombreImagen);
+        if (file_exists($origen)) {
+            \Illuminate\Support\Facades\File::move($origen, $destino);
+            // Seguridad extra: eliminar si aún existe en uploads
+            if (file_exists($origen)) {
+                unlink($origen);
+            }
+        }
+
         // Crear usuario
         $user = User::create([
             'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'imagen' => $request->imagen, // Nombre del archivo de imagen
+            'imagen' => $nombreImagen, // Nombre del archivo de imagen ya en perfiles
             'gender' => $request->gender,
             'profession' => $request->profession,
         ]);

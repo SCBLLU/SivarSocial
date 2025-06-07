@@ -47,6 +47,7 @@ Route::post('/{user:username}/posts/{post}', [ComentarioController::class, 'stor
 
 
 Route::post('/imagenes', [ImagenController::class, 'store'])->name('imagenes.store');
+Route::post('/imagenes-perfil', [ImagenController::class, 'storePerfil'])->name('imagenes.perfil.store');
 Route::delete('/imagenes', [ImagenController::class, 'destroy'])->name('imagenes.destroy');
 
 
