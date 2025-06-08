@@ -10,23 +10,28 @@ class HomeController extends Controller
 {
     public function __construct()
     {
-        // Protege la ruta para que solo usuarios autenticados puedan acceder
-        $this->middleware('auth');
+        // Elimina el middleware 'auth' para permitir acceso público a home
     }
 
     public function __invoke()
     {
-        // obtener a quien sigo
-        $ids = Auth::user()->following->pluck('id')->toArray();  
-        $posts = Post::whereIn ('user_id', $ids)
-            ->with('user')
-            ->latest()
-            ->paginate(10)
-            ->onEachSide(2);
-        
+        // Si el usuario está autenticado, mostrar posts de quienes sigue
+        if (Auth::check()) {
+            $ids = Auth::user()->following->pluck('id')->toArray();
+            $posts = Post::whereIn('user_id', $ids)
+                ->with('user')
+                ->latest()
+                ->paginate(10)
+                ->onEachSide(2);
+        } else {
+            // Si no está autenticado, mostrar todos los posts
+            $posts = Post::with('user')
+                ->latest()
+                ->paginate(10)
+                ->onEachSide(2);
+        }
         // Obtener todos los usuarios para mostrar perfiles
         $users = \App\Models\User::latest()->get();
-        
         return view('home', [
             'posts' => $posts,
             'users' => $users,

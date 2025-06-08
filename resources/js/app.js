@@ -1,24 +1,27 @@
+// importo dropzone para manejo de imagenes
 import Dropzone from "dropzone";
 
+// desactivo autodiscover para evitar conflictos
 Dropzone.autoDiscover = false;
 
-// Dropzone para posts (si existe)
+// dropzone para crear posts (solo si existe el elemento)
 if(document.getElementById('dropzone')) {
+    // inicializo dropzone en el formulario de posts
     let dropzone = new Dropzone('#dropzone', {
-        url: '/imagenes',
-        dictDefaultMessage: 'Sube tu post aquí',
-        acceptedFiles: '.jpg,.jpeg,.png,.gif',
-        addRemoveLinks: true,
-        dictRemoveFile: 'Eliminar archivo',
-        maxFiles: 1,
-        maxFilesize: 2,
-        uploadMultiple: false,
-        paramName: 'imagen', // Importante: nombre del parámetro
+        url: '/imagenes', // ruta para subir imagenes de posts
+        dictDefaultMessage: 'Sube tu post aquí', // mensaje por defecto
+        acceptedFiles: '.jpg,.jpeg,.png,.gif', // tipos de archivos permitidos
+        addRemoveLinks: true, // permite eliminar archivos
+        dictRemoveFile: 'Eliminar archivo', // texto del boton eliminar
+        maxFiles: 1, // solo una imagen por post
+        maxFilesize: 2, // tamaño maximo en mb
+        uploadMultiple: false, // no permite multiples archivos
+        paramName: 'imagen', // nombre del campo para el backend
         headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // token csrf
         },
         init: function () {
-            // Mostrar imagen previa si existe (tras error de validación)
+            // si ya hay una imagen (por error de validacion), la muestro
             const imagenInput = document.querySelector('[name="imagen"]');
             if(imagenInput && imagenInput.value.trim()) {
                 const mockFile = { 
@@ -29,6 +32,7 @@ if(document.getElementById('dropzone')) {
                 this.emit('thumbnail', mockFile, `/uploads/${mockFile.name}`);
                 this.emit('complete', mockFile);
                 mockFile.previewElement.classList.add('dz-success', 'dz-complete');
+                // habilito el boton de crear si hay imagen
                 if(document.getElementById('btn-submit')) {
                     document.getElementById('btn-submit').disabled = false;
                 }
@@ -36,44 +40,45 @@ if(document.getElementById('dropzone')) {
         }
     });
 
+    // cuando la imagen se sube correctamente
     dropzone.on("success", function (file, response) {
-        document.querySelector('[name="imagen"]').value = response.imagen;
+        document.querySelector('[name="imagen"]').value = response.imagen; // guardo el nombre en el input oculto
         if(document.getElementById('btn-submit')) {
             document.getElementById('btn-submit').disabled = false;
         }
     });
 
+    // cuando se elimina la imagen
     dropzone.on("removedfile", function (file) {
-        document.querySelector('[name="imagen"]').value = "";
+        document.querySelector('[name="imagen"]').value = ""; // limpio el input
         if(document.getElementById('btn-submit')) {
             document.getElementById('btn-submit').disabled = true;
         }
     });
 }
 
-// Dropzone para registro (si existe)
+// dropzone para registro de usuario (solo si existe el elemento)
 if(document.getElementById('dropzone-register')) {
+    // inicializo dropzone en el formulario de registro
     let dropzoneRegister = new Dropzone('#dropzone-register', {
-        url: '/imagenes',
-        dictDefaultMessage: 'Arrastra aquí tu imagen de perfil o haz clic',
-        acceptedFiles: '.jpg,.jpeg,.png,.gif',
-        addRemoveLinks: true,
-        dictRemoveFile: 'Eliminar',
-        maxFiles: 1,
-        maxFilesize: 2,
-        uploadMultiple: false,
-        paramName: 'imagen', // Importante: nombre del parámetro
+        url: '/imagenes', // ruta para subir imagen de perfil
+        dictDefaultMessage: 'Arrastra aquí tu imagen de perfil o haz clic', // mensaje por defecto
+        acceptedFiles: '.jpg,.jpeg,.png,.gif', // tipos de archivos permitidos
+        addRemoveLinks: true, // permite eliminar archivos
+        dictRemoveFile: 'Eliminar', // texto del boton eliminar
+        maxFiles: 1, // solo una imagen de perfil
+        maxFilesize: 2, // tamaño maximo en mb
+        uploadMultiple: false, // no permite multiples archivos
+        paramName: 'imagen', // nombre del campo para el backend
         headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // token csrf
         },
         init: function () {
-            // Limitar a un solo archivo
+            // si ya hay una imagen (por error de validacion), la muestro
             this.on('maxfilesexceeded', function(file) {
                 this.removeAllFiles();
                 this.addFile(file);
             });
-
-            // Mostrar imagen previa si existe
             const imagenInput = document.querySelector('[name="imagen"]');
             if(imagenInput && imagenInput.value.trim()) {
                 const mockFile = { 
@@ -88,16 +93,18 @@ if(document.getElementById('dropzone-register')) {
         }
     });
 
+    // cuando la imagen de perfil se sube correctamente
     dropzoneRegister.on("success", function (file, response) {
-        console.log('Imagen subida exitosamente:', response);
+        // guardo el nombre en el input oculto
         document.querySelector('[name="imagen"]').value = response.imagen;
     });
 
+    // cuando se elimina la imagen de perfil
     dropzoneRegister.on("removedfile", function (file) {
-        console.log('Imagen eliminada');
         document.querySelector('[name="imagen"]').value = "";
     });
 
+    // si hay error al subir la imagen
     dropzoneRegister.on("error", function(file, message) {
         console.error('Error al subir imagen:', message);
     });
