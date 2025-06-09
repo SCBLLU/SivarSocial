@@ -98,10 +98,37 @@ class UserController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * elimina la cuenta del usuario autenticado y sus datos relacionados
      */
-    public function destroy(User $user)
+    public function destroy(Request $request)
     {
-        //
+        // obtengo el usuario autenticado
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('home');
+        }
+        // Refrescar el modelo para asegurarse de que es una instancia de Eloquent
+        $user = User::find($user->id);
+        // elimino todos los posts del usuario y sus imágenes
+        foreach ($user->posts as $post) {
+            $imagePath = public_path('uploads/' . $post->imagen);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+            $post->delete();
+        }
+        // elimino la imagen de perfil si existe
+        if ($user->imagen) {
+            $perfilPath = public_path('perfiles/' . $user->imagen);
+            if (file_exists($perfilPath)) {
+                unlink($perfilPath);
+            }
+        }
+        // cierro sesión antes de eliminar
+        Auth::logout();
+        // elimino el usuario
+        $user->delete();
+        // redirijo al home con mensaje
+        return redirect()->route('home')->with('success', 'Cuenta eliminada correctamente');
     }
 }

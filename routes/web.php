@@ -61,3 +61,4 @@ Route::get('/{user:username}', [PostController::class, 'index'])->name('posts.in
 
 Route::post('/{user:username}/follow', [FollowerController::class, 'store'])->name('users.follow');
 Route::delete('/{user:username}/unfollow', [FollowerController::class, 'destroy'])->name('users.unfollow');
+Route::delete('/user', [UserController::class, 'destroy'])->name('user.destroy');
