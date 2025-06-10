@@ -100,7 +100,8 @@
                     <div>
                         <a href="{{ route('posts.show', ['post' => $post, 'user' => $user]) }}">
                             <img src="{{ asset('uploads') . '/' . $post->imagen }}"
-                                alt="Imagen del post {{ $post->titulo }}">
+                                alt="Imagen del post {{ $post->titulo }}"
+                                class="object-cover w-full max-h-96 aspect-square rounded-none">
                         </a>
 
                     </div>
