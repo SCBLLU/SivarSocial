@@ -3,11 +3,7 @@
 @section('titulo')
     <div class="flex items-center justify-center gap-4">
         <div class="text-3xl font-bold text-white">
-            Inicia Sesión en 
-        </div>
-        <div>
-            <img srcset="https://res.cloudinary.com/dj848z4er/image/upload/v1748745537/alcb019nadktidzpwi4w.png 2x"
-                alt="LOGO2" class="h-25">
+            Inicia Sesión
         </div>
     </div>
 @endsection
