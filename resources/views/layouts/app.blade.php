@@ -20,7 +20,7 @@
     <div class="wave-background">
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
             style="margin: auto; background: rgba(255, 255, 255,0); display: block; shape-rendering: auto;"
-            class="wave-svg" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1980 600">
+            class="wave-svg h-[180px] md:h-[320px] lg:h-[400px] w-full" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1980 600">
             <g transform="">
                 <linearGradient id="lg-0.8589700868456098" x1="0" x2="1" y1="0" y2="0">
                     <stop stop-color="#e3f1ff" offset="0"></stop>
@@ -75,6 +75,29 @@
             </g>
         </svg>
     </div>
+    <style>
+        @media (max-width: 768px) {
+            .wave-svg {
+                height: 240px !important;
+                min-height: 180px !important;
+                max-height: 300px !important;
+            }
+        }
+        @media (max-width: 480px) {
+            .wave-svg {
+                height: 180px !important;
+                min-height: 140px !important;
+                max-height: 220px !important;
+            }
+        }
+        @media (max-width: 370px) {
+            .wave-svg {
+                height: 140px !important;
+                min-height: 100px !important;
+                max-height: 180px !important;
+            }
+        }
+    </style>
     {{-- termina olas animadas --}}
 
     {{-- Contenedor principal --}}
