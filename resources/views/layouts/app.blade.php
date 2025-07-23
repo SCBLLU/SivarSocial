@@ -75,29 +75,6 @@
             </g>
         </svg>
     </div>
-    <style>
-        @media (max-width: 768px) {
-            .wave-svg {
-                height: 240px !important;
-                min-height: 180px !important;
-                max-height: 300px !important;
-            }
-        }
-        @media (max-width: 480px) {
-            .wave-svg {
-                height: 180px !important;
-                min-height: 140px !important;
-                max-height: 220px !important;
-            }
-        }
-        @media (max-width: 370px) {
-            .wave-svg {
-                height: 140px !important;
-                min-height: 100px !important;
-                max-height: 180px !important;
-            }
-        }
-    </style>
     {{-- termina olas animadas --}}
 
     {{-- Contenedor principal --}}
