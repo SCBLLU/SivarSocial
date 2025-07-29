@@ -11,6 +11,7 @@
     @livewireStyles()
     <!-- Alpine.js - Cargar ANTES del contenido -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://kit.fontawesome.com/6305bb531f.js" crossorigin="anonymous"></script>
 </head>
 
 <body style="background-color: #0f02a4; color: white;">

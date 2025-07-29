@@ -18,8 +18,8 @@ class PostController extends Controller
     public function index(User $user)
     {
 
-        
-        $posts = Post::where('user_id', $user->id)->paginate(8)->onEachSide(2);
+
+        $posts = Post::where('user_id', $user->id)->with('comentarios')->paginate(8)->onEachSide(2);
 
         // Verifica si el usuario autenticado es el mismo que el del muro
         return view('layouts.dashboard', [
@@ -69,13 +69,12 @@ class PostController extends Controller
         //eliminar la imagen
         $imagePath = public_path('uploads/' . $post->imagen);
 
-        if (file_exists($imagePath)){
+        if (file_exists($imagePath)) {
             unlink($imagePath);
         }
-        
+
         // Redirigir al muro del usuario autenticado
         return redirect()->route('posts.index', ['user' => Auth::user()])
             ->with('success', 'Post eliminado correctamente');
     }
 }
-
