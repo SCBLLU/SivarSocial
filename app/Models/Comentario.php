@@ -15,7 +15,7 @@ class Comentario extends Model
     // para traer los datos del usuario y del post de quien es el comentario
     public function user()
     {
-        return $this->belongsTo(User::class)->select(['name', 'username']);
+        return $this->belongsTo(User::class);
     }
 
     public function post()
