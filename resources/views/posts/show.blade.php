@@ -18,59 +18,145 @@
             <!-- Contenido principal -->
             <div class="flex gap-8 w-full justify-center items-start">
 
-                <!-- Post - Lado izquierdo usando el estilo de listar-post -->
-                <div id="post-container" class="bg-white rounded-2xl shadow-lg w-full max-w-md flex flex-col items-center">
-                    <!-- Header: perfil y username -->
-                    <div class="flex items-center w-full px-4 py-3 border-b border-gray-200">
-                        <a href="{{ route('posts.index', $post->user->username) }}" class="flex items-center group">
-                            <img src="{{ $post->user && $post->user->imagen ? asset('perfiles/' . $post->user->imagen) : asset('img/usuario.svg') }}"
-                                alt="Avatar de {{ $post->user->username }}"
-                                class="w-10 h-10 rounded-full object-cover border-2 border-[#3B25DD] group-hover:border-[#120073] transition"
-                                onerror="this.src='{{ asset('img/usuario.svg') }}'">
-                            <span class="ml-3 font-bold text-black group-hover:underline">
-                                {{ $post->user->name ?? $post->user->username }}
-                            </span>
-                        </a>
-                        <span class="text-xs text-gray-500 ml-auto">{{ ucfirst($post->created_at->diffForHumans()) }}</span>
-                    </div>
+                <!-- Post - Lado izquierdo -->
+                @if($post->isMusicPost())
+                    <!-- Post musical -->
+                    <div id="post-container" class="bg-white rounded-2xl shadow-lg w-full max-w-md flex flex-col items-center">
+                        <!-- Header: perfil y username -->
+                        <div class="flex items-center w-full px-4 py-3 border-b border-gray-200">
+                            <a href="{{ route('posts.index', $post->user->username) }}" class="flex items-center group">
+                                <img src="{{ $post->user && $post->user->imagen ? asset('perfiles/' . $post->user->imagen) : asset('img/usuario.svg') }}"
+                                    alt="Avatar de {{ $post->user->username }}"
+                                    class="w-10 h-10 rounded-full object-cover border-2 border-[#3B25DD] group-hover:border-[#120073] transition"
+                                    onerror="this.src='{{ asset('img/usuario.svg') }}'">
+                                <span class="ml-3 font-bold text-black group-hover:underline">
+                                    {{ $post->user->name ?? $post->user->username }}
+                                </span>
+                            </a>
+                            <span class="text-xs text-gray-500 ml-auto">{{ ucfirst($post->created_at->diffForHumans()) }}</span>
+                        </div>
 
-                    <!-- Imagen del post -->
-                    <div class="w-full flex justify-center bg-black rounded-b-none rounded-t-none">
-                        <img src="{{ asset('uploads') . '/' . $post->imagen }}" alt="Imagen del post {{ $post->titulo }}"
-                            class="object-cover w-full max-h-96 aspect-square rounded-none">
-                    </div>
-
-                    <!-- Detalles debajo de la imagen -->
-                    <div class="w-full px-4 py-3">
-                        <!-- Título del post y botones de interacción en la misma línea -->
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="font-semibold text-black text-lg">{{ $post->titulo }}</span>
-                            <div class="flex items-center gap-4">
-                                <!-- Componente de comentarios (siempre visible) -->
-                                <livewire:comment-post :post="$post" color="gray" />
-
-                                <!-- Componente de likes (siempre visible, pero interacción solo si está logueado) -->
-                                <livewire:like-post :post="$post" color="red" />
+                        <!-- Contenido musical -->
+                        <div class="w-full p-6 bg-black border border-gray-600 rounded-lg">
+                            <div class="text-center mb-6">
+                                <!-- Imagen de álbum más grande -->
+                                <div class="relative inline-block">
+                                    <img src="{{ $post->spotify_album_image ?? asset('img/usuario.svg') }}" 
+                                         alt="{{ $post->spotify_album_name }}"
+                                         class="w-32 h-32 rounded-2xl object-cover shadow-2xl mx-auto">
+                                    <!-- Indicador de música -->
+                                    <div class="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg">
+                                        <svg class="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM15.657 6.343a1 1 0 011.414 0A9.972 9.972 0 0119 12a9.972 9.972 0 01-1.929 5.657 1 1 0 11-1.414-1.414A7.971 7.971 0 0017 12a7.971 7.971 0 00-1.343-4.243 1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                            <path fill-rule="evenodd" d="M13.828 8.172a1 1 0 011.414 0A5.983 5.983 0 0117 12a5.983 5.983 0 01-1.758 3.828 1 1 0 11-1.414-1.414A3.987 3.987 0 0015 12a3.987 3.987 0 00-1.172-2.828 1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                
+                                <!-- Información de la canción -->
+                                <div class="mt-4 text-white">
+                                    <h2 class="text-2xl font-bold mb-2 text-white">{{ $post->spotify_track_name }}</h2>
+                                    <p class="text-gray-300 text-lg mb-1">{{ $post->spotify_artist_name }}</p>
+                                    <p class="text-gray-400 text-sm">{{ $post->spotify_album_name }}</p>
+                                </div>
+                                
+                                <!-- Controles de reproducción -->
+                                <div class="flex items-center justify-center gap-4 mt-6">
+                                    @if ($post->spotify_preview_url)
+                                        <button onclick="togglePostPreview('{{ $post->spotify_preview_url }}', this, {{ $post->id }})" 
+                                                class="w-16 h-16 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-all duration-300 group hover:scale-110">
+                                            <svg class="w-8 h-8 text-white play-icon group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <svg class="w-8 h-8 text-white pause-icon hidden group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </button>
+                                    @endif
+                                    
+                                    @if ($post->spotify_external_url)
+                                        <a href="{{ $post->spotify_external_url }}" target="_blank" 
+                                           class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-full text-white text-sm transition-all hover:scale-105 border border-gray-600 hover:border-gray-400">
+                                            Ver en Spotify ↗
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Descripción -->
-                        <div class="mb-3">
-                            <p class="text-gray-700 text-sm">{{ $post->descripcion }}</p>
+                        <!-- Detalles debajo del contenido musical -->
+                        <div class="w-full px-4 py-3">
+                            <!-- Título del post y botones de interacción en la misma línea -->
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-semibold text-black text-lg">{{ $post->titulo }}</span>
+                                <div class="flex items-center gap-4">
+                                    <!-- Componente de comentarios -->
+                                    <livewire:comment-post :post="$post" color="gray" />
+                                    <!-- Componente de likes -->
+                                    <livewire:like-post :post="$post" color="red" />
+                                </div>
+                            </div>
+
+                            <!-- Descripción -->
+                            <div class="mb-3">
+                                <p class="text-gray-700 text-sm">{{ $post->descripcion }}</p>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <!-- Post de imagen -->
+                    <div id="post-container" class="bg-white rounded-2xl shadow-lg w-full max-w-md flex flex-col items-center">
+                        <!-- Header: perfil y username -->
+                        <div class="flex items-center w-full px-4 py-3 border-b border-gray-200">
+                            <a href="{{ route('posts.index', $post->user->username) }}" class="flex items-center group">
+                                <img src="{{ $post->user && $post->user->imagen ? asset('perfiles/' . $post->user->imagen) : asset('img/usuario.svg') }}"
+                                    alt="Avatar de {{ $post->user->username }}"
+                                    class="w-10 h-10 rounded-full object-cover border-2 border-[#3B25DD] group-hover:border-[#120073] transition"
+                                    onerror="this.src='{{ asset('img/usuario.svg') }}'">
+                                <span class="ml-3 font-bold text-black group-hover:underline">
+                                    {{ $post->user->name ?? $post->user->username }}
+                                </span>
+                            </a>
+                            <span class="text-xs text-gray-500 ml-auto">{{ ucfirst($post->created_at->diffForHumans()) }}</span>
                         </div>
 
-                        @auth
-                            @if ($post->user_id === Auth::user()->id)
-                                <form action="{{ route('posts.destroy', $post) }}" method="POST" class="mt-4">
-                                    @csrf
-                                    @method('DELETE')
-                                    <input type="submit" value="Eliminar Post"
-                                        class="bg-red-500 hover:bg-red-600 transition-colors cursor-pointer font-bold p-2 text-white rounded-lg w-full text-sm">
-                                </form>
-                            @endif
-                        @endauth
+                        <!-- Imagen del post -->
+                        <div class="w-full flex justify-center bg-black rounded-b-none rounded-t-none">
+                            <img src="{{ asset('uploads') . '/' . $post->imagen }}" alt="Imagen del post {{ $post->titulo }}"
+                                class="object-cover w-full max-h-96 aspect-square rounded-none">
+                        </div>
+
+                        <!-- Detalles debajo de la imagen -->
+                        <div class="w-full px-4 py-3">
+                            <!-- Título del post y botones de interacción en la misma línea -->
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-semibold text-black text-lg">{{ $post->titulo }}</span>
+                                <div class="flex items-center gap-4">
+                                    <!-- Componente de comentarios -->
+                                    <livewire:comment-post :post="$post" color="gray" />
+                                    <!-- Componente de likes -->
+                                    <livewire:like-post :post="$post" color="red" />
+                                </div>
+                            </div>
+
+                            <!-- Descripción -->
+                            <div class="mb-3">
+                                <p class="text-gray-700 text-sm">{{ $post->descripcion }}</p>
+                            </div>
+
+                            @auth
+                                @if ($post->user_id === Auth::user()->id)
+                                    <form action="{{ route('posts.destroy', $post) }}" method="POST" class="mt-4">
+                                        @csrf
+                                        @method('DELETE')
+                                        <input type="submit" value="Eliminar Post"
+                                            class="bg-red-500 hover:bg-red-600 transition-colors cursor-pointer font-bold p-2 text-white rounded-lg w-full text-sm">
+                                    </form>
+                                @endif
+                            @endauth
+                        </div>
                     </div>
-                </div>
+                @endif
 
                 <!-- Comentarios - Lado derecho con altura igual al post -->
                 <div id="comments-container"
