@@ -37,17 +37,51 @@
                         </div>
 
                         <!-- Contenido musical principal -->
-                        <div class="w-full p-6 relative">
-                            <div class="relative z-12 text-center">
-                                <!-- Iframe de Spotify (si está disponible) -->
-                                @if($post->spotify_track_id)
-                                    <iframe
-                                        src="https://open.spotify.com/embed/track/{{ $post->spotify_track_id }}?utm_source=generator&theme=0"
-                                        width="100%" height="152" frameBorder="0" allowfullscreen=""
-                                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                                        loading="lazy" class="rounded-lg">
-                                    </iframe>
+                        <div class="w-full p-6 bg-gradient-to-br from-[#121212] to-[#1a1a1a] relative overflow-hidden">
+                            <!-- Fondo decorativo con el color dominante -->
+                            <div class="absolute inset-0 opacity-10"
+                                style="background: linear-gradient(135deg, {{ $post->dominant_color ?? '#1DB954' }} 0%, transparent 50%);">
+                            </div>
+
+                            <!-- Spotify Brand Attribution -->
+                            <div class="flex items-center justify-between mb-6 relative z-10">
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-8 h-8 text-[#1DB954]" fill="currentColor" viewBox="0 0 168 168">
+                                        <path
+                                            d="M83.996 0C37.588 0 0 37.588 0 83.996s37.588 83.996 83.996 83.996 83.996-37.588 83.996-83.996S130.404 0 83.996 0zm38.404 121.17c-1.506 2.467-4.718 3.24-7.177 1.737-19.640-12.002-44.389-14.729-73.524-8.075-2.818.646-5.674-1.115-6.32-3.934-.646-2.818 1.115-5.674 3.934-6.32 31.9-7.291 59.263-4.15 81.337 9.34 2.46 1.51 3.24 4.72 1.75 7.18zm10.25-22.802c-1.89 3.075-5.91 4.045-8.98 2.155-22.51-13.839-56.823-17.846-83.448-9.764-3.453 1.043-7.1-.903-8.148-4.35-1.04-3.453.907-7.093 4.354-8.143 30.413-9.228 68.222-4.758 94.072 11.127 3.07 1.89 4.04 5.91 2.15 8.976zm.88-23.744c-26.99-16.031-71.52-17.505-97.289-9.684-4.138 1.255-8.514-1.081-9.768-5.219-1.254-4.14 1.08-8.513 5.221-9.771 29.581-8.98 78.756-7.245 109.83 11.202 3.722 2.209 4.943 7.016 2.737 10.733-2.2 3.722-7.02 4.949-10.73 2.739z" />
+                                    </svg>
+                                </div>
+
+                                @if($post->spotify_external_url)
+                                    <a href="{{ $post->spotify_external_url }}" target="_blank"
+                                        class="bg-[#1DB954] hover:bg-[#1ed760] text-black px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 hover:scale-105 shadow-lg">
+                                        Abrir en Spotify
+                                    </a>
                                 @endif
+                            </div>
+
+                            <!-- Contenido principal de la canción -->
+                            <div class="relative z-10 space-y-6">
+
+
+                                <!-- Iframe de Spotify si está disponible -->
+                                @if($post->spotify_track_id)
+                                    <div class="bg-black/20 rounded-xl p-4 backdrop-blur-sm">
+                                        <iframe
+                                            src="https://open.spotify.com/embed/track/{{ $post->spotify_track_id }}?utm_source=generator&theme=0"
+                                            width="100%" height="152" frameBorder="0" allowfullscreen=""
+                                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                            loading="lazy" class="rounded-lg">
+                                        </iframe>
+                                    </div>
+                                @endif
+
+                                <!-- Atribución requerida por Spotify -->
+                                <div class="flex flex-col items-center mt-4">
+                                    <span class="text-white/50 text-xs mb-1">Powered by <a href="https://spotify.com"
+                                            target="_blank" class="hover:text-white/60 transition-colors">Spotify</a></span>
+
+                                </div>
                             </div>
                         </div>
 
@@ -243,6 +277,73 @@
     </div>
 
     <script>
+        // Audio global para preview
+        let currentPreviewAudio = null;
+
+        // Función para alternar preview de música
+        function toggleTrackPreview(previewUrl, button) {
+            const playIcon = button.querySelector('.play-icon');
+            const pauseIcon = button.querySelector('.pause-icon');
+            const previewText = button.querySelector('.preview-text');
+
+            if (!previewUrl) {
+                showNotification('Vista previa no disponible', 'info');
+                return;
+            }
+
+            // Si hay audio reproduciéndose y es el mismo
+            if (currentPreviewAudio && !currentPreviewAudio.paused && currentPreviewAudio.src === previewUrl) {
+                currentPreviewAudio.pause();
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+                previewText.textContent = 'Vista previa • 30s';
+                return;
+            }
+
+            // Pausar cualquier audio anterior
+            if (currentPreviewAudio) {
+                currentPreviewAudio.pause();
+                // Resetear otros botones si existen
+                document.querySelectorAll('.play-icon').forEach(icon => icon.classList.remove('hidden'));
+                document.querySelectorAll('.pause-icon').forEach(icon => icon.classList.add('hidden'));
+                document.querySelectorAll('.preview-text').forEach(text => text.textContent = 'Vista previa • 30s');
+            }
+
+            // Crear nuevo audio
+            currentPreviewAudio = new Audio(previewUrl);
+            currentPreviewAudio.volume = 0.7;
+
+            // Actualizar UI
+            playIcon.classList.add('hidden');
+            pauseIcon.classList.remove('hidden');
+            previewText.textContent = 'Reproduciendo...';
+
+            // Reproducir
+            currentPreviewAudio.play().catch(error => {
+                console.error('Error al reproducir:', error);
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+                previewText.textContent = 'Vista previa • 30s';
+                showNotification('Error al reproducir vista previa', 'error');
+            });
+
+            // Evento cuando termina
+            currentPreviewAudio.addEventListener('ended', () => {
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+                previewText.textContent = 'Vista previa • 30s';
+            });
+        }
+
+        // Función para mostrar notificaciones (si existe)
+        function showNotification(message, type = 'info') {
+            if (window.showNotification) {
+                window.showNotification(message, type);
+            } else {
+                console.log(`${type.toUpperCase()}: ${message}`);
+            }
+        }
+
         // Función para igualar alturas sin saltos visuales
         function matchHeights() {
             const postContainer = document.getElementById('post-container');

@@ -28,7 +28,7 @@
                     <!-- Publicacion de musica -->
                     <a href="{{ route('posts.show', ['user' => $post->user ? $post->user->username : 'usuario', 'post' => $post->id]) }}"
                         class="w-full block">
-                        <div class="w-full p-4 bg-[#121212] hover:bg-[#1a1a1a] transition-colors duration-200">
+                        <div class="w-full p-4 bg-[#000000] hover:bg-[#121212] transition-colors duration-200">
                             <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center gap-2">
                                     <svg class="w-5 h-5 text-[#1DB954]" fill="currentColor" viewBox="0 0 168 168">
@@ -72,6 +72,7 @@
                                     @endif
                                 </div>
                             </div>
+                            <br />
                         </div>
                     </a>
 
