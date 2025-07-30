@@ -6,14 +6,14 @@
 
 @section('contenido')
     <div class="flex h-full">
-        <div class="container mx-auto">
-            <div class="grid h-full grid-cols-1 gap-8 lg:grid-cols-3">
+        <div class="container mx-auto px-4">
+            <div class="grid h-full grid-cols-1 gap-4 lg:gap-8 lg:grid-cols-3">
                 <!-- Columna 1: Vacía (espaciador) -->
                 <div class="hidden lg:block"></div>
 
                 <!-- Columna 2: Posts centrados con scroll interno -->
-                <div class="w-full h-full">
-                    <div id="posts-container" class="h-full pr-2 overflow-y-auto">
+                <div class="w-full h-full flex flex-col">
+                    <div id="posts-container" class="flex-1 pr-0 lg:pr-2 overflow-y-auto">
                         @include('components.new-post')
                         @component('components.listar-post', ['posts' => $posts])
                         @endcomponent
@@ -21,9 +21,8 @@
                 </div>
 
                 <!-- Columna 3: Perfiles a la derecha con altura igual a posts -->
-                <div class="w-full h-full">
-                    <div id="users-container" class="flex flex-col p-4 bg-white shadow-lg rounded-2xl"
-                        style="height: fit-content; max-height: 600px;">
+                <div class="w-full h-full  lg:flex lg:flex-col">
+                    <div id="users-container" class="flex flex-col p-4 bg-white shadow-lg rounded-2xl h-full max-h-[600px]">
                         <h2
                             class="flex items-center justify-center flex-shrink-0 gap-2 mb-4 text-xl font-bold text-purple-700">
                             Perfiles
@@ -31,8 +30,7 @@
                         </h2>
 
                         <hr class="border-gray-300 mb-4 w-[80%] mx-auto">
-                        <div class="flex-1 overflow-y-scroll scrollbar-purple"
-                            style="max-height: 400px; min-height: 200px;">
+                        <div class="flex-1 overflow-y-auto scrollbar-purple min-h-0">
                             @component('components.listar-perfiles', ['users' => $users])
                             @endcomponent
                         </div>
@@ -78,7 +76,7 @@
 
         /* Forzar que siempre se muestre el scrollbar */
         .scrollbar-purple {
-            overflow-y: scroll !important;
+            overflow-y: auto !important;
         }
 
         /* Scrollbar personalizado para los posts */
@@ -98,6 +96,17 @@
 
         #posts-container::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Asegurar que las columnas se alineen correctamente */
+        .grid {
+            align-items: start;
+        }
+
+        /* Altura consistente para ambas columnas */
+        #posts-container,
+        #users-container {
+            height: 100%;
         }
     </style>
 @endpush
