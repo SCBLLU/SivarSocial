@@ -14,6 +14,7 @@
                 <!-- Columna 2: Posts centrados con scroll interno -->
                 <div class="w-full h-full">
                     <div id="posts-container" class="h-full overflow-y-auto pr-2">
+                        @include('components.new-post')
                         @component('components.listar-post', ['posts' => $posts])
                         @endcomponent
                     </div>
