@@ -1,31 +1,41 @@
 @extends('layouts.app')
 {{-- la section inyecta el contenido dentro del yield --}}
 @section('titulo')
-    <div class="items-center flex flex-row justify-center">
-        <p class="text-4xl font-bold mb-4">
-            Pagina principal
-        </p>
-    </div>
+    Publicaciones
 @endsection
 
 @section('contenido')
-    <div class="container mx-auto flex flex-col md:flex-row gap-8 mt-8">
-        <div class="w-full md:w-2/3">
-            @component('components.listar-post', ['posts' => $posts])
-            @endcomponent
-        </div>
-        <div class="w-full md:w-1/3">
-            <div class="bg-white rounded-2xl shadow-lg p-4">
-                <h2 class="text-xl font-bold text-purple-700 mb-4 flex items-center gap-2 justify-center">
-                    Perfiles
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-                        <path
-                            d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" />
-                    </svg>
-                </h2>
-                <div class="max-h-80 overflow-y-auto scrollbar-purple">
-                    @component('components.listar-perfiles', ['users' => $users])
-                    @endcomponent
+    <div class="h-full flex">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
+                <!-- Columna 1: Vacía (espaciador) -->
+                <div class="hidden lg:block"></div>
+
+                <!-- Columna 2: Posts centrados con scroll interno -->
+                <div class="w-full h-full">
+                    <div id="posts-container" class="h-full overflow-y-auto pr-2">
+                        @include('components.new-post')
+                        @component('components.listar-post', ['posts' => $posts])
+                        @endcomponent
+                    </div>
+                </div>
+
+                <!-- Columna 3: Perfiles a la derecha con altura igual a posts -->
+                <div class="w-full h-full">
+                    <div id="users-container" class="bg-white rounded-2xl shadow-lg p-4 h-full flex flex-col">
+                        <h2
+                            class="text-xl font-bold text-purple-700 mb-4 flex items-center gap-2 justify-center flex-shrink-0">
+                            Perfiles
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                                <path
+                                    d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" />
+                            </svg>
+                        </h2>
+                        <div class="flex-1 overflow-y-auto scrollbar-purple">
+                            @component('components.listar-perfiles', ['users' => $users])
+                            @endcomponent
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -37,19 +47,44 @@
         /* Scrollbar personalizado para la sección de Perfiles */
         .scrollbar-purple::-webkit-scrollbar {
             width: 8px;
-            height: 8px; /* para scroll horizontal si hiciera falta */
+            height: 8px;
+            /* para scroll horizontal si hiciera falta */
         }
+
         .scrollbar-purple::-webkit-scrollbar-thumb {
-            background: #7e22ce; /* Tailwind purple-700 */
+            background: #7e22ce;
+            /* Tailwind purple-700 */
             border-radius: 6px;
         }
+
         .scrollbar-purple::-webkit-scrollbar-track {
-            background: #ede9fe; /* Tailwind purple-100 */
+            background: #ede9fe;
+            /* Tailwind purple-100 */
         }
+
         /* Firefox */
         .scrollbar-purple {
             scrollbar-width: thin;
             scrollbar-color: #7e22ce #ede9fe;
+        }
+
+        /* Scrollbar personalizado para los posts */
+        #posts-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #posts-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        #posts-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        #posts-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
         }
     </style>
 @endpush

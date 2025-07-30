@@ -19,13 +19,13 @@ class HomeController extends Controller
         if (Auth::check()) {
             $ids = Auth::user()->following->pluck('id')->toArray();
             $posts = Post::whereIn('user_id', $ids)
-                ->with('user')
+                ->with(['user', 'comentarios'])
                 ->latest()
                 ->paginate(10)
                 ->onEachSide(2);
         } else {
             // Si no está autenticado, mostrar todos los posts
-            $posts = Post::with('user')
+            $posts = Post::with(['user', 'comentarios'])
                 ->latest()
                 ->paginate(10)
                 ->onEachSide(2);
