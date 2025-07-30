@@ -16,22 +16,22 @@ let currentPostAudio = null; // Para el reproductor de posts en el feed
 // Función para cambiar entre tabs
 function switchTab(type) {
     currentPostType = type;
-    
+
     // Actualizar apariencia de tabs
     document.querySelectorAll('.tab-button').forEach(btn => {
         btn.classList.remove('active');
     });
     document.getElementById(`tab-${type}`).classList.add('active');
-    
+
     // Mostrar/ocultar contenido
     document.querySelectorAll('.content-panel').forEach(panel => {
         panel.classList.add('hidden');
     });
     document.getElementById(`content-${type}`).classList.remove('hidden');
-    
+
     // Actualizar campo hidden del tipo
     document.getElementById('post-tipo').value = type;
-    
+
     // Mostrar/ocultar campos del formulario
     if (type === 'imagen') {
         document.getElementById('imagen-fields').classList.remove('hidden');
@@ -40,7 +40,7 @@ function switchTab(type) {
         document.getElementById('imagen-fields').classList.add('hidden');
         document.getElementById('musica-fields').classList.remove('hidden');
     }
-    
+
     // Resetear validación del botón submit
     updateSubmitButton();
 }
@@ -49,14 +49,14 @@ function switchTab(type) {
 function updateSubmitButton() {
     const submitBtn = document.getElementById('btn-submit');
     let canSubmit = false;
-    
+
     if (currentPostType === 'imagen') {
         const imagenInput = document.querySelector('[name="imagen"]');
         canSubmit = imagenInput && imagenInput.value.trim() !== '';
     } else if (currentPostType === 'musica') {
         canSubmit = selectedTrack !== null;
     }
-    
+
     if (submitBtn) {
         submitBtn.disabled = !canSubmit;
     }
@@ -69,14 +69,14 @@ async function searchSpotify(query) {
         showSearchSuggestions();
         return;
     }
-    
+
     // Añadir a búsquedas recientes
     if (query.length >= 3 && !recentSearches.includes(query)) {
         recentSearches.unshift(query);
         recentSearches = recentSearches.slice(0, 5); // Mantener solo 5 búsquedas recientes
         localStorage.setItem('spotify_recent_searches', JSON.stringify(recentSearches));
     }
-    
+
     // Mostrar indicador de carga
     const resultsContainer = document.getElementById('search-results');
     resultsContainer.innerHTML = `
@@ -85,16 +85,16 @@ async function searchSpotify(query) {
             <span class="ml-3 text-white">Buscando canciones...</span>
         </div>
     `;
-    
+
     try {
         const response = await fetch(`/spotify/search?query=${encodeURIComponent(query)}`, {
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
         });
-        
+
         const data = await response.json();
-        
+
         if (response.ok) {
             displaySearchResults(data.tracks.items);
         } else {
@@ -120,9 +120,9 @@ async function searchSpotify(query) {
 // Función para mostrar sugerencias de búsqueda
 function showSearchSuggestions() {
     const resultsContainer = document.getElementById('search-results');
-    
+
     let suggestionsHTML = '';
-    
+
     // Búsquedas recientes
     if (recentSearches.length > 0) {
         suggestionsHTML += `
@@ -139,7 +139,7 @@ function showSearchSuggestions() {
             </div>
         `;
     }
-    
+
     // Géneros populares
     suggestionsHTML += `
         <div class="bg-black p-4 rounded-lg">
@@ -154,7 +154,7 @@ function showSearchSuggestions() {
             </div>
         </div>
     `;
-    
+
     resultsContainer.innerHTML = `
         <div class="space-y-4">
             ${suggestionsHTML}
@@ -163,21 +163,21 @@ function showSearchSuggestions() {
 }
 
 // Función para realizar búsqueda desde sugerencias
-window.performSearch = function(query) {
+window.performSearch = function (query) {
     document.getElementById('spotify-search').value = query;
     searchSpotify(query);
 };
 
 // Función para reproducir/pausar preview en los posts del feed
-window.togglePostPreview = function(previewUrl, button, postId) {
+window.togglePostPreview = function (previewUrl, button, postId) {
     const playIcon = button.querySelector('.play-icon');
     const pauseIcon = button.querySelector('.pause-icon');
-    
+
     if (!previewUrl) {
         showNotification('Esta canción no tiene vista previa disponible', 'warning');
         return;
     }
-    
+
     // Si hay un audio reproduciéndose actualmente
     if (currentPostAudio && !currentPostAudio.paused) {
         // Si es el mismo botón, pausar
@@ -203,32 +203,32 @@ window.togglePostPreview = function(previewUrl, button, postId) {
             }
         }
     }
-    
+
     // Reproducir nuevo audio
     currentPostAudio = new Audio(previewUrl);
     currentPostAudio.dataset = { postId: postId };
-    
+
     // Añadir efectos visuales
     button.classList.add('animate-pulse');
     playIcon.classList.add('hidden');
     pauseIcon.classList.remove('hidden');
-    
+
     // Configurar eventos del audio
     currentPostAudio.addEventListener('loadstart', () => {
         button.style.opacity = '0.7';
     });
-    
+
     currentPostAudio.addEventListener('canplay', () => {
         button.style.opacity = '1';
     });
-    
+
     currentPostAudio.addEventListener('ended', () => {
         playIcon.classList.remove('hidden');
         pauseIcon.classList.add('hidden');
         button.classList.remove('animate-pulse');
         currentPostAudio = null;
     });
-    
+
     currentPostAudio.addEventListener('error', () => {
         playIcon.classList.remove('hidden');
         pauseIcon.classList.add('hidden');
@@ -236,7 +236,7 @@ window.togglePostPreview = function(previewUrl, button, postId) {
         showNotification('Error al reproducir la vista previa', 'error');
         currentPostAudio = null;
     });
-    
+
     // Reproducir
     currentPostAudio.play().catch(error => {
         console.error('Error al reproducir audio:', error);
@@ -251,7 +251,7 @@ window.togglePostPreview = function(previewUrl, button, postId) {
 // Función para mostrar resultados de búsqueda
 function displaySearchResults(tracks) {
     const resultsContainer = document.getElementById('search-results');
-    
+
     if (!tracks || tracks.length === 0) {
         resultsContainer.innerHTML = `
             <div class="text-center py-8 bg-black rounded-lg">
@@ -264,17 +264,17 @@ function displaySearchResults(tracks) {
         `;
         return;
     }
-    
+
     resultsContainer.innerHTML = tracks.map((track, index) => {
         // Formatear duración
         const duration = track.duration_ms ? formatDuration(track.duration_ms) : '';
-        
+
         // Crear barra de popularidad
-        const popularityBar = track.popularity ? 
+        const popularityBar = track.popularity ?
             `<div class="w-full bg-gray-600 rounded-full h-1.5 mt-1">
                 <div class="bg-white h-1.5 rounded-full transition-all duration-500" style="width: ${track.popularity}%"></div>
             </div>` : '';
-        
+
         return `
             <div class="spotify-track-card opacity-0 animate-fade-in bg-black border border-gray-600 rounded-lg p-3 hover:bg-gray-900 transition-all duration-200 cursor-pointer" 
                  data-track='${JSON.stringify(track)}' 
@@ -320,14 +320,14 @@ function displaySearchResults(tracks) {
             </div>
         `;
     }).join('');
-    
+
     // Añadir event listeners para selección
     resultsContainer.querySelectorAll('.spotify-track-card').forEach(card => {
-        card.addEventListener('click', function(e) {
+        card.addEventListener('click', function (e) {
             if (e.target.closest('.play-button')) return; // No seleccionar si se hace clic en play
-            
+
             const track = JSON.parse(this.dataset.track);
-            
+
             // Añadir efecto visual de selección
             this.style.transform = 'scale(0.98)';
             setTimeout(() => {
@@ -335,13 +335,13 @@ function displaySearchResults(tracks) {
                 selectTrack(track);
             }, 150);
         });
-        
+
         // Efecto hover mejorado
-        card.addEventListener('mouseenter', function() {
+        card.addEventListener('mouseenter', function () {
             this.style.transform = 'translateY(-2px)';
         });
-        
-        card.addEventListener('mouseleave', function() {
+
+        card.addEventListener('mouseleave', function () {
             this.style.transform = '';
         });
     });
@@ -357,7 +357,7 @@ function formatDuration(ms) {
 // Función para seleccionar una canción
 async function selectTrack(track) {
     selectedTrack = track;
-    
+
     // Actualizar campos del formulario
     document.querySelector('[name="spotify_track_id"]').value = track.id;
     document.querySelector('[name="spotify_track_name"]').value = track.name;
@@ -366,7 +366,7 @@ async function selectTrack(track) {
     document.querySelector('[name="spotify_album_image"]').value = track.image || '';
     document.querySelector('[name="spotify_preview_url"]').value = track.preview_url || '';
     document.querySelector('[name="spotify_external_url"]').value = track.external_url || '';
-    
+
     // Extraer color dominante
     if (track.image) {
         try {
@@ -382,7 +382,7 @@ async function selectTrack(track) {
             const colorData = await colorResponse.json();
             const dominantColor = colorData.dominant_color || '#1DB954';
             document.querySelector('[name="dominant_color"]').value = dominantColor;
-            
+
             // Actualizar el color del preview
             updateSelectedTrackColor(dominantColor);
         } catch (error) {
@@ -390,7 +390,7 @@ async function selectTrack(track) {
             document.querySelector('[name="dominant_color"]').value = '#1DB954';
         }
     }
-    
+
     // Mostrar canción seleccionada con animación
     const selectedTrackContainer = document.getElementById('selected-track');
     selectedTrackContainer.innerHTML = `
@@ -434,7 +434,7 @@ async function selectTrack(track) {
             </div>
         </div>
     `;
-    
+
     // Limpiar resultados de búsqueda con animación
     const searchResults = document.getElementById('search-results');
     searchResults.style.opacity = '0';
@@ -442,12 +442,12 @@ async function selectTrack(track) {
         searchResults.innerHTML = '';
         searchResults.style.opacity = '1';
     }, 300);
-    
+
     document.getElementById('spotify-search').value = '';
-    
+
     // Mostrar notificación de éxito
     showNotification(`🎵 ${track.name} seleccionada`, 'success');
-    
+
     updateSubmitButton();
 }
 
@@ -464,10 +464,10 @@ function adjustBrightness(hex, percent) {
 }
 
 // Función para limpiar selección de track
-window.clearSelectedTrack = function() {
+window.clearSelectedTrack = function () {
     selectedTrack = null;
     document.getElementById('selected-track').innerHTML = '';
-    
+
     // Limpiar campos del formulario
     document.querySelector('[name="spotify_track_id"]').value = '';
     document.querySelector('[name="spotify_track_name"]').value = '';
@@ -477,7 +477,7 @@ window.clearSelectedTrack = function() {
     document.querySelector('[name="spotify_preview_url"]').value = '';
     document.querySelector('[name="spotify_external_url"]').value = '';
     document.querySelector('[name="dominant_color"]').value = '';
-    
+
     updateSubmitButton();
     showNotification('Selección eliminada', 'info');
 };
@@ -492,21 +492,21 @@ function updateSelectedTrackColor(color) {
 }
 
 // Función para reproducir/pausar preview
-window.togglePreview = function(previewUrl, button) {
+window.togglePreview = function (previewUrl, button) {
     const playIcon = button.querySelector('.play-icon');
     const pauseIcon = button.querySelector('.pause-icon');
-    
+
     if (!previewUrl) {
         // Mostrar notificación si no hay preview disponible
         showNotification('Esta canción no tiene vista previa disponible', 'warning');
         return;
     }
-    
+
     if (currentAudio && !currentAudio.paused) {
         // Pausar audio actual
         currentAudio.pause();
         currentAudio = null;
-        
+
         // Resetear todos los botones
         document.querySelectorAll('.play-button').forEach(btn => {
             btn.querySelector('.play-icon').classList.remove('hidden');
@@ -516,34 +516,34 @@ window.togglePreview = function(previewUrl, button) {
     } else {
         // Reproducir nuevo audio
         currentAudio = new Audio(previewUrl);
-        
+
         // Añadir efectos visuales
         button.classList.add('playing');
         playIcon.classList.add('hidden');
         pauseIcon.classList.remove('hidden');
-        
+
         // Configurar eventos del audio
         currentAudio.addEventListener('loadstart', () => {
             button.style.opacity = '0.7';
         });
-        
+
         currentAudio.addEventListener('canplay', () => {
             button.style.opacity = '1';
         });
-        
+
         currentAudio.addEventListener('ended', () => {
             playIcon.classList.remove('hidden');
             pauseIcon.classList.add('hidden');
             button.classList.remove('playing');
         });
-        
+
         currentAudio.addEventListener('error', () => {
             playIcon.classList.remove('hidden');
             pauseIcon.classList.add('hidden');
             button.classList.remove('playing');
             showNotification('Error al reproducir la vista previa', 'error');
         });
-        
+
         // Reproducir
         currentAudio.play().catch(error => {
             console.error('Error al reproducir audio:', error);
@@ -560,7 +560,7 @@ function showNotification(message, type = 'info') {
     // Crear elemento de notificación
     const notification = document.createElement('div');
     notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 max-w-sm`;
-    
+
     // Aplicar estilos según el tipo
     switch (type) {
         case 'success':
@@ -575,7 +575,7 @@ function showNotification(message, type = 'info') {
         default:
             notification.classList.add('bg-blue-500', 'text-white');
     }
-    
+
     notification.innerHTML = `
         <div class="flex items-center gap-2">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -584,15 +584,15 @@ function showNotification(message, type = 'info') {
             <span class="font-medium">${message}</span>
         </div>
     `;
-    
+
     // Añadir al DOM
     document.body.appendChild(notification);
-    
+
     // Animar entrada
     setTimeout(() => {
         notification.classList.remove('translate-x-full');
     }, 100);
-    
+
     // Remover después de 3 segundos
     setTimeout(() => {
         notification.classList.add('translate-x-full');
@@ -605,35 +605,35 @@ function showNotification(message, type = 'info') {
 }
 
 // Inicialización cuando el DOM está listo
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Event listeners para tabs
     document.getElementById('tab-imagen')?.addEventListener('click', () => switchTab('imagen'));
     document.getElementById('tab-musica')?.addEventListener('click', () => switchTab('musica'));
-    
+
     // Event listener para búsqueda de Spotify
     const spotifySearch = document.getElementById('spotify-search');
     if (spotifySearch) {
-        spotifySearch.addEventListener('input', function(e) {
+        spotifySearch.addEventListener('input', function (e) {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 searchSpotify(e.target.value.trim());
             }, 500);
         });
-        
+
         // Mostrar sugerencias al hacer focus si no hay valor
-        spotifySearch.addEventListener('focus', function(e) {
+        spotifySearch.addEventListener('focus', function (e) {
             if (!e.target.value.trim()) {
                 showSearchSuggestions();
             }
         });
     }
-    
+
     // Inicializar con imagen por defecto
     switchTab('imagen');
 });
 
 // dropzone para crear posts (solo si existe el elemento)
-if(document.getElementById('dropzone')) {
+if (document.getElementById('dropzone')) {
     // inicializo dropzone en el formulario de posts
     let dropzone = new Dropzone('#dropzone', {
         url: '/imagenes', // ruta para subir imagenes de posts
@@ -651,10 +651,10 @@ if(document.getElementById('dropzone')) {
         init: function () {
             // si ya hay una imagen (por error de validacion), la muestro
             const imagenInput = document.querySelector('[name="imagen"]');
-            if(imagenInput && imagenInput.value.trim()) {
-                const mockFile = { 
-                    name: imagenInput.value, 
-                    size: 1234 
+            if (imagenInput && imagenInput.value.trim()) {
+                const mockFile = {
+                    name: imagenInput.value,
+                    size: 1234
                 };
                 this.emit('addedfile', mockFile);
                 this.emit('thumbnail', mockFile, `/uploads/${mockFile.name}`);
@@ -680,7 +680,7 @@ if(document.getElementById('dropzone')) {
 }
 
 // dropzone para registro de usuario (solo si existe el elemento)
-if(document.getElementById('dropzone-register')) {
+if (document.getElementById('dropzone-register')) {
     // inicializo dropzone en el formulario de registro
     let dropzoneRegister = new Dropzone('#dropzone-register', {
         url: '/imagenes', // ruta para subir imagen de perfil
@@ -697,15 +697,15 @@ if(document.getElementById('dropzone-register')) {
         },
         init: function () {
             // si ya hay una imagen (por error de validacion), la muestro
-            this.on('maxfilesexceeded', function(file) {
+            this.on('maxfilesexceeded', function (file) {
                 this.removeAllFiles();
                 this.addFile(file);
             });
             const imagenInput = document.querySelector('[name="imagen"]');
-            if(imagenInput && imagenInput.value.trim()) {
-                const mockFile = { 
-                    name: imagenInput.value, 
-                    size: 1234 
+            if (imagenInput && imagenInput.value.trim()) {
+                const mockFile = {
+                    name: imagenInput.value,
+                    size: 1234
                 };
                 this.emit('addedfile', mockFile);
                 this.emit('thumbnail', mockFile, `/perfiles/${mockFile.name}`);
@@ -727,7 +727,58 @@ if(document.getElementById('dropzone-register')) {
     });
 
     // si hay error al subir la imagen
-    dropzoneRegister.on("error", function(file, message) {
+    dropzoneRegister.on("error", function (file, message) {
         console.error('Error al subir imagen:', message);
     });
 }
+
+// Funciones adicionales para el nuevo componente de música
+// Asegurar compatibilidad con el nuevo componente
+window.selectTrack = function (track) {
+    if (typeof selectTrack === 'function') {
+        selectTrack(track);
+    } else {
+        // Fallback si la función no existe
+        console.error('selectTrack function not found');
+    }
+};
+
+window.togglePreview = function (previewUrl, button) {
+    if (typeof togglePreview === 'function') {
+        togglePreview(previewUrl, button);
+    } else {
+        // Implementación básica si no existe
+        const playIcon = button.querySelector('.play-icon');
+        const pauseIcon = button.querySelector('.pause-icon');
+
+        if (!previewUrl) {
+            showNotification('Esta canción no tiene vista previa disponible', 'warning');
+            return;
+        }
+
+        if (currentAudio && !currentAudio.paused) {
+            currentAudio.pause();
+            currentAudio = null;
+            document.querySelectorAll('.play-button').forEach(btn => {
+                btn.querySelector('.play-icon').classList.remove('hidden');
+                btn.querySelector('.pause-icon').classList.add('hidden');
+            });
+        } else {
+            currentAudio = new Audio(previewUrl);
+            playIcon.classList.add('hidden');
+            pauseIcon.classList.remove('hidden');
+
+            currentAudio.addEventListener('ended', () => {
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            });
+
+            currentAudio.play().catch(error => {
+                console.error('Error al reproducir:', error);
+                showNotification('Error al reproducir la vista previa', 'error');
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            });
+        }
+    }
+};
