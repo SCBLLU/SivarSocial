@@ -27,15 +27,12 @@
                         <h2
                             class="flex items-center justify-center flex-shrink-0 gap-2 mb-4 text-xl font-bold text-purple-700">
                             Perfiles
-                            <i class="fa-solid fa-user-group w-6 h-6"></i>
+                            <i class="w-6 h-6 fa-solid fa-user-group"></i>
                         </h2>
 
                         <hr class="border-gray-300 mb-4 w-[80%] mx-auto">
-                        <div class="flex-1 overflow-y-auto scrollbar-purple">
-
                         <div class="flex-1 overflow-y-scroll scrollbar-purple"
                             style="max-height: 400px; min-height: 200px;">
-
                             @component('components.listar-perfiles', ['users' => $users])
                             @endcomponent
                         </div>
