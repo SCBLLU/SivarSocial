@@ -1,6 +1,52 @@
 @import "tailwindcss";
 
+/* Estilos para el formulario de edición de perfil */
+.profile-avatar {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
 
+.profile-avatar:hover {
+    transform: scale(1.05);
+}
+
+.profile-form-input {
+    transition: all 0.2s ease;
+    color: #1f2937 !important;
+    /* Asegurar texto visible */
+}
+
+.profile-form-input:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.profile-form-input::placeholder {
+    color: #9ca3af !important;
+    /* Color del placeholder */
+}
+
+/* Asegurar que el texto sea visible en todos los inputs */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    color: #1f2937 !important;
+}
+
+/* Mejores estilos para el modal */
+.modal-backdrop {
+    backdrop-filter: blur(4px);
+}
+
+/* Animaciones suaves */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s;
+}
+
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
+}
 
 .wave-background {
     position: fixed;

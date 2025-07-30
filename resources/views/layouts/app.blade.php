@@ -108,7 +108,7 @@
         <header class="bg-white shadow-violet-700/100 rounded-b-xl">
             <div class="container mx-auto flex justify-between items-center p-5">
                 <a href="{{ route('home') }}" class="cursor-pointer z-20">
-                    <img srcset="https://res.cloudinary.com/dj848z4er/image/upload/v1748745136/tokhsr71m0thpsjaduyc.png 3x"
+                    <img srcset="https://res.cloudinary.com/dj848z4er/image/upload/v1748745136/tokhsr71m0thpsjaduyc.png 4x"
                         alt="LOGO" class="navbar-logo-responsive">
                 </a>
                 <!-- Menú hamburguesa SIEMPRE a la derecha dentro del navbar -->
