@@ -35,18 +35,51 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
+        // Validación base
         $request->validate([
             'titulo' => 'required|max:255',
             'descripcion' => 'required',
-            'imagen' => 'required|string',
+            'tipo' => 'required|in:imagen,musica',
         ]);
 
-        Post::create([
+        // Validación condicional según el tipo
+        if ($request->tipo === 'imagen') {
+            $request->validate([
+                'imagen' => 'required|string',
+            ]);
+        } else if ($request->tipo === 'musica') {
+            $request->validate([
+                'spotify_track_id' => 'required|string',
+                'spotify_track_name' => 'required|string',
+                'spotify_artist_name' => 'required|string',
+                'spotify_album_name' => 'required|string',
+                'spotify_album_image' => 'required|string',
+                'spotify_external_url' => 'required|string',
+            ]);
+        }
+
+        $postData = [
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,
-            'imagen' => $request->imagen,
+            'tipo' => $request->tipo,
             'user_id' => Auth::id(),
-        ]);
+        ];
+
+        // Añadir campos específicos según el tipo
+        if ($request->tipo === 'imagen') {
+            $postData['imagen'] = $request->imagen;
+        } else if ($request->tipo === 'musica') {
+            $postData['spotify_track_id'] = $request->spotify_track_id;
+            $postData['spotify_track_name'] = $request->spotify_track_name;
+            $postData['spotify_artist_name'] = $request->spotify_artist_name;
+            $postData['spotify_album_name'] = $request->spotify_album_name;
+            $postData['spotify_album_image'] = $request->spotify_album_image;
+            $postData['spotify_preview_url'] = $request->spotify_preview_url;
+            $postData['spotify_external_url'] = $request->spotify_external_url;
+            $postData['dominant_color'] = $request->dominant_color ?? '#1DB954';
+        }
+
+        Post::create($postData);
 
         return redirect()->route('posts.index', ['user' => Auth::user()])
             ->with('success', 'Post creado correctamente');
