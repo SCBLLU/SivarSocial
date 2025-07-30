@@ -140,7 +140,7 @@
                                         <path
                                             d="m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z" />
                                     </svg>
-                                    HOME
+                                    PUBLICACIONES
                                 </a>
                                 <a href="{{ route('posts.create', ['user' => Auth::user()->username]) }}"
                                     class="flex items-center gap-3 bg-blue-700 hover:bg-blue-800 transition-colors border p-3 text-white rounded text-base uppercase font-bold cursor-pointer my-2 md:my-0 justify-center md:justify-start"
@@ -163,28 +163,44 @@
                                     </svg>
                                     PERFIL
                                 </a>
-                                @if (!request()->routeIs('home'))
-                                    <form method="POST" action="{{ url('/logout') }}" class="my-2 md:my-0">
-                                        @csrf
-                                        <button type="submit"
-                                            class="font-bold uppercase text-blue-700 text-base cursor-pointer block w-full text-center md:text-left hover:underline"
-                                            @click="open = false">
-                                            Cerrar Sesión
-                                        </button>
-                                    </form>
-                                @endif
+
+                                {{-- Vista Landing page no login --}}
                             @endauth
                             @guest
-                                <a href="{{ route('login') }}"
-                                    class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
-                                    @click="open = false">
-                                    Login
-                                </a>
-                                <a href="{{ url('/register') }}"
-                                    class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
-                                    @click="open = false">
-                                    Crear Cuenta
-                                </a>
+                                @if (request()->routeIs('login'))
+                                    <a href="{{ route('home') }}"
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
+                                        @click="open = false">
+                                        PUBLICACIONES
+                                    </a>
+                                    <a href="{{ url('/register') }}"
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
+                                        @click="open = false">
+                                        CREAR CUENTA
+                                    </a>
+                                @elseif (request()->routeIs('register'))
+                                    <a href="{{ route('home') }}"
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
+                                        @click="open = false">
+                                        PUBLICACIONES
+                                    </a>
+                                    <a href="{{ route('login') }}"
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
+                                        @click="open = false">
+                                        INICIAR SESIÓN
+                                    </a>
+                                @else
+                                    <a href="{{ route('login') }}"
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
+                                        @click="open = false">
+                                        INICIAR SESIÓN
+                                    </a>
+                                    <a href="{{ url('/register') }}"
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
+                                        @click="open = false">
+                                        CREAR CUENTA
+                                    </a>
+                                @endif
                             @endguest
                         </div>
                     </nav>
