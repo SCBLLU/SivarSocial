@@ -108,7 +108,7 @@
         <header class="bg-white shadow-violet-700/100 rounded-b-xl">
             <div class="container mx-auto flex justify-between items-center p-5">
                 <a href="{{ route('home') }}" class="cursor-pointer z-20">
-                    <img srcset="https://res.cloudinary.com/dj848z4er/image/upload/v1748745136/tokhsr71m0thpsjaduyc.png 3x"
+                    <img srcset="https://res.cloudinary.com/dj848z4er/image/upload/v1748745136/tokhsr71m0thpsjaduyc.png 4x"
                         alt="LOGO" class="navbar-logo-responsive">
                 </a>
                 <!-- Menú hamburguesa SIEMPRE a la derecha dentro del navbar -->
@@ -130,61 +130,66 @@
                         <div :class="{'shadow-2xl': open && window.innerWidth < 768}"
                             class="flex flex-col md:flex-row md:gap-8 md:items-center p-4 md:p-0 bg-white md:bg-transparent rounded-lg md:rounded-none w-full md:w-auto">
                             @auth
-                                <a href="{{ route('home') }}"
-                                    class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 text-center md:text-left hover:underline flex items-center gap-2 justify-center"
-                                    @click="open = false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                                        class="size-6">
-                                        <path
-                                            d="M11.47 3.841a.75.75 0 0 1 1.06 0l8.69 8.69a.75.75 0 1 0 1.06-1.061l-8.689-8.69a2.25 2.25 0 0 0-3.182 0l-8.69 8.69a.75.75 0 1 0 1.061 1.06l8.69-8.689Z" />
-                                        <path
-                                            d="m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z" />
-                                    </svg>
-                                    HOME
-                                </a>
-                                <a href="{{ route('posts.create', ['user' => Auth::user()->username]) }}"
-                                    class="flex items-center gap-3 bg-blue-700 hover:bg-blue-800 transition-colors border p-3 text-white rounded text-base uppercase font-bold cursor-pointer my-2 md:my-0 justify-center md:justify-start"
-                                    @click="open = false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                                    </svg>
-                                    Crear
-                                </a>
-                                <a href="{{ route('posts.index', ['user' => Auth::user()->username]) }}"
-                                    class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 text-center md:text-left hover:underline flex items-center gap-2 justify-center"
-                                    @click="open = false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                                        class="size-6">
-                                        <path fill-rule="evenodd"
-                                            d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                    PERFIL
-                                </a>
-                                @if (!request()->routeIs('home'))
-                                    <form method="POST" action="{{ url('/logout') }}" class="my-2 md:my-0">
-                                        @csrf
-                                        <button type="submit"
-                                            class="font-bold uppercase text-blue-700 text-base cursor-pointer block w-full text-center md:text-left hover:underline"
-                                            @click="open = false">
-                                            Cerrar Sesión
-                                        </button>
-                                    </form>
+                                @php
+                                    // Detectar si estás en tu propio perfil
+                                    $currentRoute = request()->route();
+                                    $isProfile = false;
+
+                                    if ($currentRoute && $currentRoute->getName() === 'posts.index') {
+                                        $routeUser = $currentRoute->parameter('user');
+                                        if ($routeUser && $routeUser->username === Auth::user()->username) {
+                                            $isProfile = true;
+                                        }
+                                    }
+                                @endphp
+
+                                @if ($isProfile)
+                                    {{-- Solo mostrar PUBLICACIONES cuando estás en tu propio perfil --}}
+                                    <a href="{{ route('home') }}"
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 text-center md:text-left hover:underline flex items-center gap-2 justify-center"
+                                        @click="open = false">
+                                        PUBLICACIONES
+                                    </a>
+                                @else
+                                    <x-profile-link :user="Auth::user()" />
                                 @endif
+
                             @endauth
                             @guest
-                                <a href="{{ route('login') }}"
-                                    class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
-                                    @click="open = false">
-                                    Login
-                                </a>
-                                <a href="{{ url('/register') }}"
-                                    class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
-                                    @click="open = false">
-                                    Crear Cuenta
-                                </a>
+                                @if (request()->routeIs('login'))
+                                    <a href="{{ route('home') }}"
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
+                                        @click="open = false">
+                                        PUBLICACIONES
+                                    </a>
+                                    <a href="{{ url('/register') }}"
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
+                                        @click="open = false">
+                                        CREAR CUENTA
+                                    </a>
+                                @elseif (request()->routeIs('register'))
+                                    <a href="{{ route('home') }}"
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
+                                        @click="open = false">
+                                        PUBLICACIONES
+                                    </a>
+                                    <a href="{{ route('login') }}"
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
+                                        @click="open = false">
+                                        INICIAR SESIÓN
+                                    </a>
+                                @else
+                                    <a href="{{ route('login') }}"
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
+                                        @click="open = false">
+                                        INICIAR SESIÓN
+                                    </a>
+                                    <a href="{{ url('/register') }}"
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
+                                        @click="open = false">
+                                        CREAR CUENTA
+                                    </a>
+                                @endif
                             @endguest
                         </div>
                     </nav>

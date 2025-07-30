@@ -25,7 +25,7 @@
                         <a href="{{ route('posts.index', $post->user->username) }}" class="flex items-center group">
                             <img src="{{ $post->user && $post->user->imagen ? asset('perfiles/' . $post->user->imagen) : asset('img/usuario.svg') }}"
                                 alt="Avatar de {{ $post->user->username }}"
-                                class="w-10 h-10 rounded-full object-cover border-2 border-black group-hover:border-purple-700 transition"
+                                class="w-10 h-10 rounded-full object-cover border-2 border-[#3B25DD] group-hover:border-[#120073] transition"
                                 onerror="this.src='{{ asset('img/usuario.svg') }}'">
                             <span class="ml-3 font-bold text-black group-hover:underline">
                                 {{ $post->user->name ?? $post->user->username }}
@@ -89,7 +89,7 @@
                                         <div class="flex items-start gap-3">
                                             <img src="{{ $comentario->user && $comentario->user->imagen ? asset('perfiles/' . $comentario->user->imagen) : asset('img/usuario.svg') }}"
                                                 alt="Avatar de {{ $comentario->user->username }}"
-                                                class="w-10 h-10 rounded-full object-cover border-2 border-purple-300 flex-shrink-0"
+                                                class="w-10 h-10 rounded-full object-cover border-2 border-[#3B25DD] flex-shrink-0"
                                                 onerror="this.src='{{ asset('img/usuario.svg') }}'">
                                             <div class="flex-1">
                                                 <div class="flex items-center justify-between mb-1">
@@ -107,13 +107,12 @@
                                 </div>
                             @endforeach
                         @else
-                            <div class="text-center py-8">
-                                <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
+                            <div class="flex flex-col items-center justify-center h-full py-8">
+                                <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                 </svg>
-                                <p class="text-gray-500 text-sm">No hay comentarios aún</p>
+                                <p class="text-gray-500 text-sm text-center">No hay comentarios aún</p>
                             </div>
                         @endif
                     </div>
@@ -142,11 +141,11 @@
                                 <div class="bg-gray-100 rounded-full p-2 flex items-center gap-3">
                                     @if(auth()->user()->imagen)
                                         <img src="{{ asset('perfiles/' . auth()->user()->imagen) }}" alt="Tu avatar"
-                                            class="w-8 h-8 rounded-full object-cover border-2 border-blue-300 flex-shrink-0"
+                                            class="w-8 h-8 rounded-full object-cover border-2 border-[#3B25DD] flex-shrink-0"
                                             onerror="this.src='{{ asset('img/usuario.svg') }}'">
                                     @else
                                         <img src="{{ asset('img/usuario.svg') }}" alt="Tu avatar por defecto"
-                                            class="w-8 h-8 rounded-full object-cover border-2 border-blue-300 flex-shrink-0">
+                                            class="w-8 h-8 rounded-full object-cover border-2 border-[#3B25DD] flex-shrink-0">
                                     @endif
                                     <input type="text" id="comentario" name="comentario"
                                         class="flex-1 bg-transparent border-none outline-none text-sm placeholder-gray-500 text-gray-800 {{ $errors->has('comentario') ? 'text-red-500' : '' }}"
@@ -178,7 +177,7 @@
                                     <p class="text-gray-500 text-xs">Inicia sesión para poder comentar esta publicación</p>
                                 </div>
                                 <a href="{{ route('login') }}"
-                                    class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full text-sm font-semibold transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg">
+                                    class="inline-block bg-[#3B25DD] hover:bg-[#120073] text-white px-6 py-2 rounded-full text-sm font-semibold transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg">
                                     Iniciar Sesión
                                 </a>
                             </div>

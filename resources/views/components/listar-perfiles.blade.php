@@ -8,9 +8,10 @@
                         <a href="{{ route('posts.index', $user) }}" class="flex items-center group flex-1">
                             <img src="{{ $user->imagen ? asset('perfiles/' . $user->imagen) : asset('img/usuario.svg') }}"
                                 alt="Avatar de {{ $user->username }}"
-                                class="w-12 h-12 rounded-full object-cover border-2 border-transparent group-hover:border-purple-700 transition">
+                                class="w-12 h-12 rounded-full object-cover border-2 border-transparent group-hover:border-[#3B25DD] transition">
                             <div class="ml-4">
-                                <h3 class="font-semibold text-gray-900 text-base group-hover:border-purple-700 transition">
+                                <h3 class="font-semibold text-gray-900 text-base group-hover:border-[#3B25DD] transition">
+                                    {{-- Mostrar nombre o username --}}
                                     {{ $user->name ?? $user->username }}
                                 </h3>
                                 <p class="text-sm text-gray-500">{{ $user->profession ?? 'Usuario de muestra' }}</p>
@@ -23,7 +24,7 @@
                                     <form action="{{ route('users.follow', $user) }}" method="POST" class="inline">
                                         @csrf
                                         <button type="submit"
-                                            class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-6 py-2 rounded-full transition-colors duration-200">
+                                            class="bg-[#3B25DD] border-1 border-[#000000] text-[#FFFFFF] px-6 py-2 rounded-full text-sm font-medium hover:bg-[#120073]">
                                             SEGUIR
                                         </button>
                                     </form>
@@ -32,7 +33,7 @@
                                         @method('DELETE')
                                         @csrf
                                         <button type="submit"
-                                            class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium text-sm px-4 py-2 rounded-full transition-colors duration-200">
+                                            class="bg-[#FFFFFF] border-1 border-[#000000] text-[#000000] px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-50">
                                             NO SEGUIR
                                         </button>
                                     </form>

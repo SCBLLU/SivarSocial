@@ -7,7 +7,7 @@
                     <a href="{{ $post->user ? route('posts.index', $post->user) : '#' }}" class="flex items-center group">
                         <img src="{{ $post->user && $post->user->imagen ? asset('perfiles/' . $post->user->imagen) : asset('img/default-avatar.png') }}"
                             alt="Avatar de {{ $post->user ? $post->user->username : 'usuario' }}"
-                            class="w-10 h-10 rounded-full object-cover border-2 border-black group-hover:border-purple-700 transition">
+                            class="w-10 h-10 rounded-full object-cover border-2 border-[#3B25DD] group-hover:border-[#120073] transition">
                         <span class="ml-3 font-bold text-black group-hover:underline">
                             {{ $post->user ? ($post->user->name ?? $post->user->username) : 'usuario' }}
 
