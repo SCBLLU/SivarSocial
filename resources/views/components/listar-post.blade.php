@@ -119,12 +119,11 @@
             </div>
         @endforeach
 
-        <!-- Paginación de publicaciones -->
-        <div class="w-full flex justify-center px-4">
-            <div class="flex items-center justify-center w-full max-w-3xl">
-                {{ $posts->links() }}
-            </div>
+        <!-- Paginación -->
+        <div class="w-full max-w-md sm:max-w-lg mt-8">
+            {{ $posts->links('custom.pagination') }}
         </div>
+
     @else
         <p class="text-center text-gray-500 text-sm sm:text-base px-4">No hay post, sigue a alguien para ver sus posts</p>
     @endif

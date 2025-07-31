@@ -84,7 +84,7 @@
                     <svg class="w-full h-full text-gray-400" fill="currentColor" viewBox="0 0 24 24">
                         <path
                             d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 
-                                                                                                                    1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                                                                                                                            1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                     </svg>
                 @endif
             </div>
@@ -129,20 +129,19 @@
             <h1 class="text-white text-xl sm:text-2xl font-bold mx-auto text-center">Publicaciones</h1>
         </div>
         @if ($posts->count())
-            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4 lg:gap-8">
+            <div
+                class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4 lg:gap-8 mb-8">
                 @foreach ($posts as $post)
-                    <div>
-                        <a href="{{ route('posts.show', ['post' => $post, 'user' => $user]) }}">
+                    <div class="group">
+                        <a href="{{ route('posts.show', ['post' => $post, 'user' => $user]) }}" class="block">
                             <img src="{{ asset('uploads/' . $post->imagen) }}" alt="Imagen del post {{ $post->titulo }}"
-                                class="object-cover w-full rounded-xl sm:rounded-2xl hover:scale-105 transition-transform duration-300"
+                                class="object-cover w-full rounded-xl sm:rounded-2xl group-hover:scale-105 transition-transform duration-300 shadow-md hover:shadow-xl"
                                 style="aspect-ratio:1/1; max-width:100%; max-height:100%;">
                         </a>
                     </div>
                 @endforeach
             </div>
-            <div class="my-10 flex justify-center">
-                {{ $posts->links() }}
-            </div>
+
         @else
             <p class="text-gray-400 uppercase text-xs sm:text-sm text-center font-bold mt-10">No hay publicaciones aún</p>
         @endif

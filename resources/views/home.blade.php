@@ -11,9 +11,9 @@
                 <!-- Columna 1: Vacía (espaciador) -->
                 <div class="hidden lg:block"></div>
 
-                <!-- Columna 2: Posts centrados con scroll interno -->
-                <div class="w-full h-full flex flex-col">
-                    <div id="posts-container" class="flex-1 pr-0 lg:pr-2 overflow-y-auto">
+                <!-- Columna 2: Posts centrados sin scroll interno -->
+                <div class="w-full flex flex-col">
+                    <div id="posts-container" class="pr-0 lg:pr-2 flex flex-col">
                         @include('components.new-post')
                         @component('components.listar-post', ['posts' => $posts])
                         @endcomponent
@@ -79,25 +79,6 @@
             overflow-y: auto !important;
         }
 
-        /* Scrollbar personalizado para los posts */
-        #posts-container::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        #posts-container::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-        }
-
-        #posts-container::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
-        }
-
-        #posts-container::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
-
         /* Asegurar que las columnas se alineen correctamente */
         .grid {
             align-items: start;
@@ -107,6 +88,38 @@
         #posts-container,
         #users-container {
             height: 100%;
+        }
+
+        /* Optimización específica para la paginación en el grid */
+        #posts-container {
+            min-height: 70vh; /* Asegurar altura mínima */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Asegurar que la paginación se mantenga en la parte inferior */
+        #posts-container > div:last-child {
+            margin-top: auto;
+        }
+
+        /* Espaciado optimizado para la columna central */
+        @media (min-width: 1024px) {
+            #posts-container {
+                max-width: 100%;
+                overflow: visible;
+            }
+        }
+
+        /* Ajustes responsivos para la paginación */
+        @media (max-width: 1023px) {
+            #posts-container {
+                min-height: auto;
+            }
+        }
+
+        /* Espaciado entre posts y paginación */
+        #posts-container .mt-auto {
+            margin-top: 2rem !important;
         }
     </style>
 @endpush
