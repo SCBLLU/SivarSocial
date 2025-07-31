@@ -22,7 +22,8 @@
                 @if($post->isMusicPost())
                     <!-- Post musical -->
                     <div id="post-container"
-                        class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col items-center">
+                        class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col min-h-[500px] mt-4 lg:mt-0"
+                        x-data="{ showMusicMenu: false }">
                         <!-- Header: perfil y username -->
                         <div class="flex items-center w-full px-4 py-3 border-b border-gray-200">
                             <a href="{{ route('posts.index', $post->user->username) }}" class="flex items-center group">
@@ -34,7 +35,57 @@
                                     {{ $post->user->name ?? $post->user->username }}
                                 </span>
                             </a>
-                            <span class="text-xs text-gray-500 ml-auto">{{ ucfirst($post->created_at->diffForHumans()) }}</span>
+                            <div class="flex items-center gap-2 ml-auto">
+                                <span class="text-xs text-gray-500">{{ ucfirst($post->created_at->diffForHumans()) }}</span>
+
+                                <!-- Menú de opciones (solo para el propietario) -->
+                                @auth
+                                    @if ($post->user_id === Auth::user()->id)
+                                        <div class="relative">
+                                            <button @click="showMusicMenu = !showMusicMenu"
+                                                class="p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path
+                                                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z">
+                                                    </path>
+                                                </svg>
+                                            </button>
+
+                                            <!-- Dropdown menu -->
+                                            <div x-show="showMusicMenu" @click.away="showMusicMenu = false" x-transition
+                                                class="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1">
+
+                                                <!-- Opción Editar (preparada para futura implementación) -->
+                                                <button onclick="alert('Función de editar en desarrollo')"
+                                                    class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                        </path>
+                                                    </svg>
+                                                    Editar
+                                                </button>
+
+                                                <!-- Separador -->
+                                                <hr class="my-1">
+
+                                                <!-- Opción Eliminar -->
+                                                <button @click="showMusicMenu = false" onclick="confirmDeleteMusic()"
+                                                    class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16">
+                                                        </path>
+                                                    </svg>
+                                                    Eliminar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endauth
+                            </div>
                         </div>
 
                         <!-- Contenido musical principal -->
@@ -106,11 +157,22 @@
                                 <p class="text-gray-700 text-sm">{{ $post->descripcion }}</p>
                             </div>
                         </div>
+
+                        <!-- Formulario oculto para eliminar posts de música -->
+                        @auth
+                            @if ($post->user_id === Auth::user()->id)
+                                <form id="deleteMusicForm" action="{{ route('posts.destroy', $post) }}" method="POST" class="hidden">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                            @endif
+                        @endauth
                     </div>
                 @else
                     <!-- Post de imagen -->
                     <div id="post-container"
-                        class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col items-center">
+                        class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col items-center"
+                        x-data="{ showImageMenu: false }">
                         <!-- Header: perfil y username -->
                         <div class="flex items-center w-full px-4 py-3 border-b border-gray-200">
                             <a href="{{ route('posts.index', $post->user->username) }}" class="flex items-center group">
@@ -122,7 +184,57 @@
                                     {{ $post->user->name ?? $post->user->username }}
                                 </span>
                             </a>
-                            <span class="text-xs text-gray-500 ml-auto">{{ ucfirst($post->created_at->diffForHumans()) }}</span>
+                            <div class="flex items-center gap-2 ml-auto">
+                                <span class="text-xs text-gray-500">{{ ucfirst($post->created_at->diffForHumans()) }}</span>
+
+                                <!-- Menú de opciones (solo para el propietario) -->
+                                @auth
+                                    @if ($post->user_id === Auth::user()->id)
+                                        <div class="relative">
+                                            <button @click="showImageMenu = !showImageMenu"
+                                                class="p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path
+                                                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z">
+                                                    </path>
+                                                </svg>
+                                            </button>
+
+                                            <!-- Dropdown menu -->
+                                            <div x-show="showImageMenu" @click.away="showImageMenu = false" x-transition
+                                                class="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1">
+
+                                                <!-- Opción Editar (preparada para futura implementación) -->
+                                                <button onclick="alert('Función de editar en desarrollo')"
+                                                    class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                        </path>
+                                                    </svg>
+                                                    Editar
+                                                </button>
+
+                                                <!-- Separador -->
+                                                <hr class="my-1">
+
+                                                <!-- Opción Eliminar -->
+                                                <button @click="showImageMenu = false" onclick="confirmDeleteImage()"
+                                                    class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16">
+                                                        </path>
+                                                    </svg>
+                                                    Eliminar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endauth
+                            </div>
                         </div>
 
                         <!-- Imagen del post -->
@@ -149,18 +261,17 @@
                             <div class="mb-3">
                                 <p class="text-gray-700 text-sm">{{ $post->descripcion }}</p>
                             </div>
-
-                            @auth
-                                @if ($post->user_id === Auth::user()->id)
-                                    <form action="{{ route('posts.destroy', $post) }}" method="POST" class="mt-4">
-                                        @csrf
-                                        @method('DELETE')
-                                        <input type="submit" value="Eliminar Post"
-                                            class="bg-red-500 hover:bg-red-600 transition-colors cursor-pointer font-bold p-2 text-white rounded-lg w-full text-sm">
-                                    </form>
-                                @endif
-                            @endauth
                         </div>
+
+                        <!-- Formulario oculto para eliminar posts de imagen -->
+                        @auth
+                            @if ($post->user_id === Auth::user()->id)
+                                <form id="deleteImageForm" action="{{ route('posts.destroy', $post) }}" method="POST" class="hidden">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                            @endif
+                        @endauth
                     </div>
                 @endif
 
@@ -445,5 +556,19 @@
             hideMessage('success-message');
             hideMessage('mensaje-success');
         });
+
+        // Función para confirmar eliminación de post de música
+        function confirmDeleteMusic() {
+            if (confirm('¿Estás seguro de que quieres eliminar esta publicación musical? Esta acción no se puede deshacer.')) {
+                document.getElementById('deleteMusicForm').submit();
+            }
+        }
+
+        // Función para confirmar eliminación de post de imagen
+        function confirmDeleteImage() {
+            if (confirm('¿Estás seguro de que quieres eliminar esta publicación? Esta acción no se puede deshacer.')) {
+                document.getElementById('deleteImageForm').submit();
+            }
+        }
     </script>
 @endsection
