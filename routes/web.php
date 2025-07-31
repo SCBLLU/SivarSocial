@@ -13,10 +13,11 @@ use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\ComentarioController;
 use App\Http\Controllers\FollowerController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SpotifyApiController;
 use App\Http\Controllers\RegisterController;
 
 Route::get('/', function () {
-    return view('principal');
+    return view('home');
 });
 
 Route::get('/', HomeController::class)->name('home');
@@ -49,6 +50,11 @@ Route::post('/{user:username}/posts/{post}', [ComentarioController::class, 'stor
 Route::post('/imagenes', [ImagenController::class, 'store'])->name('imagenes.store');
 Route::post('/imagenes-perfil', [ImagenController::class, 'storePerfil'])->name('imagenes.perfil.store');
 Route::delete('/imagenes', [ImagenController::class, 'destroy'])->name('imagenes.destroy');
+
+// Rutas de Spotify
+Route::get('/spotify/search', [SpotifyApiController::class, 'search'])->name('spotify.search');
+Route::get('/spotify/track', [SpotifyApiController::class, 'getTrack'])->name('spotify.track');
+Route::post('/spotify/dominant-color', [SpotifyApiController::class, 'extractDominantColor'])->name('spotify.color');
 
 
 Route::post('/posts/{post}/likes', [LikeController::class, 'store'])->name('posts.likes.store');

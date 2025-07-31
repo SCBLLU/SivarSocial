@@ -16,6 +16,15 @@ class Post extends Model
         'descripcion',
         'imagen',
         'user_id',
+        'tipo',
+        'spotify_track_id',
+        'spotify_track_name',
+        'spotify_artist_name',
+        'spotify_album_name',
+        'spotify_album_image',
+        'spotify_preview_url',
+        'spotify_external_url',
+        'dominant_color'
     ];
 
     public function user()
@@ -37,5 +46,15 @@ class Post extends Model
     public function checkLike(User $user)
     {
         return $this->likes->contains('user_id', $user->id);
+    }
+
+    public function isMusicPost()
+    {
+        return $this->tipo === 'musica';
+    }
+
+    public function isImagePost()
+    {
+        return $this->tipo === 'imagen';
     }
 }

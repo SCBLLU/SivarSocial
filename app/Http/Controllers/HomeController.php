@@ -15,20 +15,22 @@ class HomeController extends Controller
 
     public function __invoke()
     {
-        // Si el usuario está autenticado, mostrar posts de quienes sigue
+        $postsPerPage = config('pagination.posts_per_page', 6);
+
+        // Si el usuario está autenticado, mostrar posts de quienes sigue + sus propios posts
         if (Auth::check()) {
             $ids = Auth::user()->following->pluck('id')->toArray();
+            // Agregar el ID del usuario autenticado para ver sus propios posts
+            $ids[] = Auth::id();
             $posts = Post::whereIn('user_id', $ids)
                 ->with(['user', 'comentarios'])
                 ->latest()
-                ->paginate(10)
-                ->onEachSide(2);
+                ->paginate($postsPerPage);
         } else {
             // Si no está autenticado, mostrar todos los posts
             $posts = Post::with(['user', 'comentarios'])
                 ->latest()
-                ->paginate(10)
-                ->onEachSide(2);
+                ->paginate($postsPerPage);
         }
         // Obtener todos los usuarios para mostrar perfiles
         $users = \App\Models\User::latest()->get();

@@ -6,14 +6,14 @@
 
 @section('contenido')
     <div class="flex h-full">
-        <div class="container mx-auto">
-            <div class="grid h-full grid-cols-1 gap-8 lg:grid-cols-3">
+        <div class="container mx-auto px-4">
+            <div class="grid h-full grid-cols-1 gap-4 lg:gap-8 lg:grid-cols-3">
                 <!-- Columna 1: Vacía (espaciador) -->
                 <div class="hidden lg:block"></div>
 
-                <!-- Columna 2: Posts centrados con scroll interno -->
-                <div class="w-full h-full">
-                    <div id="posts-container" class="h-full pr-2 overflow-y-auto">
+                <!-- Columna 2: Posts centrados sin scroll interno -->
+                <div class="w-full flex flex-col">
+                    <div id="posts-container" class="pr-0 lg:pr-2 flex flex-col">
                         @include('components.new-post')
                         @component('components.listar-post', ['posts' => $posts])
                         @endcomponent
@@ -21,9 +21,8 @@
                 </div>
 
                 <!-- Columna 3: Perfiles a la derecha con altura igual a posts -->
-                <div class="w-full h-full">
-                    <div id="users-container" class="flex flex-col p-4 bg-white shadow-lg rounded-2xl"
-                        style="height: fit-content; max-height: 600px;">
+                <div class="w-full h-full  lg:flex lg:flex-col">
+                    <div id="users-container" class="flex flex-col p-4 bg-white shadow-lg rounded-2xl h-full max-h-[600px]">
                         <h2
                             class="flex items-center justify-center flex-shrink-0 gap-2 mb-4 text-xl font-bold text-purple-700">
                             Perfiles
@@ -31,8 +30,7 @@
                         </h2>
 
                         <hr class="border-gray-300 mb-4 w-[80%] mx-auto">
-                        <div class="flex-1 overflow-y-scroll scrollbar-purple"
-                            style="max-height: 400px; min-height: 200px;">
+                        <div class="flex-1 overflow-y-auto scrollbar-purple min-h-0">
                             @component('components.listar-perfiles', ['users' => $users])
                             @endcomponent
                         </div>
@@ -78,26 +76,50 @@
 
         /* Forzar que siempre se muestre el scrollbar */
         .scrollbar-purple {
-            overflow-y: scroll !important;
+            overflow-y: auto !important;
         }
 
-        /* Scrollbar personalizado para los posts */
-        #posts-container::-webkit-scrollbar {
-            width: 8px;
+        /* Asegurar que las columnas se alineen correctamente */
+        .grid {
+            align-items: start;
         }
 
-        #posts-container::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
+        /* Altura consistente para ambas columnas */
+        #posts-container,
+        #users-container {
+            height: 100%;
         }
 
-        #posts-container::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
+        /* Optimización específica para la paginación en el grid */
+        #posts-container {
+            min-height: 70vh; /* Asegurar altura mínima */
+            display: flex;
+            flex-direction: column;
         }
 
-        #posts-container::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
+        /* Asegurar que la paginación se mantenga en la parte inferior */
+        #posts-container > div:last-child {
+            margin-top: auto;
+        }
+
+        /* Espaciado optimizado para la columna central */
+        @media (min-width: 1024px) {
+            #posts-container {
+                max-width: 100%;
+                overflow: visible;
+            }
+        }
+
+        /* Ajustes responsivos para la paginación */
+        @media (max-width: 1023px) {
+            #posts-container {
+                min-height: auto;
+            }
+        }
+
+        /* Espaciado entre posts y paginación */
+        #posts-container .mt-auto {
+            margin-top: 2rem !important;
         }
     </style>
 @endpush
