@@ -17,9 +17,12 @@ class PostController extends Controller
 
     public function index(User $user)
     {
+        $postsPerPage = config('pagination.posts_per_page', 6);
 
-
-        $posts = Post::where('user_id', $user->id)->with('comentarios')->paginate(8)->onEachSide(2);
+        $posts = Post::where('user_id', $user->id)
+            ->with('comentarios')
+            ->latest()
+            ->paginate($postsPerPage);
 
         // Verifica si el usuario autenticado es el mismo que el del muro
         return view('layouts.dashboard', [
