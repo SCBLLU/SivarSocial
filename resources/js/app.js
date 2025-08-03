@@ -1,18 +1,11 @@
 // Importo dropzone para manejo de imagenes
 import Dropzone from "dropzone";
 
-// Importar módulo centralizado de Spotify para evitar duplicación
-// import SpotifyModule from './spotify-module.js'; // Descomentado cuando el servidor esté listo
-
 // Desactivo autodiscover para evitar conflictos
 Dropzone.autoDiscover = false;
 
-// Variables globales para el manejo de posts (no duplicar Spotify vars)
-let currentPostType = 'imagen';
-let currentPostAudio = null; // Para el reproductor de posts en el feed (diferente del reproductor de búsqueda)
-
-// Inicializar módulo de Spotify cuando esté disponible
-// window.spotifyModule = new SpotifyModule();
+// Variables globales para el manejo de posts
+let currentPostType = 'imagen'; // Tipo de post actual (imagen o musica)
 
 // Función para cambiar entre tabs
 function switchTab(type) {
@@ -24,16 +17,16 @@ function switchTab(type) {
     });
     document.getElementById(`tab-${type}`).classList.add('active');
 
-    // Mostrar/ocultar contenido
+    // Mostrar/ocultar contenido de cada tab
     document.querySelectorAll('.content-panel').forEach(panel => {
         panel.classList.add('hidden');
     });
     document.getElementById(`content-${type}`).classList.remove('hidden');
 
-    // Actualizar campo hidden del tipo
+    // Actualizar campo hidden del tipo de post
     document.getElementById('post-tipo').value = type;
 
-    // Mostrar/ocultar campos del formulario
+    // Mostrar/ocultar campos del formulario según el tipo de post
     if (type === 'imagen') {
         document.getElementById('imagen-fields').classList.remove('hidden');
         document.getElementById('musica-fields').classList.add('hidden');
@@ -51,47 +44,38 @@ function updateSubmitButton() {
     const submitBtn = document.getElementById('btn-submit');
     let canSubmit = false;
 
+    // Validación según el tipo de post
     if (currentPostType === 'imagen') {
         const imagenInput = document.querySelector('[name="imagen"]');
         canSubmit = imagenInput && imagenInput.value.trim() !== '';
     } else if (currentPostType === 'musica') {
-        // Comprobar si hay una canción seleccionada (usar spotifyModule cuando esté disponible)
         const trackIdInput = document.querySelector('[name="spotify_track_id"]');
         canSubmit = trackIdInput && trackIdInput.value.trim() !== '';
     }
 
+    // Habilitar/deshabilitar botón submit
     if (submitBtn) {
         submitBtn.disabled = !canSubmit;
     }
 }
 
-// FUNCIONES DE SPOTIFY - Usar el módulo centralizado para evitar duplicación
-// Estas funciones son adapters que llaman al módulo centralizado
+// FUNCIONES DE SPOTIFY
 
-// Adapter para búsqueda - llama al módulo centralizado
+// Adapter para búsqueda de Spotify
 async function searchSpotify(query) {
-    // Si el módulo está disponible, usarlo
-    if (window.spotifyModule) {
-        return window.spotifyModule.searchSpotify(query);
-    }
 
-    // Fallback temporal para compatibilidad
-    console.log('Spotify module not loaded, using fallback');
-    if (!query || query.length < 2) {
-        showSearchSuggestions();
-        return;
-    }
-
+    // Mostrar loader de búsqueda
     const resultsContainer = document.getElementById('search-results');
     if (!resultsContainer) return;
 
     resultsContainer.innerHTML = `
-        <div class="flex items-center justify-center py-8 bg-black rounded-lg">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-            <span class="ml-3 text-white">Buscando canciones...</span>
+        <div class="flex items-center justify-center py-6 bg-black rounded-lg">
+            <div class="loader mr-2"></div>
+            <span class="text-white text-sm">Buscando...</span>
         </div>
     `;
 
+    // Realizar petición al backend
     try {
         const response = await fetch(`/spotify/search?query=${encodeURIComponent(query)}`, {
             headers: {
@@ -109,16 +93,13 @@ async function searchSpotify(query) {
     }
 }
 
-// Adapter para mostrar resultados
+// Adapter para mostrar resultados de búsqueda
 function displaySearchResults(tracks) {
-    if (window.spotifyModule) {
-        return window.spotifyModule.displaySearchResults(tracks);
-    }
-
-    // Fallback temporal
+    // JS para mostrar resultados de búsqueda de Spotify
     const resultsContainer = document.getElementById('search-results');
     if (!resultsContainer || !tracks) return;
 
+    // Renderizar cada track como tarjeta
     resultsContainer.innerHTML = tracks.map(track => `
         <div class="spotify-track-card bg-black border border-gray-600 rounded-lg p-3 cursor-pointer" 
              onclick="selectTrack(${JSON.stringify(track).replace(/"/g, '&quot;')})">
@@ -132,7 +113,7 @@ function displaySearchResults(tracks) {
         </div>
     `).join('');
 
-    // Añadir listeners
+    // Añadir listeners para seleccionar track
     resultsContainer.querySelectorAll('.spotify-track-card').forEach(card => {
         card.addEventListener('click', () => {
             const track = JSON.parse(card.querySelector('.spotify-track-card').getAttribute('onclick').match(/selectTrack\((.*?)\)/)[1]);
@@ -147,7 +128,7 @@ async function selectTrack(track) {
         return window.spotifyModule.selectTrack(track);
     }
 
-    // Fallback temporal - funcionalidad básica
+    // JS para seleccionar un track de Spotify
     const fields = {
         'spotify_track_id': track.id,
         'spotify_track_name': track.name,
@@ -158,33 +139,37 @@ async function selectTrack(track) {
         'spotify_external_url': track.external_url || ''
     };
 
+    // Asignar valores a los inputs del formulario
     Object.entries(fields).forEach(([name, value]) => {
         const input = document.querySelector(`[name="${name}"]`);
         if (input) input.value = value;
     });
 
-    // Mostrar selección básica
+    // Mostrar selección en el panel
     const container = document.getElementById('selected-track');
     if (container) {
         container.innerHTML = `
-            <div class="bg-black border border-gray-600 rounded-lg p-4">
-                <h4 class="text-white mb-2">🎵 ${track.name}</h4>
-                <p class="text-gray-400">${track.artist}</p>
-                <button onclick="clearSelectedTrack()" class="mt-2 text-gray-400 hover:text-white">
-                    Eliminar selección
-                </button>
+            <div class="flex items-center gap-3">
+                <img src="${track.image || '/img/usuario.svg'}" class="w-12 h-12 rounded object-cover">
+                <div class="flex-1">
+                    <h4 class="text-white font-medium">${track.name}</h4>
+                    <p class="text-gray-400 text-sm">${track.artist}</p>
+                    <p class="text-gray-500 text-xs">${track.album}</p>
+                </div>
+                <button class="text-red-500 hover:underline" onclick="clearSelectedTrack()">Eliminar selección</button>
             </div>
         `;
     }
 
+    // Limpiar resultados y campo de búsqueda
     document.getElementById('search-results').innerHTML = '';
     document.getElementById('spotify-search').value = '';
 
-    showNotification(`🎵 ${track.name} seleccionada`, 'success');
+    showNotification(`${track.name} seleccionada`, 'success');
     updateSubmitButton();
 }
 
-// Adapter para reproducir preview
+// Adapter para reproducir preview de Spotify
 function togglePreview(previewUrl, button) {
     if (window.spotifyModule) {
         return window.spotifyModule.togglePreview(previewUrl, button);
@@ -195,13 +180,13 @@ function togglePreview(previewUrl, button) {
     showNotification('Función de reproducción en desarrollo', 'info');
 }
 
-// Función para limpiar selección
+// Función para limpiar selección de track
 window.clearSelectedTrack = function () {
     if (window.spotifyModule) {
         return window.spotifyModule.clearSelectedTrack();
     }
 
-    // Fallback temporal
+    // JS para limpiar selección de track de Spotify
     document.getElementById('selected-track').innerHTML = '';
     const fieldNames = [
         'spotify_track_id', 'spotify_track_name', 'spotify_artist_name',
@@ -209,6 +194,7 @@ window.clearSelectedTrack = function () {
         'spotify_external_url', 'dominant_color'
     ];
 
+    // Limpiar todos los campos relacionados
     fieldNames.forEach(name => {
         const input = document.querySelector(`[name="${name}"]`);
         if (input) input.value = '';
@@ -218,7 +204,7 @@ window.clearSelectedTrack = function () {
     showNotification('Selección eliminada', 'info');
 };
 
-// Función para mostrar sugerencias de búsqueda
+// Función para mostrar sugerencias de búsqueda por género
 function showSearchSuggestions() {
     if (window.spotifyModule) {
         return window.spotifyModule.showSearchSuggestions();
@@ -227,11 +213,12 @@ function showSearchSuggestions() {
     const resultsContainer = document.getElementById('search-results');
     if (!resultsContainer) return;
 
-    const genres = ['Pop', 'Rock', 'Reggaeton', 'Salsa', 'Bachata', 'Electrónica'];
+    const genres = ['Pop', 'Hip-Hop', 'Reggaeton', 'Salsa', 'Bachata', 'Rock'];
 
+    // Renderizar botones de géneros
     resultsContainer.innerHTML = `
         <div class="bg-black p-4 rounded-lg">
-            <h4 class="text-white font-medium mb-2">🎵 Explorar por género</h4>
+            <h4 class="text-white font-medium mb-2">Explorar por género</h4>
             <div class="grid grid-cols-2 gap-2">
                 ${genres.map(genre => `
                     <button onclick="performSearch('${genre}')" 
@@ -250,122 +237,58 @@ window.performSearch = function (query) {
     searchSpotify(query);
 };
 
-// FUNCIONES ESPECÍFICAS PARA POSTS DEL FEED (no duplicar con búsqueda)
-// Estas funciones son solo para reproducir música en el feed, no para buscar
-
-window.togglePostPreview = function (previewUrl, button, postId) {
-    const playIcon = button.querySelector('.play-icon');
-    const pauseIcon = button.querySelector('.pause-icon');
-
-    if (!previewUrl) {
-        showNotification('Esta canción no tiene vista previa disponible', 'warning');
-        return;
-    }
-
-    // Si hay un audio reproduciéndose actualmente
-    if (currentPostAudio && !currentPostAudio.paused) {
-        // Si es el mismo botón, pausar
-        if (currentPostAudio.dataset && currentPostAudio.dataset.postId == postId) {
-            currentPostAudio.pause();
-            currentPostAudio = null;
-            playIcon.classList.remove('hidden');
-            pauseIcon.classList.add('hidden');
-            button.classList.remove('animate-pulse');
-            return;
-        } else {
-            // Pausar el audio anterior y resetear su botón
-            currentPostAudio.pause();
-            const previousButton = document.querySelector(`button[onclick*="togglePostPreview"][onclick*="${currentPostAudio.dataset.postId}"]`);
-            if (previousButton) {
-                const prevPlay = previousButton.querySelector('.play-icon');
-                const prevPause = previousButton.querySelector('.pause-icon');
-                if (prevPlay && prevPause) {
-                    prevPlay.classList.remove('hidden');
-                    prevPause.classList.add('hidden');
-                    previousButton.classList.remove('animate-pulse');
-                }
-            }
-        }
-    }
-
-    // Reproducir nuevo audio
-    currentPostAudio = new Audio(previewUrl);
-    currentPostAudio.dataset = { postId: postId };
-
-    // Añadir efectos visuales
-    button.classList.add('animate-pulse');
-    playIcon.classList.add('hidden');
-    pauseIcon.classList.remove('hidden');
-
-    // Configurar eventos del audio
-    currentPostAudio.addEventListener('ended', () => {
-        playIcon.classList.remove('hidden');
-        pauseIcon.classList.add('hidden');
-        button.classList.remove('animate-pulse');
-        currentPostAudio = null;
-    });
-
-    currentPostAudio.addEventListener('error', () => {
-        playIcon.classList.remove('hidden');
-        pauseIcon.classList.add('hidden');
-        button.classList.remove('animate-pulse');
-        showNotification('Error al reproducir la vista previa', 'error');
-        currentPostAudio = null;
-    });
-
-    // Reproducir
-    currentPostAudio.play().catch(error => {
-        console.error('Error al reproducir audio:', error);
-        showNotification('Error al reproducir la vista previa', 'error');
-        playIcon.classList.remove('hidden');
-        pauseIcon.classList.add('hidden');
-        button.classList.remove('animate-pulse');
-        currentPostAudio = null;
-    });
-};
-
-// Función para mostrar notificaciones (usada por todas las funciones)
+// Notificación flotante 
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 max-w-sm`;
+    notification.className = `
+        fixed top-6 right-6 z-50 px-5 py-3 rounded-xl shadow-lg transition-all duration-300 max-w-xs flex items-center gap-3
+        bg-white border border-gray-200
+    `.replace(/\s+/g, ' ');
 
+    // Iconos tipo 
+    let icon = '';
     switch (type) {
         case 'success':
-            notification.classList.add('bg-green-500', 'text-white');
+            notification.classList.add('border-green-400');
+            icon = `<svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>`;
             break;
         case 'error':
-            notification.classList.add('bg-red-500', 'text-white');
+            notification.classList.add('border-red-400');
+            icon = `<svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>`;
             break;
         case 'warning':
-            notification.classList.add('bg-yellow-500', 'text-white');
+            notification.classList.add('border-yellow-400');
+            icon = `<svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4m0 4h.01"/><circle cx="12" cy="12" r="10"/></svg>`;
             break;
         default:
-            notification.classList.add('bg-blue-500', 'text-white');
+            notification.classList.add('border-blue-400');
+            icon = `<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>`;
     }
 
     notification.innerHTML = `
-        <div class="flex items-center gap-2">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-            </svg>
-            <span class="font-medium">${message}</span>
-        </div>
+        ${icon}
+        <span class="font-semibold text-gray-800">${message}</span>
     `;
 
+    // Añadir al DOM
     document.body.appendChild(notification);
 
+    // Animación de entrada
+    notification.style.opacity = '0';
+    notification.style.transform = 'translateY(-20px)';
     setTimeout(() => {
-        notification.classList.remove('translate-x-full');
-    }, 100);
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateY(0)';
+    }, 50);
 
+    // Animación de salida y eliminación
     setTimeout(() => {
-        notification.classList.add('translate-x-full');
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(-20px)';
         setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
+            notification.remove();
         }, 300);
-    }, 3000);
+    }, 2500);
 }
 
 // Inicialización cuando el DOM está listo
@@ -379,6 +302,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (spotifySearch) {
         let searchTimeout;
 
+        // Buscar con retardo al escribir
         spotifySearch.addEventListener('input', function (e) {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
@@ -386,6 +310,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 500);
         });
 
+        // Mostrar sugerencias al enfocar si el campo está vacío
         spotifySearch.addEventListener('focus', function (e) {
             if (!e.target.value.trim()) {
                 showSearchSuggestions();
@@ -396,10 +321,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Inicializar con imagen por defecto
     switchTab('imagen');
 
-    // Intentar cargar el módulo de Spotify si no está disponible
-    if (!window.spotifyModule) {
-        console.log('SpotifyModule no disponible, usando funciones fallback');
-    }
 });
 
 // DROPZONE PARA CREAR POSTS
@@ -418,6 +339,7 @@ if (document.getElementById('dropzone')) {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         init: function () {
+            // Si ya hay una imagen cargada, mostrarla como mockFile
             const imagenInput = document.querySelector('[name="imagen"]');
             if (imagenInput && imagenInput.value.trim()) {
                 const mockFile = {
@@ -433,11 +355,13 @@ if (document.getElementById('dropzone')) {
         }
     });
 
+    // Al subir imagen exitosamente, actualizar input
     dropzone.on("success", function (file, response) {
         document.querySelector('[name="imagen"]').value = response.imagen;
         updateSubmitButton();
     });
 
+    // Al eliminar imagen, limpiar input
     dropzone.on("removedfile", function (file) {
         document.querySelector('[name="imagen"]').value = "";
         updateSubmitButton();
@@ -460,10 +384,12 @@ if (document.getElementById('dropzone-register')) {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         init: function () {
+            // Permitir solo un archivo
             this.on('maxfilesexceeded', function (file) {
                 this.removeAllFiles();
                 this.addFile(file);
             });
+            // Si ya hay imagen, mostrarla como mockFile
             const imagenInput = document.querySelector('[name="imagen"]');
             if (imagenInput && imagenInput.value.trim()) {
                 const mockFile = {
@@ -478,14 +404,17 @@ if (document.getElementById('dropzone-register')) {
         }
     });
 
+    // Al subir imagen exitosamente, actualizar input
     dropzoneRegister.on("success", function (file, response) {
         document.querySelector('[name="imagen"]').value = response.imagen;
     });
 
+    // Al eliminar imagen, limpiar input
     dropzoneRegister.on("removedfile", function (file) {
         document.querySelector('[name="imagen"]').value = "";
     });
 
+    // Manejar errores de subida
     dropzoneRegister.on("error", function (file, message) {
         console.error('Error al subir imagen:', message);
     });
