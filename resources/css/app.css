@@ -32,6 +32,11 @@ input[type="password"] {
     color: #1f2937 !important;
 }
 
+/* Excepción para el input de búsqueda de Spotify */
+#spotify-search {
+    color: #ffffff !important;
+}
+
 /* Mejores estilos para el modal */
 .modal-backdrop {
     backdrop-filter: blur(4px);
@@ -129,6 +134,7 @@ input[type="password"] {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -173,7 +179,7 @@ input[type="password"] {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
     transition: left 0.6s;
 }
 
@@ -195,6 +201,7 @@ input[type="password"] {
     0% {
         box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
     }
+
     100% {
         box-shadow: 0 0 30px rgba(16, 185, 129, 0.8);
     }
@@ -285,6 +292,7 @@ input[type="password"] {
     0% {
         transform: scale(0);
     }
+
     100% {
         transform: scale(1);
     }
@@ -294,6 +302,7 @@ input[type="password"] {
     0% {
         transform: scale(1);
     }
+
     100% {
         transform: scale(0);
     }
@@ -303,6 +312,7 @@ input[type="password"] {
     0% {
         transform: translate(0, 0);
     }
+
     100% {
         transform: translate(24px, 0);
     }
@@ -314,13 +324,14 @@ input[type="password"] {
         margin: 0 -1rem;
         border-radius: 1rem;
     }
-    
+
     .search-result-card {
         padding: 0.75rem;
     }
-    
+
     .music-search-input {
-        font-size: 16px; /* Prevent zoom on iOS */
+        font-size: 16px;
+        /* Prevent zoom on iOS */
     }
 }
 
