@@ -15,5 +15,5 @@
     {{-- Imagen de perfil --}}
     <img src="{{ $user->imagen ? asset('perfiles/' . $user->imagen) : asset('img/usuario.svg') }}"
         alt="Avatar de {{ $user->username }}"
-        class="w-9 h-9 rounded-full object-cover border-2 border-[#3B25DD] transition-all duration-300 group-hover:border-4 group-hover:border-[#120073] cursor-pointer">
+        class="w-9 h-9 rounded-full object-cover border-2 border-[#3B25DD] cursor-pointer">
 </a>
