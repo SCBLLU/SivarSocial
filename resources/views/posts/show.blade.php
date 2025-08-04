@@ -113,8 +113,9 @@
 
                                 @if(($isItunes && $post->itunes_track_view_url) || (!$isItunes && $post->spotify_external_url))
                                     <a href="{{ $isItunes ? $post->itunes_track_view_url : $post->spotify_external_url }}"
-                                        target="_blank" class="px-4 py-2 rounded-full text-xs font-medium
-                                        {{ $isItunes ? 'bg-white text-black hover:bg-gray-100' : 'bg-[#1DB954] text-white hover:bg-green-700' }}">
+                                        target="_blank"
+                                        class="px-4 py-2 rounded-full text-xs font-medium
+                                                                {{ $isItunes ? 'bg-white text-black hover:bg-gray-100' : 'bg-[#1DB954] text-white hover:bg-green-700' }}">
                                         {{ $isItunes ? 'Abrir Apple Music' : 'Abrir Spotify' }}
                                     </a>
                                 @endif
@@ -177,24 +178,24 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                                        h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
                                                     <div id="progress-bar" class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                transition-all duration-100 ease-out" style="width: 0%">
+                                                                                        transition-all duration-100 ease-out"
+                                                        style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
                                                     <div id="progress-thumb" class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                opacity-0 transition-all duration-200 ease-out
-                                                                hover:scale-110 active:scale-95"
+                                                                                        shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                                        opacity-0 transition-all duration-200 ease-out
+                                                                                        hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 
                                                 <!-- Tiempo y controles -->
                                                 <div class="flex justify-between items-center text-xs sm:text-sm text-gray-300">
                                                     <span id="current-time" class="font-mono">0:00</span>
-                                                    <span
-                                                        class="font-mono">{{ floor($trackDuration / 60) }}:{{ str_pad($trackDuration % 60, 2, '0', STR_PAD_LEFT) }}</span>
+                                                    <span id="total-time" class="font-mono">0:30</span>
                                                 </div>
                                             </div>
 
@@ -216,24 +217,6 @@
                                                             d="M10 9v6m4-6v6" />
                                                     </svg>
                                                 </button>
-                                            </div>
-
-                                            <!-- Controles adicionales responsive -->
-                                            <div class="flex items-center justify-between">
-                                                <!-- Control de volumen -->
-                                                <div class="flex items-center gap-2 sm:gap-3">
-                                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path
-                                                            d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-                                                    </svg>
-                                                    <input type="range" id="volume-slider" min="0" max="100" value="50"
-                                                        class="volume-slider w-12 sm:w-16 md:w-20 h-1.5 sm:h-2 
-                                                                bg-white/20 hover:bg-white/30 
-                                                                rounded-lg appearance-none cursor-pointer 
-                                                                transition-all duration-200
-                                                                focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
-                                                </div>
                                             </div>
                                         </div>
                                     @else
@@ -603,7 +586,6 @@
             const progressBar = document.getElementById('progress-bar');
             const progressThumb = document.getElementById('progress-thumb');
             const currentTimeDisplay = document.getElementById('current-time');
-            const volumeSlider = document.getElementById('volume-slider');
 
             if (!previewUrl) {
                 showNotification('Vista previa no disponible', 'info');
@@ -623,7 +605,7 @@
 
             // Crear nuevo audio
             currentPreviewAudio = new Audio(previewUrl);
-            currentPreviewAudio.volume = volumeSlider ? volumeSlider.value / 100 : 0.7;
+            currentPreviewAudio.volume = 0.7;
             currentPreviewAudio.crossOrigin = "anonymous";
 
             // Actualizar UI inmediatamente
@@ -724,16 +706,6 @@
 
         // Inicialización cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function () {
-            // Control de volumen
-            const volumeSlider = document.getElementById('volume-slider');
-            if (volumeSlider) {
-                volumeSlider.addEventListener('input', function () {
-                    if (currentPreviewAudio) {
-                        currentPreviewAudio.volume = this.value / 100;
-                    }
-                });
-            }
-
             // Control de progreso
             const progressContainer = document.getElementById('progress-container');
             const progressBar = document.getElementById('progress-bar');
@@ -818,20 +790,6 @@
                         case 'ArrowRight':
                             e.preventDefault();
                             currentPreviewAudio.currentTime = Math.min(currentPreviewAudio.duration, currentPreviewAudio.currentTime + 5);
-                            break;
-                        case 'ArrowUp':
-                            e.preventDefault();
-                            if (volumeSlider) {
-                                volumeSlider.value = Math.min(100, parseInt(volumeSlider.value) + 10);
-                                volumeSlider.dispatchEvent(new Event('input'));
-                            }
-                            break;
-                        case 'ArrowDown':
-                            e.preventDefault();
-                            if (volumeSlider) {
-                                volumeSlider.value = Math.max(0, parseInt(volumeSlider.value) - 10);
-                                volumeSlider.dispatchEvent(new Event('input'));
-                            }
                             break;
                     }
                 }
