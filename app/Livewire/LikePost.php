@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class LikePost extends Component
 {
@@ -27,16 +28,30 @@ class LikePost extends Component
             return;
         }
 
-        if ($this->post->checkLike(Auth::user())) {
-            $this->post->likes()->where('post_id', $this->post->id)->delete();
-            $this->isLiked = false;
-            $this->likes--;
-        } else {
-            $this->post->likes()->create([
-                'user_id' => Auth::user()->id,
-            ]);
-            $this->isLiked = true;
-            $this->likes++;
+        try {
+            // Permitir dar like a cualquier post, incluidos los propios
+            if ($this->post->checkLike(Auth::user())) {
+                // Quitar like
+                $this->post->likes()->where('user_id', Auth::user()->id)->delete();
+                $this->isLiked = false;
+                $this->likes--;
+            } else {
+                // Dar like
+                $this->post->likes()->create([
+                    'user_id' => Auth::user()->id,
+                ]);
+                $this->isLiked = true;
+                $this->likes++;
+            }
+            
+            // Refrescar la relación likes
+            $this->post->load('likes');
+            
+        } catch (\Exception $e) {
+            // Log del error para debugging
+            Log::error('Error en LikePost: ' . $e->getMessage());
+            // También podemos agregar una sesión flash para mostrar el error
+            session()->flash('like_error', 'Error al procesar el like: ' . $e->getMessage());
         }
     }
 
