@@ -27,56 +27,113 @@
                     </a>
                 @elseif ($post->tipo === 'musica')
                     <!-- Publicacion de musica -->
-                    <a href="{{ route('posts.show', ['user' => $post->user ? $post->user->username : 'usuario', 'post' => $post->id]) }}"
-                        class="w-full block">
+                    <div class="w-full relative">
                         <div class="w-full p-3 sm:p-4 bg-[#000000] hover:bg-[#121212] transition-colors duration-200">
                             <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[#1DB954]" fill="currentColor" viewBox="0 0 168 168">
-                                        <path
-                                            d="M83.996 0C37.588 0 0 37.588 0 83.996s37.588 83.996 83.996 83.996 83.996-37.588 83.996-83.996S130.404 0 83.996 0zm38.404 121.17c-1.506 2.467-4.718 3.24-7.177 1.737-19.640-12.002-44.389-14.729-73.524-8.075-2.818.646-5.674-1.115-6.32-3.934-.646-2.818 1.115-5.674 3.934-6.32 31.9-7.291 59.263-4.15 81.337 9.34 2.46 1.51 3.24 4.72 1.75 7.18zm10.25-22.802c-1.89 3.075-5.91 4.045-8.98 2.155-22.51-13.839-56.823-17.846-83.448-9.764-3.453 1.043-7.1-.903-8.148-4.35-1.04-3.453.907-7.093 4.354-8.143 30.413-9.228 68.222-4.758 94.072 11.127 3.07 1.89 4.04 5.91 2.15 8.976zm.88-23.744c-26.99-16.031-71.52-17.505-97.289-9.684-4.138 1.255-8.514-1.081-9.768-5.219-1.254-4.14 1.08-8.513 5.221-9.771 29.581-8.98 78.756-7.245 109.83 11.202 3.722 2.209 4.943 7.016 2.737 10.733-2.2 3.722-7.02 4.949-10.73 2.739z" />
-                                    </svg>
-                                    <span class="text-[#1DB954] text-xs sm:text-sm font-medium">Spotify</span>
+                                    @php
+                                        $isItunes = $post->music_source === 'itunes' || !empty($post->itunes_track_id);
+                                    @endphp
+
+                                    @if ($isItunes)
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                            <path
+                                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
+                                        </svg>
+                                        <span class="text-white text-xs sm:text-sm font-medium">iTunes</span>
+                                    @else
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[#1DB954]" fill="currentColor" viewBox="0 0 168 168">
+                                            <path
+                                                d="M83.996 0C37.588 0 0 37.588 0 83.996s37.588 83.996 83.996 83.996 83.996-37.588 83.996-83.996S130.404 0 83.996 0zm38.404 121.17c-1.506 2.467-4.718 3.24-7.177 1.737-19.640-12.002-44.389-14.729-73.524-8.075-2.818.646-5.674-1.115-6.32-3.934-.646-2.818 1.115-5.674 3.934-6.32 31.9-7.291 59.263-4.15 81.337 9.34 2.46 1.51 3.24 4.72 1.75 7.18zm10.25-22.802c-1.89 3.075-5.91 4.045-8.98 2.155-22.51-13.839-56.823-17.846-83.448-9.764-3.453 1.043-7.1-.903-8.148-4.35-1.04-3.453.907-7.093 4.354-8.143 30.413-9.228 68.222-4.758 94.072 11.127 3.07 1.89 4.04 5.91 2.15 8.976zm.88-23.744c-26.99-16.031-71.52-17.505-97.289-9.684-4.138 1.255-8.514-1.081-9.768-5.219-1.254-4.14 1.08-8.513 5.221-9.771 29.581-8.98 78.756-7.245 109.83 11.202 3.722 2.209 4.943 7.016 2.737 10.733-2.2 3.722-7.02 4.949-10.73 2.739z" />
+                                        </svg>
+                                        <span class="text-[#1DB954] text-xs sm:text-sm font-medium">Spotify</span>
+                                    @endif
                                 </div>
                             </div>
 
                             <div class="flex items-center gap-3 sm:gap-4 text-white">
+                                <!-- Enlace al post (solo imagen y texto) -->
+                                <a href="{{ route('posts.show', ['user' => $post->user ? $post->user->username : 'usuario', 'post' => $post->id]) }}"
+                                    class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
 
-                                <!-- Imagen del álbum con esquinas redondeadas según lineamientos -->
-                                <div class="relative flex-shrink-0">
-                                    <img src="{{ $post->spotify_album_image ?? asset('img/img.jpg') }}"
-                                        alt="{{ $post->spotify_album_name }}"
-                                        class="w-16 h-16 sm:w-20 sm:h-20 rounded-[4px] object-cover shadow-lg">
-                                </div>
+                                    <!-- Imagen del álbum estilo Spotify/Instagram -->
+                                    <div class="relative flex-shrink-0">
+                                        @php
+                                            $albumImage = null;
+                                            $trackName = '';
+                                            $artistName = '';
+                                            $albumName = '';
+                                            $externalUrl = '';
+                                            $previewUrl = '';
+                                            $isItunes = $post->music_source === 'itunes' || !empty($post->itunes_track_id);
 
-                                <!-- Información de la canción (metadata exacta de Spotify) -->
-                                <div class="flex-1 min-w-0">
-                                    <h3 class="font-semibold text-sm sm:text-lg truncate text-white leading-tight">
-                                        {{ $post->spotify_track_name }}
-                                    </h3>
-                                    <p class="text-gray-300 text-xs sm:text-sm truncate mt-1">{{ $post->spotify_artist_name }}</p>
-                                    <p class="text-gray-400 text-xs truncate">{{ $post->spotify_album_name }}</p>
-                                </div>
+                                            if ($isItunes) {
+                                                $albumImage = $post->itunes_artwork_url;
+                                                $trackName = $post->itunes_track_name;
+                                                $artistName = $post->itunes_artist_name;
+                                                $albumName = $post->itunes_collection_name;
+                                                $externalUrl = $post->itunes_track_view_url;
+                                                $previewUrl = $post->itunes_preview_url;
+                                            } else {
+                                                $albumImage = $post->spotify_album_image;
+                                                $trackName = $post->spotify_track_name;
+                                                $artistName = $post->spotify_artist_name;
+                                                $albumName = $post->spotify_album_name;
+                                                $externalUrl = $post->spotify_external_url;
+                                                $previewUrl = $post->spotify_preview_url;
+                                            }
+                                        @endphp
 
-                                <!-- Controles de reproducción a spotify -->
-                                <div class="flex flex-col items-center gap-3">
-                                    @if ($post->spotify_external_url)
-                                        <button
-                                            onclick="event.preventDefault(); event.stopPropagation(); window.open('{{ $post->spotify_external_url }}', '_blank'); return false;"
-                                            class="flex items-center gap-1 bg-[#1DB954] hover:bg-[#1ed760] text-black text-xs font-medium px-2 py-1 sm:px-3 sm:py-1.5 rounded-full transition-all duration-300 hover:shadow-lg cursor-pointer z-10 relative">
-                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 168 168">
-                                                <path
-                                                    d="M83.996 0C37.588 0 0 37.588 0 83.996s37.588 83.996 83.996 83.996 83.996-37.588 83.996-83.996S130.404 0 83.996 0zm38.404 121.17c-1.506 2.467-4.718 3.24-7.177 1.737-19.640-12.002-44.389-14.729-73.524-8.075-2.818.646-5.674-1.115-6.32-3.934-.646-2.818 1.115-5.674 3.934-6.32 31.9-7.291 59.263-4.15 81.337 9.34 2.46 1.51 3.24 4.72 1.75 7.18zm10.25-22.802c-1.89 3.075-5.91 4.045-8.98 2.155-22.51-13.839-56.823-17.846-83.448-9.764-3.453 1.043-7.1-.903-8.148-4.35-1.04-3.453.907-7.093 4.354-8.143 30.413-9.228 68.222-4.758 94.072 11.127 3.07 1.89 4.04 5.91 2.15 8.976zm.88-23.744c-26.99-16.031-71.52-17.505-97.289-9.684-4.138 1.255-8.514-1.081-9.768-5.219-1.254-4.14 1.08-8.513 5.221-9.771 29.581-8.98 78.756-7.245 109.83 11.202 3.722 2.209 4.943 7.016 2.737 10.733-2.2 3.722-7.02 4.949-10.73 2.739z" />
+                                        <img src="{{ $albumImage ?: asset('img/img.jpg') }}"
+                                            alt="{{ $albumName ?: 'Portada del álbum' }}"
+                                            class="w-16 h-16 sm:w-20 sm:h-20 rounded-[4px] object-cover shadow-lg">
+                                    </div>
+
+                                    <!-- Información de la canción estilo Spotify -->
+                                    <div class="flex-1 min-w-0 flex flex-col justify-center">
+                                        <h4 class="font-semibold text-base sm:text-lg truncate text-white leading-tight">
+                                            {{ $trackName ?: 'Canción desconocida' }}
+                                        </h4>
+                                        <p class="text-gray-300 text-xs sm:text-sm truncate mt-1">
+                                            {{ $artistName ?: 'Artista desconocido' }}
+                                        </p>
+                                    </div>
+                                </a>
+
+                                <!-- Botón de reproducir vista previa - SEPARADO del enlace -->
+                                @if($previewUrl)
+                                    <div class="flex-shrink-0">
+                                        <button type="button"
+                                            class="play-button-{{ $post->id }} bg-white/20 hover:bg-white/30 text-white rounded-full p-2 sm:p-3 shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+                                            onclick="toggleMusicPreview('{{ $previewUrl }}', '{{ $post->id }}', '{{ $isItunes ? 'itunes' : 'spotify' }}')"
+                                            title="Reproducir vista previa">
+                                            <!-- Icono play -->
+                                            <svg class="play-icon-{{ $post->id }} w-5 h-5 sm:w-6 sm:h-6 transition-all duration-200"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M8 5v14l11-7z" />
                                             </svg>
-                                            <span class="hidden sm:inline">Reproducir</span>
-                                            <span class="sm:hidden">Play</span>
+                                            <!-- Icono pause (oculto por defecto) -->
+                                            <svg class="pause-icon-{{ $post->id }} w-5 h-5 sm:w-6 sm:h-6 hidden transition-all duration-200"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M10 9v6m4-6v6" />
+                                            </svg>
+                                            <!-- Icono loading (oculto por defecto) -->
+                                            <svg class="loading-icon-{{ $post->id }} w-5 h-5 sm:w-6 sm:h-6 hidden animate-spin text-gray-300"
+                                                fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                    stroke-width="4">
+                                                </circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                                            </svg>
                                         </button>
-                                    @endif
-                                </div>
+                                    </div>
+                                @endif
+
                             </div>
-                            <br />
                         </div>
-                    </a>
+                    </div>
 
                 @endif
 

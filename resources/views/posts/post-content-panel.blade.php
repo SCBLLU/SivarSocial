@@ -21,7 +21,7 @@
 
     <!-- Contenido para post de música -->
     <div id="content-musica" class="content-panel hidden transition-all duration-300 ease-in-out">
-        @include('components.spotify.Spotify')
+        @include('components.itunes.iTunes')
     </div>
 
 </div>

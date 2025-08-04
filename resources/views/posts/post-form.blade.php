@@ -42,6 +42,22 @@
 
     <!-- Campos ocultos para música -->
     <div id="musica-fields" class="hidden">
+        <!-- Campo para especificar la fuente de música -->
+        <input name="music_source" type="hidden" value="itunes">
+        
+        <!-- Campos iTunes -->
+        <input name="itunes_track_id" type="hidden" value="{{ old('itunes_track_id') }}">
+        <input name="itunes_track_name" type="hidden" value="{{ old('itunes_track_name') }}">
+        <input name="itunes_artist_name" type="hidden" value="{{ old('itunes_artist_name') }}">
+        <input name="itunes_collection_name" type="hidden" value="{{ old('itunes_collection_name') }}">
+        <input name="itunes_artwork_url" type="hidden" value="{{ old('itunes_artwork_url') }}">
+        <input name="itunes_preview_url" type="hidden" value="{{ old('itunes_preview_url') }}">
+        <input name="itunes_track_view_url" type="hidden" value="{{ old('itunes_track_view_url') }}">
+        <input name="itunes_track_time_millis" type="hidden" value="{{ old('itunes_track_time_millis') }}">
+        <input name="itunes_country" type="hidden" value="{{ old('itunes_country') }}">
+        <input name="itunes_primary_genre_name" type="hidden" value="{{ old('itunes_primary_genre_name') }}">
+        
+        <!-- Campos Spotify (mantener para compatibilidad) -->
         <input name="spotify_track_id" type="hidden" value="{{ old('spotify_track_id') }}">
         <input name="spotify_track_name" type="hidden" value="{{ old('spotify_track_name') }}">
         <input name="spotify_artist_name" type="hidden" value="{{ old('spotify_artist_name') }}">
@@ -49,7 +65,11 @@
         <input name="spotify_album_image" type="hidden" value="{{ old('spotify_album_image') }}">
         <input name="spotify_preview_url" type="hidden" value="{{ old('spotify_preview_url') }}">
         <input name="spotify_external_url" type="hidden" value="{{ old('spotify_external_url') }}">
-        @error('spotify_track_id')
+        
+        @error('itunes_track_id')
+            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+        @enderror
+        @error('music')
             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
         @enderror
     </div>

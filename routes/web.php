@@ -14,6 +14,7 @@ use App\Http\Controllers\ComentarioController;
 use App\Http\Controllers\FollowerController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SpotifyApiController;
+use App\Http\Controllers\iTunesApiController;
 use App\Http\Controllers\RegisterController;
 
 Route::get('/', function () {
@@ -54,6 +55,13 @@ Route::delete('/imagenes', [ImagenController::class, 'destroy'])->name('imagenes
 // Rutas de Spotify
 Route::get('/spotify/search', [SpotifyApiController::class, 'search'])->name('spotify.search');
 Route::get('/spotify/track', [SpotifyApiController::class, 'getTrack'])->name('spotify.track');
+
+// Rutas de iTunes
+Route::get('/itunes/search', [iTunesApiController::class, 'search'])->name('itunes.search');
+Route::get('/itunes/track', [iTunesApiController::class, 'getTrack'])->name('itunes.track');
+Route::get('/itunes/genre', [iTunesApiController::class, 'searchByGenre'])->name('itunes.genre');
+Route::get('/itunes/popular', [iTunesApiController::class, 'getPopular'])->name('itunes.popular');
+Route::get('/itunes/more', [iTunesApiController::class, 'getMoreResults'])->name('itunes.more');
 
 
 Route::post('/posts/{post}/likes', [LikeController::class, 'store'])->name('posts.likes.store');

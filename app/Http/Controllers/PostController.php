@@ -51,13 +51,31 @@ class PostController extends Controller
                 'titulo' => 'nullable|max:255',
                 'descripcion' => 'nullable',
                 'tipo' => 'required|in:imagen,musica',
-                'spotify_track_id' => 'required|string',
-                'spotify_track_name' => 'required|string',
-                'spotify_artist_name' => 'required|string',
-                'spotify_album_name' => 'required|string',
-                'spotify_album_image' => 'required|string',
-                'spotify_external_url' => 'required|string',
+                'music_source' => 'required|in:itunes,spotify',
+                // Campos iTunes
+                'itunes_track_id' => 'nullable|string',
+                'itunes_track_name' => 'nullable|string',
+                'itunes_artist_name' => 'nullable|string',
+                'itunes_collection_name' => 'nullable|string',
+                'itunes_artwork_url' => 'nullable|string',
+                'itunes_preview_url' => 'nullable|string',
+                'itunes_track_view_url' => 'nullable|string',
+                'itunes_track_time_millis' => 'nullable|integer',
+                'itunes_country' => 'nullable|string',
+                'itunes_primary_genre_name' => 'nullable|string',
+                // Campos Spotify (mantener para compatibilidad)
+                'spotify_track_id' => 'nullable|string',
+                'spotify_track_name' => 'nullable|string',
+                'spotify_artist_name' => 'nullable|string',
+                'spotify_album_name' => 'nullable|string',
+                'spotify_album_image' => 'nullable|string',
+                'spotify_external_url' => 'nullable|string',
             ]);
+
+            // Validar que al menos uno de los dos sistemas tenga datos
+            if (empty($request->itunes_track_id) && empty($request->spotify_track_id)) {
+                return back()->withErrors(['music' => 'Debes seleccionar una canción'])->withInput();
+            }
         }
 
         $postData = [
@@ -71,13 +89,32 @@ class PostController extends Controller
         if ($request->tipo === 'imagen') {
             $postData['imagen'] = $request->imagen;
         } else if ($request->tipo === 'musica') {
-            $postData['spotify_track_id'] = $request->spotify_track_id;
-            $postData['spotify_track_name'] = $request->spotify_track_name;
-            $postData['spotify_artist_name'] = $request->spotify_artist_name;
-            $postData['spotify_album_name'] = $request->spotify_album_name;
-            $postData['spotify_album_image'] = $request->spotify_album_image;
-            $postData['spotify_preview_url'] = $request->spotify_preview_url;
-            $postData['spotify_external_url'] = $request->spotify_external_url;
+            $postData['music_source'] = $request->music_source ?? 'itunes';
+            
+            // Campos iTunes
+            if ($request->music_source === 'itunes' || !empty($request->itunes_track_id)) {
+                $postData['itunes_track_id'] = $request->itunes_track_id;
+                $postData['itunes_track_name'] = $request->itunes_track_name;
+                $postData['itunes_artist_name'] = $request->itunes_artist_name;
+                $postData['itunes_collection_name'] = $request->itunes_collection_name;
+                $postData['itunes_artwork_url'] = $request->itunes_artwork_url;
+                $postData['itunes_preview_url'] = $request->itunes_preview_url;
+                $postData['itunes_track_view_url'] = $request->itunes_track_view_url;
+                $postData['itunes_track_time_millis'] = $request->itunes_track_time_millis;
+                $postData['itunes_country'] = $request->itunes_country;
+                $postData['itunes_primary_genre_name'] = $request->itunes_primary_genre_name;
+            }
+            
+            // Campos Spotify (mantener para compatibilidad)
+            if ($request->music_source === 'spotify' || !empty($request->spotify_track_id)) {
+                $postData['spotify_track_id'] = $request->spotify_track_id;
+                $postData['spotify_track_name'] = $request->spotify_track_name;
+                $postData['spotify_artist_name'] = $request->spotify_artist_name;
+                $postData['spotify_album_name'] = $request->spotify_album_name;
+                $postData['spotify_album_image'] = $request->spotify_album_image;
+                $postData['spotify_preview_url'] = $request->spotify_preview_url;
+                $postData['spotify_external_url'] = $request->spotify_external_url;
+            }
         }
 
         Post::create($postData);
