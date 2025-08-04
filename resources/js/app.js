@@ -147,6 +147,14 @@ function updatePlayButton(trackId, isPlaying) {
             pauseIcon.classList.add('hidden');
         }
     }
+
+    // Emitir evento para Alpine.js
+    document.dispatchEvent(new CustomEvent('audioStateChanged', {
+        detail: {
+            isPlaying: isPlaying,
+            trackId: isPlaying ? trackId : null
+        }
+    }));
 }
 
 // FUNCIONES DE iTUNES
@@ -301,6 +309,7 @@ window.clearSelectedTrack = function () {
 window.itunesSelectTrack = itunesSelectTrack;
 window.itunesClearSelection = itunesClearSelection;
 window.itunesTogglePreview = itunesTogglePreview;
+window.toggleAudioPreview = toggleAudioPreview;
 window.searchiTunes = searchiTunes;
 
 window.performiTunesSearch = function (query) {

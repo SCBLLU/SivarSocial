@@ -110,6 +110,8 @@
             selectedTrack: null,
             errorMessage: '',
             inputFocused: false,
+            isPlaying: false,
+            currentTrackId: null,
 
             init() {
                 // Escuchar eventos personalizados del JavaScript
@@ -145,6 +147,12 @@
                     this.currentState = 'suggestions';
                     this.searchResults = [];
                 });
+
+                // Escuchar cambios en el reproductor global
+                document.addEventListener('audioStateChanged', (event) => {
+                    this.isPlaying = event.detail.isPlaying;
+                    this.currentTrackId = event.detail.trackId;
+                });
             },
 
             handleInputFocus() {
@@ -160,15 +168,24 @@
 
 
             selectTrack(track) {
-                window.selectTrack(track);
+                // Usar la función global de selección de iTunes
+                if (window.itunesSelectTrack) {
+                    window.itunesSelectTrack(track);
+                }
             },
 
             clearSelection() {
-                window.clearSelectedTrack();
+                // Usar la función global para limpiar selección
+                if (window.itunesClearSelection) {
+                    window.itunesClearSelection();
+                }
             },
 
             togglePreview(previewUrl, trackId) {
-                window.togglePreview(previewUrl, trackId);
+                // Usar la función global de reproducción de audio
+                if (window.toggleAudioPreview) {
+                    window.toggleAudioPreview(previewUrl, trackId, 'itunes');
+                }
             }
         }
     }
