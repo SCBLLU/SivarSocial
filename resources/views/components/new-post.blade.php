@@ -4,7 +4,7 @@
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2 sm:space-x-3">
                 <img class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-[#3B25DD]"
-                    src="{{ auth()->user()->imagen ? asset('perfiles/' . auth()->user()->imagen) : asset('img/usuario.svg') }}"
+                    src="{{ auth()->user()->imagen ? asset('perfiles/' . auth()->user()->imagen) : asset('img/img.jpg') }}"
                     alt="Foto de perfil de {{ auth()->user()->username }}">
                 <div class="flex flex-col">
                     <span class="text-xs sm:text-sm font-semibold text-gray-900">{{ auth()->user()->username }}</span>

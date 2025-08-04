@@ -23,8 +23,7 @@ class Post extends Model
         'spotify_album_name',
         'spotify_album_image',
         'spotify_preview_url',
-        'spotify_external_url',
-        'dominant_color'
+        'spotify_external_url'
     ];
 
     public function user()

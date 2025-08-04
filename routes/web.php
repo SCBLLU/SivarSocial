@@ -54,7 +54,6 @@ Route::delete('/imagenes', [ImagenController::class, 'destroy'])->name('imagenes
 // Rutas de Spotify
 Route::get('/spotify/search', [SpotifyApiController::class, 'search'])->name('spotify.search');
 Route::get('/spotify/track', [SpotifyApiController::class, 'getTrack'])->name('spotify.track');
-Route::post('/spotify/dominant-color', [SpotifyApiController::class, 'extractDominantColor'])->name('spotify.color');
 
 
 Route::post('/posts/{post}/likes', [LikeController::class, 'store'])->name('posts.likes.store');

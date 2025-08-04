@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('spotify_album_image')->nullable()->after('spotify_album_name');
             $table->string('spotify_preview_url')->nullable()->after('spotify_album_image');
             $table->string('spotify_external_url')->nullable()->after('spotify_preview_url');
-            $table->string('dominant_color')->nullable()->after('spotify_external_url');
         });
     }
 
@@ -38,8 +37,7 @@ return new class extends Migration
                 'spotify_album_name',
                 'spotify_album_image',
                 'spotify_preview_url',
-                'spotify_external_url',
-                'dominant_color'
+                'spotify_external_url'
             ]);
         });
     }
