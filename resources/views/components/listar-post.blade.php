@@ -131,86 +131,39 @@
 
                 <!-- Acciones de la publicación -->
                 <div class="w-full px-4 py-3">
-                    <!-- Layout para móviles: título → descripción → acciones -->
-                    <div class="block sm:hidden">
+                    <!-- Layout unificado para móviles y PC: título y acciones en la misma línea -->
+                    <div class="flex items-center justify-between mb-2">
                         @if($post->tipo === 'musica')
                             <!-- Para posts de música: lógica especial para descripción -->
                             @if($post->titulo)
-                                <!-- Si tiene título, mostrar título en su línea -->
-                                <div class="mb-2">
-                                    <span class="font-semibold text-black text-base">{{ $post->titulo }}</span>
-                                </div>
-                                <!-- Y descripción abajo si existe -->
-                                @if($post->descripcion)
-                                    <div class="mb-3">
-                                        <p class="text-gray-700 text-xs">{{ $post->descripcion }}</p>
-                                    </div>
-                                @endif
+                                <!-- Si tiene título, mostrar solo el título en esta línea -->
+                                <span class="font-semibold text-black text-base sm:text-lg">{{ $post->titulo }}</span>
                             @elseif($post->descripcion)
                                 <!-- Si NO tiene título pero SÍ descripción, descripción va en línea del título -->
-                                <div class="mb-2">
-                                    <span class="text-gray-700 text-base">{{ $post->descripcion }}</span>
-                                </div>
+                                <span class="text-gray-700 text-base sm:text-lg">{{ $post->descripcion }}</span>
+                            @else
+                                <span></span> <!-- Espacio vacío para mantener el layout -->
                             @endif
                         @else
-                            <!-- Para posts de imagen: título y descripción separados -->
-                            <!-- Título (solo si existe) -->
+                            <!-- Para posts de imagen: solo título -->
                             @if($post->titulo)
-                                <div class="mb-2">
-                                    <span class="font-semibold text-black text-base">{{ $post->titulo }}</span>
-                                </div>
-                            @endif
-
-                            <!-- Descripción (solo si existe) -->
-                            @if($post->descripcion)
-                                <div class="mb-3">
-                                    <p class="text-gray-700 text-xs">{{ $post->descripcion }}</p>
-                                </div>
+                                <span class="font-semibold text-black text-base sm:text-lg">{{ $post->titulo }}</span>
+                            @else
+                                <span></span> <!-- Espacio vacío para mantener el layout -->
                             @endif
                         @endif
-
-                        <!-- Acciones -->
-                        <div class="flex items-center justify-start gap-4">
+                        <div class="flex items-center gap-4">
                             <livewire:comment-post :post="$post" color="gray" />
                             <livewire:like-post :post="$post" color="red" />
                         </div>
                     </div>
 
-                    <!-- Layout para PC: título y acciones en la misma línea, descripción abajo -->
-                    <div class="hidden sm:block">
-                        <div class="flex items-center justify-between mb-2">
-                            @if($post->tipo === 'musica')
-                                <!-- Para posts de música: lógica especial para descripción -->
-                                @if($post->titulo)
-                                    <!-- Si tiene título, mostrar solo el título en esta línea -->
-                                    <span class="font-semibold text-black text-lg">{{ $post->titulo }}</span>
-                                @elseif($post->descripcion)
-                                    <!-- Si NO tiene título pero SÍ descripción, descripción va en línea del título -->
-                                    <span class="text-gray-700 text-lg">{{ $post->descripcion }}</span>
-                                @else
-                                    <span></span> <!-- Espacio vacío para mantener el layout -->
-                                @endif
-                            @else
-                                <!-- Para posts de imagen: solo título -->
-                                @if($post->titulo)
-                                    <span class="font-semibold text-black text-lg">{{ $post->titulo }}</span>
-                                @else
-                                    <span></span> <!-- Espacio vacío para mantener el layout -->
-                                @endif
-                            @endif
-                            <div class="flex items-center gap-4">
-                                <livewire:comment-post :post="$post" color="gray" />
-                                <livewire:like-post :post="$post" color="red" />
-                            </div>
+                    <!-- Descripción abajo solo para posts de música que tienen título Y descripción, o posts de imagen -->
+                    @if(($post->tipo === 'musica' && $post->titulo && $post->descripcion) || ($post->tipo === 'imagen' && $post->descripcion))
+                        <div class="mb-3">
+                            <p class="text-gray-700 text-xs sm:text-sm">{{ $post->descripcion }}</p>
                         </div>
-
-                        <!-- Descripción abajo solo para posts de música que tienen título Y descripción, o posts de imagen -->
-                        @if(($post->tipo === 'musica' && $post->titulo && $post->descripcion) || ($post->tipo === 'imagen' && $post->descripcion))
-                            <div class="mb-3">
-                                <p class="text-gray-700 text-sm">{{ $post->descripcion }}</p>
-                            </div>
-                        @endif
-                    </div>
+                    @endif
                 </div>
             </div>
         @endforeach

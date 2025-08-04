@@ -115,7 +115,7 @@
                                     <a href="{{ $isItunes ? $post->itunes_track_view_url : $post->spotify_external_url }}"
                                         target="_blank"
                                         class="px-4 py-2 rounded-full text-xs font-medium
-                                                                {{ $isItunes ? 'bg-white text-black hover:bg-gray-100' : 'bg-[#1DB954] text-white hover:bg-green-700' }}">
+                                                                            {{ $isItunes ? 'bg-white text-black hover:bg-gray-100' : 'bg-[#1DB954] text-white hover:bg-green-700' }}">
                                         {{ $isItunes ? 'Abrir Apple Music' : 'Abrir Spotify' }}
                                     </a>
                                 @endif
@@ -178,17 +178,19 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                                        h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                                                    h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
-                                                    <div id="progress-bar" class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                                        transition-all duration-100 ease-out"
+                                                    <div id="progress-bar"
+                                                        class="absolute left-0 top-0 h-full bg-white rounded-full 
+                                                                                                    transition-all duration-100 ease-out"
                                                         style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
-                                                    <div id="progress-thumb" class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                                        shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                                        opacity-0 transition-all duration-200 ease-out
-                                                                                        hover:scale-110 active:scale-95"
+                                                    <div id="progress-thumb"
+                                                        class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
+                                                                                                    shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                                                    opacity-0 transition-all duration-200 ease-out
+                                                                                                    hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 
@@ -255,58 +257,29 @@
 
                         <!-- Detalles debajo del contenido musical -->
                         <div class="w-full px-4 py-3">
-                            <!-- Layout para móviles: lógica especial para posts de música -->
-                            <div class="block sm:hidden">
+                            <!-- Layout unificado para móviles y PC: título y acciones en la misma línea -->
+                            <div class="flex items-center justify-between mb-2">
                                 @if($post->titulo)
-                                    <!-- Si tiene título, mostrar título en su línea -->
-                                    <div class="mb-2">
-                                        <span class="font-semibold text-black text-base">{{ $post->titulo }}</span>
-                                    </div>
-                                    <!-- Y descripción abajo si existe -->
-                                    @if($post->descripcion)
-                                        <div class="mb-3">
-                                            <p class="text-gray-700 text-xs">{{ $post->descripcion }}</p>
-                                        </div>
-                                    @endif
+                                    <!-- Si tiene título, mostrar solo el título en esta línea -->
+                                    <span class="font-semibold text-black text-base sm:text-lg">{{ $post->titulo }}</span>
                                 @elseif($post->descripcion)
                                     <!-- Si NO tiene título pero SÍ descripción, descripción va en línea del título -->
-                                    <div class="mb-2">
-                                        <span class="text-gray-700 text-base">{{ $post->descripcion }}</span>
-                                    </div>
+                                    <span class="text-gray-700 text-base sm:text-lg">{{ $post->descripcion }}</span>
+                                @else
+                                    <span></span> <!-- Espacio para alinear las acciones a la derecha -->
                                 @endif
-
-                                <!-- Acciones -->
-                                <div class="flex items-center justify-start gap-4">
+                                <div class="flex items-center gap-4">
                                     <livewire:comment-post :post="$post" color="gray" />
                                     <livewire:like-post :post="$post" color="red" />
                                 </div>
                             </div>
 
-                            <!-- Layout para PC: lógica especial para posts de música -->
-                            <div class="hidden sm:block">
-                                <div class="flex items-center justify-between mb-2">
-                                    @if($post->titulo)
-                                        <!-- Si tiene título, mostrar solo el título en esta línea -->
-                                        <span class="font-semibold text-black text-lg">{{ $post->titulo }}</span>
-                                    @elseif($post->descripcion)
-                                        <!-- Si NO tiene título pero SÍ descripción, descripción va en línea del título -->
-                                        <span class="text-gray-700 text-lg">{{ $post->descripcion }}</span>
-                                    @else
-                                        <span></span> <!-- Espacio para alinear las acciones a la derecha -->
-                                    @endif
-                                    <div class="flex items-center gap-4">
-                                        <livewire:comment-post :post="$post" color="gray" />
-                                        <livewire:like-post :post="$post" color="red" />
-                                    </div>
+                            <!-- Descripción abajo solo si tiene título Y descripción -->
+                            @if($post->titulo && $post->descripcion)
+                                <div class="mb-3">
+                                    <p class="text-gray-700 text-xs sm:text-sm">{{ $post->descripcion }}</p>
                                 </div>
-
-                                <!-- Descripción abajo solo si tiene título Y descripción -->
-                                @if($post->titulo && $post->descripcion)
-                                    <div class="mb-3">
-                                        <p class="text-gray-700 text-sm">{{ $post->descripcion }}</p>
-                                    </div>
-                                @endif
-                            </div>
+                            @endif
                         </div>
 
                         <!-- Formulario oculto para eliminar posts de música -->
@@ -396,50 +369,25 @@
 
                         <!-- Detalles debajo de la imagen -->
                         <div class="w-full px-4 py-3">
-                            <!-- Layout para móviles: título → descripción → acciones -->
-                            <div class="block sm:hidden">
-                                <!-- Título (solo si existe) -->
+                            <!-- Layout unificado para móviles y PC: título y acciones en la misma línea -->
+                            <div class="flex items-center justify-between mb-2">
                                 @if($post->titulo)
-                                    <div class="mb-2">
-                                        <span class="font-semibold text-black text-base">{{ $post->titulo }}</span>
-                                    </div>
+                                    <span class="font-semibold text-black text-base sm:text-lg">{{ $post->titulo }}</span>
+                                @else
+                                    <span></span> <!-- Espacio para alinear las acciones a la derecha -->
                                 @endif
-
-                                <!-- Descripción (solo si existe) -->
-                                @if($post->descripcion)
-                                    <div class="mb-3">
-                                        <p class="text-gray-700 text-xs">{{ $post->descripcion }}</p>
-                                    </div>
-                                @endif
-
-                                <!-- Acciones -->
-                                <div class="flex items-center justify-start gap-4">
+                                <div class="flex items-center gap-4">
                                     <livewire:comment-post :post="$post" color="gray" />
                                     <livewire:like-post :post="$post" color="red" />
                                 </div>
                             </div>
 
-                            <!-- Layout para PC: título y acciones en la misma línea, descripción abajo -->
-                            <div class="hidden sm:block">
-                                <div class="flex items-center justify-between mb-2">
-                                    @if($post->titulo)
-                                        <span class="font-semibold text-black text-lg">{{ $post->titulo }}</span>
-                                    @else
-                                        <span></span> <!-- Espacio para alinear las acciones a la derecha -->
-                                    @endif
-                                    <div class="flex items-center gap-4">
-                                        <livewire:comment-post :post="$post" color="gray" />
-                                        <livewire:like-post :post="$post" color="red" />
-                                    </div>
+                            <!-- Descripción (solo si existe) -->
+                            @if($post->descripcion)
+                                <div class="mb-3">
+                                    <p class="text-gray-700 text-xs sm:text-sm">{{ $post->descripcion }}</p>
                                 </div>
-
-                                <!-- Descripción (solo si existe) -->
-                                @if($post->descripcion)
-                                    <div class="mb-3">
-                                        <p class="text-gray-700 text-sm">{{ $post->descripcion }}</p>
-                                    </div>
-                                @endif
-                            </div>
+                            @endif
                         </div>
 
                         <!-- Formulario oculto para eliminar posts de imagen -->

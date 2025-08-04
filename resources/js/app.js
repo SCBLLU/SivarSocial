@@ -60,11 +60,17 @@ function updateSubmitButton() {
     const submitBtn = document.getElementById('btn-submit');
     let canSubmit = false;
 
+    console.log('updateSubmitButton called, currentPostType:', currentPostType);
+
     // Validación según el tipo de post
     if (currentPostType === 'imagen') {
         const imagenInput = document.querySelector('[name="imagen"]');
         const tituloInput = document.getElementById('titulo');
         const descripcionInput = document.getElementById('descripcion');
+
+        console.log('imagen value:', imagenInput?.value || 'not found');
+        console.log('titulo value:', tituloInput?.value || 'not found');
+        console.log('descripcion value:', descripcionInput?.value || 'not found');
 
         canSubmit = imagenInput && imagenInput.value.trim() !== '' &&
             tituloInput && tituloInput.value.trim() !== '' &&
@@ -74,9 +80,14 @@ function updateSubmitButton() {
         canSubmit = trackIdInput && trackIdInput.value.trim() !== '';
     }
 
+    console.log('canSubmit:', canSubmit);
+
     // Habilitar/deshabilitar botón submit
     if (submitBtn) {
         submitBtn.disabled = !canSubmit;
+        console.log('Button disabled state:', submitBtn.disabled);
+    } else {
+        console.log('Submit button not found');
     }
 }
 
@@ -558,6 +569,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 spotifyShowSuggestions();
             }
         });
+    }
+
+    // Event listeners para campos de formulario para actualizar botón submit
+    const tituloInput = document.getElementById('titulo');
+    const descripcionInput = document.getElementById('descripcion');
+
+    if (tituloInput) {
+        tituloInput.addEventListener('input', updateSubmitButton);
+        tituloInput.addEventListener('keyup', updateSubmitButton);
+        tituloInput.addEventListener('change', updateSubmitButton);
+    }
+
+    if (descripcionInput) {
+        descripcionInput.addEventListener('input', updateSubmitButton);
+        descripcionInput.addEventListener('keyup', updateSubmitButton);
+        descripcionInput.addEventListener('change', updateSubmitButton);
     }
 
     // Inicializar con imagen por defecto
