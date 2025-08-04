@@ -11,15 +11,15 @@
 @section('contenido')
     <div class="max-w-6xl mx-auto">
         <!-- Tabs para seleccionar tipo de post -->
-        @include('components.spotify.post-type-tabs')
+        @include('posts.post-type-tabs')
 
         <div class="md:flex md:items-start md:gap-8">
             <!-- Panel de carga/búsqueda -->
-            @include('components.spotify.post-content-panel')
+            @include('posts.post-content-panel')
 
             <!-- Formulario -->
             <div class="md:w-1/2 p-8 bg-white rounded-2xl shadow-2xl mt-10 md:mt-0">
-                @include('components.spotify.post-form')
+                @include('posts.post-form')
             </div>
         </div>
     </div>

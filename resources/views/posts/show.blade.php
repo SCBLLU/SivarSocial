@@ -22,8 +22,7 @@
                 @if($post->isMusicPost())
                     <!-- Post musical -->
                     <div id="post-container"
-                        class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col min-h-[500px] mt-4 lg:mt-0"
-                        x-data="{ showMusicMenu: false }">
+                        class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col min-h-[500px] mt-4 lg:mt-0">
                         <!-- Header: perfil y username -->
                         <div class="flex items-center w-full px-4 py-3 border-b border-gray-200">
                             <a href="{{ route('posts.index', $post->user->username) }}" class="flex items-center group">
@@ -41,7 +40,7 @@
                                 <!-- Menú de opciones (solo para el propietario) -->
                                 @auth
                                     @if ($post->user_id === Auth::user()->id)
-                                        <div class="relative">
+                                        <div class="relative" x-data="{ showMusicMenu: false }">
                                             <button @click="showMusicMenu = !showMusicMenu"
                                                 class="p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
                                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -92,7 +91,7 @@
                         <div class="w-full p-4 sm:p-6 bg-gradient-to-br from-[#121212] to-[#1a1a1a] relative overflow-hidden">
                             <!-- Fondo decorativo con el color dominante -->
                             <div class="absolute inset-0 opacity-10"
-                                style="background: linear-gradient(135deg, {{ $post->dominant_color ?? '#1DB954' }} 0%, transparent 50%);">
+                                style="background: linear-gradient(135deg, #1DB954 0%, transparent 50%);">
                             </div>
 
                             <!-- Spotify Brand Attribution -->
@@ -140,21 +139,57 @@
 
                         <!-- Detalles debajo del contenido musical -->
                         <div class="w-full px-4 py-3">
-                            <!-- Título del post y botones de interacción en la misma línea -->
-                            <div
-                                class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 gap-2 sm:gap-0">
-                                <span class="font-semibold text-black text-lg">{{ $post->titulo }}</span>
-                                <div class="flex items-center gap-4">
-                                    <!-- Componente de comentarios -->
+                            <!-- Layout para móviles: lógica especial para posts de música -->
+                            <div class="block sm:hidden">
+                                @if($post->titulo)
+                                    <!-- Si tiene título, mostrar título en su línea -->
+                                    <div class="mb-2">
+                                        <span class="font-semibold text-black text-base">{{ $post->titulo }}</span>
+                                    </div>
+                                    <!-- Y descripción abajo si existe -->
+                                    @if($post->descripcion)
+                                        <div class="mb-3">
+                                            <p class="text-gray-700 text-xs">{{ $post->descripcion }}</p>
+                                        </div>
+                                    @endif
+                                @elseif($post->descripcion)
+                                    <!-- Si NO tiene título pero SÍ descripción, descripción va en línea del título -->
+                                    <div class="mb-2">
+                                        <span class="text-gray-700 text-base">{{ $post->descripcion }}</span>
+                                    </div>
+                                @endif
+
+                                <!-- Acciones -->
+                                <div class="flex items-center justify-start gap-4">
                                     <livewire:comment-post :post="$post" color="gray" />
-                                    <!-- Componente de likes -->
                                     <livewire:like-post :post="$post" color="red" />
                                 </div>
                             </div>
 
-                            <!-- Descripción -->
-                            <div class="mb-3">
-                                <p class="text-gray-700 text-sm">{{ $post->descripcion }}</p>
+                            <!-- Layout para PC: lógica especial para posts de música -->
+                            <div class="hidden sm:block">
+                                <div class="flex items-center justify-between mb-2">
+                                    @if($post->titulo)
+                                        <!-- Si tiene título, mostrar solo el título en esta línea -->
+                                        <span class="font-semibold text-black text-lg">{{ $post->titulo }}</span>
+                                    @elseif($post->descripcion)
+                                        <!-- Si NO tiene título pero SÍ descripción, descripción va en línea del título -->
+                                        <span class="text-gray-700 text-lg">{{ $post->descripcion }}</span>
+                                    @else
+                                        <span></span> <!-- Espacio para alinear las acciones a la derecha -->
+                                    @endif
+                                    <div class="flex items-center gap-4">
+                                        <livewire:comment-post :post="$post" color="gray" />
+                                        <livewire:like-post :post="$post" color="red" />
+                                    </div>
+                                </div>
+
+                                <!-- Descripción abajo solo si tiene título Y descripción -->
+                                @if($post->titulo && $post->descripcion)
+                                    <div class="mb-3">
+                                        <p class="text-gray-700 text-sm">{{ $post->descripcion }}</p>
+                                    </div>
+                                @endif
                             </div>
                         </div>
 
@@ -168,11 +203,11 @@
                             @endif
                         @endauth
                     </div>
+
                 @else
                     <!-- Post de imagen -->
                     <div id="post-container"
-                        class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col items-center"
-                        x-data="{ showImageMenu: false }">
+                        class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col items-center">
                         <!-- Header: perfil y username -->
                         <div class="flex items-center w-full px-4 py-3 border-b border-gray-200">
                             <a href="{{ route('posts.index', $post->user->username) }}" class="flex items-center group">
@@ -190,7 +225,7 @@
                                 <!-- Menú de opciones (solo para el propietario) -->
                                 @auth
                                     @if ($post->user_id === Auth::user()->id)
-                                        <div class="relative">
+                                        <div class="relative" x-data="{ showImageMenu: false }">
                                             <button @click="showImageMenu = !showImageMenu"
                                                 class="p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
                                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -245,21 +280,49 @@
 
                         <!-- Detalles debajo de la imagen -->
                         <div class="w-full px-4 py-3">
-                            <!-- Título del post y botones de interacción en la misma línea -->
-                            <div
-                                class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 gap-2 sm:gap-0">
-                                <span class="font-semibold text-black text-lg">{{ $post->titulo }}</span>
-                                <div class="flex items-center gap-4">
-                                    <!-- Componente de comentarios -->
+                            <!-- Layout para móviles: título → descripción → acciones -->
+                            <div class="block sm:hidden">
+                                <!-- Título (solo si existe) -->
+                                @if($post->titulo)
+                                    <div class="mb-2">
+                                        <span class="font-semibold text-black text-base">{{ $post->titulo }}</span>
+                                    </div>
+                                @endif
+
+                                <!-- Descripción (solo si existe) -->
+                                @if($post->descripcion)
+                                    <div class="mb-3">
+                                        <p class="text-gray-700 text-xs">{{ $post->descripcion }}</p>
+                                    </div>
+                                @endif
+
+                                <!-- Acciones -->
+                                <div class="flex items-center justify-start gap-4">
                                     <livewire:comment-post :post="$post" color="gray" />
-                                    <!-- Componente de likes -->
                                     <livewire:like-post :post="$post" color="red" />
                                 </div>
                             </div>
 
-                            <!-- Descripción -->
-                            <div class="mb-3">
-                                <p class="text-gray-700 text-sm">{{ $post->descripcion }}</p>
+                            <!-- Layout para PC: título y acciones en la misma línea, descripción abajo -->
+                            <div class="hidden sm:block">
+                                <div class="flex items-center justify-between mb-2">
+                                    @if($post->titulo)
+                                        <span class="font-semibold text-black text-lg">{{ $post->titulo }}</span>
+                                    @else
+                                        <span></span> <!-- Espacio para alinear las acciones a la derecha -->
+                                    @endif
+                                    <div class="flex items-center gap-4">
+                                        <livewire:comment-post :post="$post" color="gray" />
+                                        <livewire:like-post :post="$post" color="red" />
+                                    </div>
+                                </div>
+
+                                <!-- Descripción (solo si existe) -->
+                                @if($post->descripcion)
+                                    <div class="mb-3">
+                                        <p class="text-gray-700 text-sm">{{ $post->descripcion }}</p>
+                                    </div>
+                                @endif
                             </div>
                         </div>
 

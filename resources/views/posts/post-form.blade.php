@@ -6,7 +6,8 @@
     <!-- Campo de título -->
     <div class="mb-6">
         <label for="titulo" class="mb-2 block uppercase text-gray-500 font-bold text-sm">
-            Título
+            <span id="titulo-label">Título</span>
+            <span id="titulo-optional" class="text-xs text-gray-400 normal-case hidden">(Opcional para música)</span>
         </label>
         <input type="text" id="titulo" name="titulo"
             class="border-2 p-4 w-full rounded-xl text-black focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all {{ $errors->has('titulo') ? 'border-red-500' : 'border-gray-300' }}"
@@ -19,7 +20,9 @@
     <!-- Campo de descripción -->
     <div class="mb-6">
         <label for="descripcion" class="mb-2 block uppercase text-gray-500 font-bold text-sm">
-            Descripción
+            <span id="descripcion-label">Descripción</span>
+            <span id="descripcion-optional" class="text-xs text-gray-400 normal-case hidden">(Opcional para
+                música)</span>
         </label>
         <textarea id="descripcion" name="descripcion" rows="4"
             class="border-2 p-4 w-full rounded-xl text-black focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none {{ $errors->has('descripcion') ? 'border-red-500' : 'border-gray-300' }}"
@@ -46,7 +49,6 @@
         <input name="spotify_album_image" type="hidden" value="{{ old('spotify_album_image') }}">
         <input name="spotify_preview_url" type="hidden" value="{{ old('spotify_preview_url') }}">
         <input name="spotify_external_url" type="hidden" value="{{ old('spotify_external_url') }}">
-        <input name="dominant_color" type="hidden" value="{{ old('dominant_color') }}">
         @error('spotify_track_id')
             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
         @enderror
@@ -235,15 +237,19 @@
 
                     // Validación adicional antes del envío
                     let hasErrors = false;
+                    const tipoPost = document.getElementById('post-tipo').value;
 
-                    if (tituloInput && tituloInput.value.trim() === '') {
-                        tituloInput.classList.add('border-red-500', 'error-shake');
-                        hasErrors = true;
-                    }
+                    // Solo validar título y descripción si es tipo imagen
+                    if (tipoPost === 'imagen') {
+                        if (tituloInput && tituloInput.value.trim() === '') {
+                            tituloInput.classList.add('border-red-500', 'error-shake');
+                            hasErrors = true;
+                        }
 
-                    if (descripcionInput && descripcionInput.value.trim() === '') {
-                        descripcionInput.classList.add('border-red-500', 'error-shake');
-                        hasErrors = true;
+                        if (descripcionInput && descripcionInput.value.trim() === '') {
+                            descripcionInput.classList.add('border-red-500', 'error-shake');
+                            hasErrors = true;
+                        }
                     }
 
                     if (hasErrors) {

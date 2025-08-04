@@ -8,12 +8,6 @@ return [
     
     // Configuración del componente Spotify
     'spotify' => [
-        // Géneros populares que se muestran como sugerencias
-        'popular_genres' => [
-            'Pop', 'Rock', 'Reggaeton', 'Salsa', 'Bachata', 
-            'Electrónica', 'Jazz', 'Hip Hop', 'Cumbia', 'Merengue',
-            'Indie', 'Folk', 'Blues', 'R&B', 'Country', 'Clásica'
-        ],
         
         // Configuración de búsqueda
         'search' => [
@@ -35,14 +29,6 @@ return [
             'show_album_art_overlay' => true
         ],
         
-        // Configuración de colores
-        'colors' => [
-            'primary' => '#10b981',
-            'secondary' => '#065f46',
-            'accent' => '#34d399',
-            'background' => '#111827',
-            'card_background' => '#1f2937'
-        ]
     ],
     
     // Configuración del formulario
