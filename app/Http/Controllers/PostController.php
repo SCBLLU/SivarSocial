@@ -38,20 +38,19 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
-        // Validación base
-        $request->validate([
-            'titulo' => 'required|max:255',
-            'descripcion' => 'required',
-            'tipo' => 'required|in:imagen,musica',
-        ]);
-
         // Validación condicional según el tipo
         if ($request->tipo === 'imagen') {
             $request->validate([
+                'titulo' => 'required|max:255',
+                'descripcion' => 'required',
+                'tipo' => 'required|in:imagen,musica',
                 'imagen' => 'required|string',
             ]);
         } else if ($request->tipo === 'musica') {
             $request->validate([
+                'titulo' => 'nullable|max:255',
+                'descripcion' => 'nullable',
+                'tipo' => 'required|in:imagen,musica',
                 'spotify_track_id' => 'required|string',
                 'spotify_track_name' => 'required|string',
                 'spotify_artist_name' => 'required|string',

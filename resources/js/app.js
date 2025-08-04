@@ -30,9 +30,25 @@ function switchTab(type) {
     if (type === 'imagen') {
         document.getElementById('imagen-fields').classList.remove('hidden');
         document.getElementById('musica-fields').classList.add('hidden');
+        
+        // Ocultar indicadores de opcional
+        document.getElementById('titulo-optional').classList.add('hidden');
+        document.getElementById('descripcion-optional').classList.add('hidden');
+        
+        // Cambiar placeholders para imagen
+        document.getElementById('titulo').placeholder = 'Título de la publicación';
+        document.getElementById('descripcion').placeholder = 'Describe tu publicación...';
     } else {
         document.getElementById('imagen-fields').classList.add('hidden');
         document.getElementById('musica-fields').classList.remove('hidden');
+        
+        // Mostrar indicadores de opcional
+        document.getElementById('titulo-optional').classList.remove('hidden');
+        document.getElementById('descripcion-optional').classList.remove('hidden');
+        
+        // Cambiar placeholders para música
+        document.getElementById('titulo').placeholder = 'Título personalizado (opcional)';
+        document.getElementById('descripcion').placeholder = 'Agrega un comentario sobre esta canción (opcional)...';
     }
 
     // Resetear validación del botón submit
@@ -47,7 +63,12 @@ function updateSubmitButton() {
     // Validación según el tipo de post
     if (currentPostType === 'imagen') {
         const imagenInput = document.querySelector('[name="imagen"]');
-        canSubmit = imagenInput && imagenInput.value.trim() !== '';
+        const tituloInput = document.getElementById('titulo');
+        const descripcionInput = document.getElementById('descripcion');
+        
+        canSubmit = imagenInput && imagenInput.value.trim() !== '' &&
+                   tituloInput && tituloInput.value.trim() !== '' &&
+                   descripcionInput && descripcionInput.value.trim() !== '';
     } else if (currentPostType === 'musica') {
         const trackIdInput = document.querySelector('[name="spotify_track_id"]');
         canSubmit = trackIdInput && trackIdInput.value.trim() !== '';

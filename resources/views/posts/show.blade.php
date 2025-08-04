@@ -139,19 +139,23 @@
 
                         <!-- Detalles debajo del contenido musical -->
                         <div class="w-full px-4 py-3">
-                            <!-- Layout para móviles: título → descripción → acciones -->
+                            <!-- Layout para móviles: lógica especial para posts de música -->
                             <div class="block sm:hidden">
-                                <!-- Título (solo si existe) -->
                                 @if($post->titulo)
+                                    <!-- Si tiene título, mostrar título en su línea -->
                                     <div class="mb-2">
                                         <span class="font-semibold text-black text-base">{{ $post->titulo }}</span>
                                     </div>
-                                @endif
-
-                                <!-- Descripción (solo si existe) -->
-                                @if($post->descripcion)
-                                    <div class="mb-3">
-                                        <p class="text-gray-700 text-xs">{{ $post->descripcion }}</p>
+                                    <!-- Y descripción abajo si existe -->
+                                    @if($post->descripcion)
+                                        <div class="mb-3">
+                                            <p class="text-gray-700 text-xs">{{ $post->descripcion }}</p>
+                                        </div>
+                                    @endif
+                                @elseif($post->descripcion)
+                                    <!-- Si NO tiene título pero SÍ descripción, descripción va en línea del título -->
+                                    <div class="mb-2">
+                                        <span class="text-gray-700 text-base">{{ $post->descripcion }}</span>
                                     </div>
                                 @endif
 
@@ -162,11 +166,15 @@
                                 </div>
                             </div>
 
-                            <!-- Layout para PC: título y acciones en la misma línea, descripción abajo -->
+                            <!-- Layout para PC: lógica especial para posts de música -->
                             <div class="hidden sm:block">
                                 <div class="flex items-center justify-between mb-2">
                                     @if($post->titulo)
+                                        <!-- Si tiene título, mostrar solo el título en esta línea -->
                                         <span class="font-semibold text-black text-lg">{{ $post->titulo }}</span>
+                                    @elseif($post->descripcion)
+                                        <!-- Si NO tiene título pero SÍ descripción, descripción va en línea del título -->
+                                        <span class="text-gray-700 text-lg">{{ $post->descripcion }}</span>
                                     @else
                                         <span></span> <!-- Espacio para alinear las acciones a la derecha -->
                                     @endif
@@ -176,8 +184,8 @@
                                     </div>
                                 </div>
 
-                                <!-- Descripción (solo si existe) -->
-                                @if($post->descripcion)
+                                <!-- Descripción abajo solo si tiene título Y descripción -->
+                                @if($post->titulo && $post->descripcion)
                                     <div class="mb-3">
                                         <p class="text-gray-700 text-sm">{{ $post->descripcion }}</p>
                                     </div>
