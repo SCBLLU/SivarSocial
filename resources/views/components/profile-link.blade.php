@@ -13,7 +13,7 @@
     </div>
 
     {{-- Imagen de perfil --}}
-    <img src="{{ $user->imagen ? asset('perfiles/' . $user->imagen) : asset('img/usuario.svg') }}"
+    <img src="{{ $user->imagen ? asset('perfiles/' . $user->imagen) : asset('img/img.jpg') }}"
         alt="Avatar de {{ $user->username }}"
         class="w-9 h-9 rounded-full object-cover border-2 border-[#3B25DD] cursor-pointer">
 </a>

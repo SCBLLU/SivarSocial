@@ -6,7 +6,7 @@
                 <div class="bg-white rounded-xl shadow-sm mb-3 sm:mb-4 w-full max-w-lg mx-auto">
                     <div class="flex items-center justify-between p-3 sm:p-6">
                         <a href="{{ route('posts.index', $user) }}" class="flex items-center group flex-1">
-                            <img src="{{ $user->imagen ? asset('perfiles/' . $user->imagen) : asset('img/usuario.svg') }}"
+                            <img src="{{ $user->imagen ? asset('perfiles/' . $user->imagen) : asset('img/img.jpg') }}"
                                 alt="Avatar de {{ $user->username }}"
                                 class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-transparent group-hover:border-[#3B25DD] transition">
                             <div class="ml-3 sm:ml-4">

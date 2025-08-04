@@ -61,22 +61,22 @@ function updateSubmitButton() {
 
 // FUNCIONES DE SPOTIFY
 
-// Adapter para búsqueda de Spotify
+// Variables globales para Spotify
+let spotifyCurrentTracks = [];
+let spotifySelectedTrack = null;
+let spotifySearchDebounce = null;
+
+// Función principal para búsqueda de Spotify
 async function searchSpotify(query) {
+    if (!query || query.trim() === '') {
+        spotifyShowSuggestions();
+        return;
+    }
 
-    // Mostrar loader de búsqueda
-    const resultsContainer = document.getElementById('search-results');
-    if (!resultsContainer) return;
-
-    resultsContainer.innerHTML = `
-        <div class="flex items-center justify-center py-6 bg-black rounded-lg">
-            <div class="loader mr-2"></div>
-            <span class="text-white text-sm">Buscando...</span>
-        </div>
-    `;
-
-    // Realizar petición al backend
     try {
+        // Mostrar loader
+        spotifyShowLoader();
+
         const response = await fetch(`/spotify/search?query=${encodeURIComponent(query)}`, {
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
@@ -85,50 +85,22 @@ async function searchSpotify(query) {
 
         const data = await response.json();
         if (response.ok && data.tracks) {
-            displaySearchResults(data.tracks.items);
+            spotifyCurrentTracks = data.tracks.items;
+            spotifyDisplayResults(data.tracks.items);
+        } else {
+            spotifyShowError('No se encontraron resultados');
         }
     } catch (error) {
         console.error('Error en búsqueda:', error);
-        showNotification('Error al buscar en Spotify', 'error');
+        spotifyShowError('Error al buscar en Spotify');
     }
 }
 
-// Adapter para mostrar resultados de búsqueda
-function displaySearchResults(tracks) {
-    // JS para mostrar resultados de búsqueda de Spotify
-    const resultsContainer = document.getElementById('search-results');
-    if (!resultsContainer || !tracks) return;
-
-    // Renderizar cada track como tarjeta
-    resultsContainer.innerHTML = tracks.map(track => `
-        <div class="spotify-track-card bg-black border border-gray-600 rounded-lg p-3 cursor-pointer" 
-             onclick="selectTrack(${JSON.stringify(track).replace(/"/g, '&quot;')})">
-            <div class="flex items-center gap-3">
-                <img src="${track.image || '/img/usuario.svg'}" class="w-12 h-12 rounded object-cover">
-                <div class="flex-1">
-                    <h4 class="text-white font-medium">${track.name}</h4>
-                    <p class="text-gray-400 text-sm">${track.artist}</p>
-                </div>
-            </div>
-        </div>
-    `).join('');
-
-    // Añadir listeners para seleccionar track
-    resultsContainer.querySelectorAll('.spotify-track-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const track = JSON.parse(card.querySelector('.spotify-track-card').getAttribute('onclick').match(/selectTrack\((.*?)\)/)[1]);
-            selectTrack(track);
-        });
-    });
-}
-
-// Adapter para seleccionar track
-async function selectTrack(track) {
-    if (window.spotifyModule) {
-        return window.spotifyModule.selectTrack(track);
-    }
-
-    // JS para seleccionar un track de Spotify
+// Función para seleccionar track
+function spotifySelectTrack(track) {
+    spotifySelectedTrack = track;
+    
+    // Actualizar campos del formulario
     const fields = {
         'spotify_track_id': track.id,
         'spotify_track_name': track.name,
@@ -139,97 +111,85 @@ async function selectTrack(track) {
         'spotify_external_url': track.external_url || ''
     };
 
-    // Asignar valores a los inputs del formulario
     Object.entries(fields).forEach(([name, value]) => {
         const input = document.querySelector(`[name="${name}"]`);
         if (input) input.value = value;
     });
 
-    // Mostrar selección en el panel
-    const container = document.getElementById('selected-track');
-    if (container) {
-        container.innerHTML = `
-            <div class="flex items-center gap-3">
-                <img src="${track.image || '/img/usuario.svg'}" class="w-12 h-12 rounded object-cover">
-                <div class="flex-1">
-                    <h4 class="text-white font-medium">${track.name}</h4>
-                    <p class="text-gray-400 text-sm">${track.artist}</p>
-                    <p class="text-gray-500 text-xs">${track.album}</p>
-                </div>
-                <button class="text-red-500 hover:underline" onclick="clearSelectedTrack()">Eliminar selección</button>
-            </div>
-        `;
-    }
+    // Disparar eventos personalizados para que el componente Blade los maneje
+    document.dispatchEvent(new CustomEvent('spotify:trackSelected', {
+        detail: { track }
+    }));
 
-    // Limpiar resultados y campo de búsqueda
-    document.getElementById('search-results').innerHTML = '';
-    document.getElementById('spotify-search').value = '';
-
+    // Limpiar búsqueda
+    spotifyClearSearch();
+    
     showNotification(`${track.name} seleccionada`, 'success');
     updateSubmitButton();
 }
 
-// Adapter para reproducir preview de Spotify
-function togglePreview(previewUrl, button) {
-    if (window.spotifyModule) {
-        return window.spotifyModule.togglePreview(previewUrl, button);
-    }
-
-    // Fallback temporal - implementación básica
-    console.log('Toggle preview fallback:', previewUrl);
-    showNotification('Función de reproducción en desarrollo', 'info');
+// Función para mostrar loader
+function spotifyShowLoader() {
+    document.dispatchEvent(new CustomEvent('spotify:showLoader'));
 }
 
-// Función para limpiar selección de track
-window.clearSelectedTrack = function () {
-    if (window.spotifyModule) {
-        return window.spotifyModule.clearSelectedTrack();
-    }
+// Función para mostrar resultados
+function spotifyDisplayResults(tracks) {
+    document.dispatchEvent(new CustomEvent('spotify:displayResults', {
+        detail: { tracks }
+    }));
+}
 
-    // JS para limpiar selección de track de Spotify
-    document.getElementById('selected-track').innerHTML = '';
+// Función para mostrar sugerencias
+function spotifyShowSuggestions() {
+    document.dispatchEvent(new CustomEvent('spotify:showSuggestions'));
+}
+
+// Función para mostrar error
+function spotifyShowError(message) {
+    document.dispatchEvent(new CustomEvent('spotify:showError', {
+        detail: { message }
+    }));
+    showNotification(message, 'error');
+}
+
+// Función para limpiar búsqueda
+function spotifyClearSearch() {
+    document.getElementById('spotify-search').value = '';
+    document.dispatchEvent(new CustomEvent('spotify:clearSearch'));
+}
+
+// Función para limpiar selección
+function spotifyClearSelection() {
+    spotifySelectedTrack = null;
+    
     const fieldNames = [
         'spotify_track_id', 'spotify_track_name', 'spotify_artist_name',
         'spotify_album_name', 'spotify_album_image', 'spotify_preview_url',
         'spotify_external_url', 'dominant_color'
     ];
 
-    // Limpiar todos los campos relacionados
     fieldNames.forEach(name => {
         const input = document.querySelector(`[name="${name}"]`);
         if (input) input.value = '';
     });
 
+    document.dispatchEvent(new CustomEvent('spotify:trackCleared'));
     updateSubmitButton();
     showNotification('Selección eliminada', 'info');
-};
-
-// Función para mostrar sugerencias de búsqueda por género
-function showSearchSuggestions() {
-    if (window.spotifyModule) {
-        return window.spotifyModule.showSearchSuggestions();
-    }
-
-    const resultsContainer = document.getElementById('search-results');
-    if (!resultsContainer) return;
-
-    const genres = ['Pop', 'Hip-Hop', 'Reggaeton', 'Salsa', 'Bachata', 'Rock'];
-
-    // Renderizar botones de géneros
-    resultsContainer.innerHTML = `
-        <div class="bg-black p-4 rounded-lg">
-            <h4 class="text-white font-medium mb-2">Explorar por género</h4>
-            <div class="grid grid-cols-2 gap-2">
-                ${genres.map(genre => `
-                    <button onclick="performSearch('${genre}')" 
-                            class="p-2 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg text-white">
-                        ${genre}
-                    </button>
-                `).join('')}
-            </div>
-        </div>
-    `;
 }
+
+// Función para reproducir preview
+function spotifyTogglePreview(previewUrl, trackId) {
+    // Aquí se implementaría la lógica del reproductor
+    console.log('Toggle preview:', previewUrl, trackId);
+    showNotification('Función de reproducción en desarrollo', 'info');
+}
+
+// Función para limpiar selección de track
+window.clearSelectedTrack = function () {
+    spotifyClearSelection();
+};
 
 // Función para realizar búsqueda desde sugerencias
 window.performSearch = function (query) {
@@ -300,12 +260,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // Event listener para búsqueda de Spotify con debounce
     const spotifySearch = document.getElementById('spotify-search');
     if (spotifySearch) {
-        let searchTimeout;
-
         // Buscar con retardo al escribir
         spotifySearch.addEventListener('input', function (e) {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
+            clearTimeout(spotifySearchDebounce);
+            spotifySearchDebounce = setTimeout(() => {
                 searchSpotify(e.target.value.trim());
             }, 500);
         });
@@ -313,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Mostrar sugerencias al enfocar si el campo está vacío
         spotifySearch.addEventListener('focus', function (e) {
             if (!e.target.value.trim()) {
-                showSearchSuggestions();
+                spotifyShowSuggestions();
             }
         });
     }
@@ -421,7 +379,8 @@ if (document.getElementById('dropzone-register')) {
 }
 
 // Exponer funciones globales para compatibilidad con componentes
-window.selectTrack = selectTrack;
-window.togglePreview = togglePreview;
+window.selectTrack = spotifySelectTrack;
+window.togglePreview = spotifyTogglePreview;
 window.showNotification = showNotification;
+window.searchSpotify = searchSpotify;
 

@@ -43,7 +43,7 @@
 
                                 <!-- Imagen del álbum con esquinas redondeadas según lineamientos -->
                                 <div class="relative flex-shrink-0">
-                                    <img src="{{ $post->spotify_album_image ?? asset('img/usuario.svg') }}"
+                                    <img src="{{ $post->spotify_album_image ?? asset('img/img.jpg') }}"
                                         alt="{{ $post->spotify_album_name }}"
                                         class="w-16 h-16 sm:w-20 sm:h-20 rounded-[4px] object-cover shadow-lg">
                                 </div>
