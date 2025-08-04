@@ -79,7 +79,6 @@ class PostController extends Controller
             $postData['spotify_album_image'] = $request->spotify_album_image;
             $postData['spotify_preview_url'] = $request->spotify_preview_url;
             $postData['spotify_external_url'] = $request->spotify_external_url;
-            $postData['dominant_color'] = $request->dominant_color ?? '#1DB954';
         }
 
         Post::create($postData);

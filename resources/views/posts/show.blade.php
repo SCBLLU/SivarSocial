@@ -92,7 +92,7 @@
                         <div class="w-full p-4 sm:p-6 bg-gradient-to-br from-[#121212] to-[#1a1a1a] relative overflow-hidden">
                             <!-- Fondo decorativo con el color dominante -->
                             <div class="absolute inset-0 opacity-10"
-                                style="background: linear-gradient(135deg, {{ $post->dominant_color ?? '#1DB954' }} 0%, transparent 50%);">
+                                style="background: linear-gradient(135deg, #1DB954 0%, transparent 50%);">
                             </div>
 
                             <!-- Spotify Brand Attribution -->

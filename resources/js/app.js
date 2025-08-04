@@ -166,7 +166,7 @@ function spotifyClearSelection() {
     const fieldNames = [
         'spotify_track_id', 'spotify_track_name', 'spotify_artist_name',
         'spotify_album_name', 'spotify_album_image', 'spotify_preview_url',
-        'spotify_external_url', 'dominant_color'
+        'spotify_external_url'
     ];
 
     fieldNames.forEach(name => {

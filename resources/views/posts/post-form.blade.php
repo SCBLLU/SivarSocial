@@ -46,7 +46,6 @@
         <input name="spotify_album_image" type="hidden" value="{{ old('spotify_album_image') }}">
         <input name="spotify_preview_url" type="hidden" value="{{ old('spotify_preview_url') }}">
         <input name="spotify_external_url" type="hidden" value="{{ old('spotify_external_url') }}">
-        <input name="dominant_color" type="hidden" value="{{ old('dominant_color') }}">
         @error('spotify_track_id')
             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
         @enderror
