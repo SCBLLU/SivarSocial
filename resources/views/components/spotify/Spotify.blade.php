@@ -22,7 +22,9 @@
             </div>
             <input type="text" id="spotify-search"
                 class="w-full pl-12 pr-12 py-3 bg-gray-900 border border-gray-700 text-white rounded-full placeholder-gray-400 focus:outline-none focus:border-white focus:bg-gray-800 transition-all duration-200"
-                placeholder="¿Qué quieres compartir?" autocomplete="off">
+                placeholder="¿Qué quieres compartir?" autocomplete="off"
+                @focus="handleInputFocus()"
+                @blur="handleInputBlur()">
         </div>
 
         <!-- Contenedor de resultados dinámico -->
@@ -30,7 +32,7 @@
             class="max-h-96 overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
             
             <!-- Estado inicial: Sugerencias de géneros -->
-            <div x-show="currentState === 'suggestions'" x-transition>
+            <div x-show="shouldShowSuggestions()" x-transition>
                 @include('components.spotify.Sugerencias', [
                     'genres' => [
                         'Pop', 'Hip Hop', 'Rock', 'Reggaeton',
@@ -138,6 +140,7 @@ function spotifyComponent() {
         searchResults: [],
         selectedTrack: null,
         errorMessage: '',
+        inputFocused: false,
         
         init() {
             // Escuchar eventos personalizados del JavaScript
@@ -173,6 +176,27 @@ function spotifyComponent() {
                 this.currentState = 'suggestions';
                 this.searchResults = [];
             });
+        },
+        
+        handleInputFocus() {
+            this.inputFocused = true;
+        },
+        
+        handleInputBlur() {
+            // Pequeño delay para permitir clicks en sugerencias
+            setTimeout(() => {
+                this.inputFocused = false;
+            }, 150);
+        },
+        
+        shouldShowSuggestions() {
+            // Mostrar sugerencias solo si:
+            // 1. El estado actual es 'suggestions'
+            // 2. El input está enfocado
+            // 3. No hay una canción seleccionada
+            return this.currentState === 'suggestions' && 
+                   this.inputFocused && 
+                   !this.selectedTrack;
         },
         
         selectTrack(track) {
