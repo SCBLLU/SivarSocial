@@ -111,16 +111,40 @@
                                     @endif
                                 </div>
 
-                                @if(($isItunes && $post->itunes_track_view_url) || (!$isItunes && $post->spotify_external_url))
-                                    <a href="{{ $isItunes ? $post->itunes_track_view_url : $post->spotify_external_url }}"
-                                        target="_blank"
-                                        class="px-4 py-2 rounded-full text-xs font-medium
-                                                                            {{ $isItunes ? 'bg-white text-black hover:bg-gray-100' : 'bg-[#1DB954] text-white hover:bg-green-700' }}">
-                                        {{ $isItunes ? 'Abrir Apple Music' : 'Abrir Spotify' }}
-                                    </a>
-                                @endif
-                            </div>
+                                <!-- Botones para ambas plataformas -->
+                                <div class="flex flex-wrap gap-2 justify-center">
+                                    @if($post->hasAppleMusicLink())
+                                        <a href="{{ $post->getAppleMusicUrl() }}" target="_blank"
+                                            class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs font-medium bg-white text-black hover:bg-gray-100 transition-colors flex items-center gap-1">
+                                            <i class="fa-brands fa-apple text-sm"></i>
+                                            <span class="hidden sm:inline">Apple Music</span>
+                                            <span class="sm:hidden">Apple</span>
+                                        </a>
+                                    @endif
 
+                                    @if($post->hasSpotifyLink())
+                                        <a href="{{ $post->getSpotifyUrl() }}" target="_blank"
+                                            class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs font-medium bg-[#1DB954] text-white hover:bg-green-700 transition-colors flex items-center gap-1">
+                                            <i class="fa-brands fa-spotify text-sm"></i>
+                                            <span class="hidden sm:inline">Spotify</span>
+                                            <span class="sm:hidden">Spotify</span>
+                                        </a>
+                                    @endif
+
+                                    @if(!$post->hasAppleMusicLink() && !$post->hasSpotifyLink())
+                                        <!-- Fallback: mostrar el botón original si no hay enlaces cruzados -->
+                                        @if(($isItunes && $post->itunes_track_view_url) || (!$isItunes && $post->spotify_external_url))
+                                            <a href="{{ $isItunes ? $post->itunes_track_view_url : $post->spotify_external_url }}"
+                                                target="_blank"
+                                                class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs font-medium
+                                                    {{ $isItunes ? 'bg-white text-black hover:bg-gray-100' : 'bg-[#1DB954] text-white hover:bg-green-700' }}">
+                                                {{ $isItunes ? 'Abrir Apple Music' : 'Abrir Spotify' }}
+                                            </a>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            
                             <!-- Contenido principal de la canción -->
                             <div class="relative z-10 space-y-4 sm:space-y-6">
                                 @php

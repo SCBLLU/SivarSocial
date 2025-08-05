@@ -103,6 +103,18 @@ class PostController extends Controller
                 $postData['itunes_track_time_millis'] = $request->itunes_track_time_millis;
                 $postData['itunes_country'] = $request->itunes_country;
                 $postData['itunes_primary_genre_name'] = $request->itunes_primary_genre_name;
+                
+                // Generar enlaces cruzados a Spotify para canciones de iTunes
+                $searchTerms = \App\Services\CrossPlatformMusicService::cleanSearchTerms(
+                    $request->itunes_artist_name, 
+                    $request->itunes_track_name
+                );
+                $postData['artist_search_term'] = $searchTerms['artist'];
+                $postData['track_search_term'] = $searchTerms['track'];
+                $postData['spotify_web_url'] = \App\Services\CrossPlatformMusicService::generateSpotifySearchUrl(
+                    $searchTerms['artist'], 
+                    $searchTerms['track']
+                );
             }
             
             // Campos Spotify (mantener para compatibilidad)
@@ -114,6 +126,18 @@ class PostController extends Controller
                 $postData['spotify_album_image'] = $request->spotify_album_image;
                 $postData['spotify_preview_url'] = $request->spotify_preview_url;
                 $postData['spotify_external_url'] = $request->spotify_external_url;
+                
+                // Generar enlaces cruzados a Apple Music para canciones de Spotify
+                $searchTerms = \App\Services\CrossPlatformMusicService::cleanSearchTerms(
+                    $request->spotify_artist_name, 
+                    $request->spotify_track_name
+                );
+                $postData['artist_search_term'] = $searchTerms['artist'];
+                $postData['track_search_term'] = $searchTerms['track'];
+                $postData['apple_music_url'] = \App\Services\CrossPlatformMusicService::generateAppleMusicSearchUrl(
+                    $searchTerms['artist'], 
+                    $searchTerms['track']
+                );
             }
         }
 

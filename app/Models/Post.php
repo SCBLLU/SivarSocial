@@ -36,7 +36,12 @@ class Post extends Model
         'itunes_track_time_millis',
         'itunes_country',
         'itunes_primary_genre_name',
-        'music_source'
+        'music_source',
+        // Campos para enlaces cruzados entre plataformas
+        'apple_music_url',
+        'spotify_web_url',
+        'artist_search_term',
+        'track_search_term'
     ];
 
     public function user()
@@ -160,5 +165,48 @@ class Post extends Model
         return $this->music_source === 'itunes' 
             ? $this->itunes_primary_genre_name 
             : null;
+    }
+
+    /**
+     * Obtener URL de Apple Music (prioriza el campo específico, luego el campo original de iTunes)
+     */
+    public function getAppleMusicUrl()
+    {
+        return $this->apple_music_url ?: $this->itunes_track_view_url;
+    }
+
+    /**
+     * Obtener URL de Spotify (prioriza el campo específico, luego el campo original de Spotify)
+     */
+    public function getSpotifyUrl()
+    {
+        return $this->spotify_web_url ?: $this->spotify_external_url;
+    }
+
+    /**
+     * Verificar si tiene enlace a Apple Music disponible
+     */
+    public function hasAppleMusicLink()
+    {
+        return !empty($this->getAppleMusicUrl());
+    }
+
+    /**
+     * Verificar si tiene enlace a Spotify disponible  
+     */
+    public function hasSpotifyLink()
+    {
+        return !empty($this->getSpotifyUrl());
+    }
+
+    /**
+     * Obtener términos de búsqueda para plataformas cruzadas
+     */
+    public function getSearchTerms()
+    {
+        return [
+            'artist' => $this->artist_search_term ?: $this->getArtistName(),
+            'track' => $this->track_search_term ?: $this->getTrackName()
+        ];
     }
 }
