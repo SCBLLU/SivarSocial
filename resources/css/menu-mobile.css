@@ -1438,9 +1438,6 @@ i.bx.bx-search-alt-2 {
   left: 0;
   width: 4.2rem; /*4.4rem*/
   height: 4rem; /*4.2rem*/
-  background: var(--accent);
-  background: -moz-linear-gradient(315deg, var(--accent) 0%, var(--secondary) 100%);
-  background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
   -moz-border-radius: 2rem;
        border-radius: 2rem;
   -webkit-transform: scale3d(1, 1, 1);

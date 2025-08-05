@@ -22,7 +22,8 @@
 
                 <!-- Columna 3: Perfiles a la derecha con altura igual a posts -->
                 <div class="w-full h-full  lg:flex lg:flex-col">
-                    <div id="users-container" class="perfilfor-pos flex flex-col p-4 bg-white shadow-lg rounded-2xl h-full max-h-[600px]">
+                    <div id="users-container"
+                        class="perfilfor-pos flex flex-col p-4 bg-white shadow-lg rounded-2xl h-full max-h-[600px]">
                         <h2
                             class="flex items-center justify-center flex-shrink-0 gap-2 mb-4 text-xl font-bold text-purple-700">
                             Perfiles
@@ -30,34 +31,37 @@
                         </h2>
 
                         @auth
-                        @php
-                            // Detectar si estás en tu propio perfil
-                            $currentRoute = request()->route();
-                            $isProfile = false;
+                            @php
+                                // Detectar si estás en tu propio perfil
+                                $currentRoute = request()->route();
+                                $isProfile = false;
 
-                            if ($currentRoute && $currentRoute->getName() === 'posts.index') {
-                                $routeUser = $currentRoute->parameter('user');
-                                if ($routeUser && $routeUser->username === Auth::user()->username) {
-                                    $isProfile = true;
+                                if ($currentRoute && $currentRoute->getName() === 'posts.index') {
+                                    $routeUser = $currentRoute->parameter('user');
+                                    if ($routeUser && $routeUser->username === Auth::user()->username) {
+                                        $isProfile = true;
+                                    }
                                 }
-                            }
-                        @endphp
-                          @if ($isProfile)
-
-                          @else
-                          <div class="bg-white rounded-xl shadow-sm mb-3 sm:mb-4 w-full max-w-lg mx-auto">
-                            <div class="flex items-center p-2" onclick="activarInput()" style="padding-left: 15px;     height: 40px;">
-                                <i class="bx bx-search-alt-2"></i>
-                                <div class="flex-shrink-0 buscar-input">
-                                   <input type="text" id="buscar2" name="buscaru" placeholder="Buscar" >
-                                </div>
-                            </div>
-                          </div>
-                          @endif
+                            @endphp
                         @endauth
 
-
                         <hr class="border-gray-300 mb-4 w-[80%] mx-auto">
+
+                        @auth
+                            @if (!$isProfile)
+                                <div class="bg-white rounded-full shadow-sm mb-3 sm:mb-4 w-full mx-auto">
+                                    <div class="flex items-center p-2" onclick="activarInput()"
+                                        style="padding-left: 15px; height: 40px;">
+                                        <i class="bx bx-search-alt-2"></i>
+                                        <div class="flex-shrink-0 buscar-input">
+                                            <input type="text" id="buscar2" name="buscaru" placeholder="Buscar"
+                                                class="rounded-full px-3 py-1">
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endauth
+
                         <div id="resultados-busqueda2" class="flex-1 overflow-y-auto scrollbar-purple min-h-0">
                             @component('components.listar-perfiles', ['users' => $users])
                             @endcomponent
@@ -120,13 +124,13 @@
 
         /* Optimización específica para la paginación en el grid */
         #posts-container {
-            min-height: 70vh; /* Asegurar altura mínima */
+            min-height: 70vh;
             display: flex;
             flex-direction: column;
         }
 
         /* Asegurar que la paginación se mantenga en la parte inferior */
-        #posts-container > div:last-child {
+        #posts-container>div:last-child {
             margin-top: auto;
         }
 
