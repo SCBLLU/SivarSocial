@@ -36,6 +36,9 @@ input[type="password"] {
 #spotify-search {
     color: #ffffff !important;
 }
+#itunes-search {
+    color: #ffffff !important;
+}
 
 /* Mejores estilos para el modal */
 .modal-backdrop {

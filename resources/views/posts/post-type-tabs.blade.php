@@ -12,8 +12,8 @@
             :class="tab === 'musica' ? 'bg-white text-black border border-white' : 'bg-black text-white hover:bg-gray-900 border border-gray-700'"
             class="tab-button px-6 py-3 rounded-xl font-semibold text-sm flex items-center gap-2 transition-colors duration-200"
             @click="tab = 'musica'">
-            <i class="fab fa-spotify text-xl"></i>
-            Spotify
+            <i class="fas fa-music text-xl"></i>
+            Música
         </button>
     </div>
 </div>
