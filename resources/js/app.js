@@ -30,22 +30,22 @@ function switchTab(type) {
     if (type === 'imagen') {
         document.getElementById('imagen-fields').classList.remove('hidden');
         document.getElementById('musica-fields').classList.add('hidden');
-        
+
         // Ocultar indicadores de opcional
         document.getElementById('titulo-optional').classList.add('hidden');
         document.getElementById('descripcion-optional').classList.add('hidden');
-        
+
         // Cambiar placeholders para imagen
         document.getElementById('titulo').placeholder = 'Título de la publicación';
         document.getElementById('descripcion').placeholder = 'Describe tu publicación...';
     } else {
         document.getElementById('imagen-fields').classList.add('hidden');
         document.getElementById('musica-fields').classList.remove('hidden');
-        
+
         // Mostrar indicadores de opcional
         document.getElementById('titulo-optional').classList.remove('hidden');
         document.getElementById('descripcion-optional').classList.remove('hidden');
-        
+
         // Cambiar placeholders para música
         document.getElementById('titulo').placeholder = 'Título personalizado (opcional)';
         document.getElementById('descripcion').placeholder = 'Agrega un comentario sobre esta canción (opcional)...';
@@ -60,76 +60,168 @@ function updateSubmitButton() {
     const submitBtn = document.getElementById('btn-submit');
     let canSubmit = false;
 
+    console.log('updateSubmitButton called, currentPostType:', currentPostType);
+
     // Validación según el tipo de post
     if (currentPostType === 'imagen') {
         const imagenInput = document.querySelector('[name="imagen"]');
         const tituloInput = document.getElementById('titulo');
         const descripcionInput = document.getElementById('descripcion');
-        
+
+        console.log('imagen value:', imagenInput?.value || 'not found');
+        console.log('titulo value:', tituloInput?.value || 'not found');
+        console.log('descripcion value:', descripcionInput?.value || 'not found');
+
         canSubmit = imagenInput && imagenInput.value.trim() !== '' &&
-                   tituloInput && tituloInput.value.trim() !== '' &&
-                   descripcionInput && descripcionInput.value.trim() !== '';
+            tituloInput && tituloInput.value.trim() !== '' &&
+            descripcionInput && descripcionInput.value.trim() !== '';
     } else if (currentPostType === 'musica') {
-        const trackIdInput = document.querySelector('[name="spotify_track_id"]');
+        const trackIdInput = document.querySelector('[name="itunes_track_id"]');
         canSubmit = trackIdInput && trackIdInput.value.trim() !== '';
     }
+
+    console.log('canSubmit:', canSubmit);
 
     // Habilitar/deshabilitar botón submit
     if (submitBtn) {
         submitBtn.disabled = !canSubmit;
+        console.log('Button disabled state:', submitBtn.disabled);
+    } else {
+        console.log('Submit button not found');
     }
 }
 
-// FUNCIONES DE SPOTIFY
+// REPRODUCTOR DE AUDIO GLOBAL
 
-// Variables globales para Spotify
-let spotifyCurrentTracks = [];
-let spotifySelectedTrack = null;
-let spotifySearchDebounce = null;
+let currentAudio = null;
+let currentTrackId = null;
 
-// Función principal para búsqueda de Spotify
-async function searchSpotify(query) {
+// Función global para reproducir previews de audio
+function toggleAudioPreview(previewUrl, trackId, source) {
+    // Si ya hay un audio reproduciéndose
+    if (currentAudio && !currentAudio.paused) {
+        // Si es el mismo track, pausar
+        if (currentTrackId === trackId) {
+            currentAudio.pause();
+            updatePlayButton(currentTrackId, false);
+            currentTrackId = null;
+            return;
+        } else {
+            // Si es diferente track, parar el actual
+            currentAudio.pause();
+            updatePlayButton(currentTrackId, false);
+        }
+    }
+
+    // Crear nuevo audio
+    currentAudio = new Audio(previewUrl);
+    currentTrackId = trackId;
+
+    // Configurar eventos
+    currentAudio.addEventListener('loadstart', () => {
+    });
+
+    currentAudio.addEventListener('canplay', () => {
+        updatePlayButton(trackId, true);
+        currentAudio.play().catch(error => {
+            console.error('Error al reproducir:', error);
+            showNotification('Error al reproducir el preview', 'error');
+        });
+    });
+
+    currentAudio.addEventListener('ended', () => {
+        updatePlayButton(trackId, false);
+        currentTrackId = null;
+    });
+
+    currentAudio.addEventListener('error', () => {
+        showNotification('Error al cargar el preview', 'error');
+        updatePlayButton(trackId, false);
+        currentTrackId = null;
+    });
+
+    // Cargar audio
+    currentAudio.load();
+}
+
+// Función para actualizar el estado visual del botón de play
+function updatePlayButton(trackId, isPlaying) {
+    const playIcon = document.querySelector(`.play-icon-${trackId}`);
+    const pauseIcon = document.querySelector(`.pause-icon-${trackId}`);
+
+    if (playIcon && pauseIcon) {
+        if (isPlaying) {
+            playIcon.classList.add('hidden');
+            pauseIcon.classList.remove('hidden');
+        } else {
+            playIcon.classList.remove('hidden');
+            pauseIcon.classList.add('hidden');
+        }
+    }
+
+    // Emitir evento para Alpine.js
+    document.dispatchEvent(new CustomEvent('audioStateChanged', {
+        detail: {
+            isPlaying: isPlaying,
+            trackId: isPlaying ? trackId : null
+        }
+    }));
+}
+
+// FUNCIONES DE iTUNES
+
+// Variables globales para iTunes
+let itunesCurrentTracks = [];
+let itunesSelectedTrack = null;
+let itunesSearchDebounce = null;
+
+// Función principal para búsqueda de iTunes
+async function searchiTunes(query) {
     if (!query || query.trim() === '') {
-        spotifyShowSuggestions();
+        itunesShowSuggestions();
         return;
     }
 
     try {
         // Mostrar loader
-        spotifyShowLoader();
+        itunesShowLoader();
 
-        const response = await fetch(`/spotify/search?query=${encodeURIComponent(query)}`, {
+        const response = await fetch(`/itunes/search?query=${encodeURIComponent(query)}`, {
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
         });
 
         const data = await response.json();
-        if (response.ok && data.tracks) {
-            spotifyCurrentTracks = data.tracks.items;
-            spotifyDisplayResults(data.tracks.items);
+        if (response.ok && data.results) {
+            itunesCurrentTracks = data.results;
+            itunesDisplayResults(data.results);
         } else {
-            spotifyShowError('No se encontraron resultados');
+            itunesShowError('No se encontraron resultados');
         }
     } catch (error) {
         console.error('Error en búsqueda:', error);
-        spotifyShowError('Error al buscar en Spotify');
+        itunesShowError('Error al buscar');
     }
 }
 
-// Función para seleccionar track
-function spotifySelectTrack(track) {
-    spotifySelectedTrack = track;
-    
+// Función para seleccionar track de iTunes
+function itunesSelectTrack(track) {
+    itunesSelectedTrack = track;
+
     // Actualizar campos del formulario
     const fields = {
-        'spotify_track_id': track.id,
-        'spotify_track_name': track.name,
-        'spotify_artist_name': track.artist,
-        'spotify_album_name': track.album,
-        'spotify_album_image': track.image || '',
-        'spotify_preview_url': track.preview_url || '',
-        'spotify_external_url': track.external_url || ''
+        'music_source': 'itunes',
+        'itunes_track_id': track.trackId,
+        'itunes_track_name': track.trackName,
+        'itunes_artist_name': track.artistName,
+        'itunes_collection_name': track.collectionName,
+        'itunes_artwork_url': track.artworkUrlHigh || track.artworkUrl100 || '',
+        'itunes_preview_url': track.previewUrl || '',
+        'itunes_track_view_url': track.trackViewUrl || '',
+        'itunes_track_time_millis': track.trackTimeMillis || 0,
+        'itunes_country': track.country || 'US',
+        'itunes_primary_genre_name': track.primaryGenreName || ''
     };
 
     Object.entries(fields).forEach(([name, value]) => {
@@ -137,57 +229,53 @@ function spotifySelectTrack(track) {
         if (input) input.value = value;
     });
 
-    // Disparar eventos personalizados para que el componente Blade los maneje
-    document.dispatchEvent(new CustomEvent('spotify:trackSelected', {
-        detail: { track }
-    }));
-
     // Limpiar búsqueda
-    spotifyClearSearch();
-    
-    showNotification(`${track.name} seleccionada`, 'success');
+    itunesClearSearch();
+
+    showNotification(`${track.trackName} seleccionada`, 'success');
     updateSubmitButton();
 }
 
 // Función para mostrar loader
-function spotifyShowLoader() {
-    document.dispatchEvent(new CustomEvent('spotify:showLoader'));
+function itunesShowLoader() {
+    document.dispatchEvent(new CustomEvent('itunes:showLoader'));
 }
 
 // Función para mostrar resultados
-function spotifyDisplayResults(tracks) {
-    document.dispatchEvent(new CustomEvent('spotify:displayResults', {
+function itunesDisplayResults(tracks) {
+    document.dispatchEvent(new CustomEvent('itunes:displayResults', {
         detail: { tracks }
     }));
 }
 
 // Función para mostrar sugerencias
-function spotifyShowSuggestions() {
-    document.dispatchEvent(new CustomEvent('spotify:showSuggestions'));
+function itunesShowSuggestions() {
+    document.dispatchEvent(new CustomEvent('itunes:showSuggestions'));
 }
 
 // Función para mostrar error
-function spotifyShowError(message) {
-    document.dispatchEvent(new CustomEvent('spotify:showError', {
+function itunesShowError(message) {
+    document.dispatchEvent(new CustomEvent('itunes:showError', {
         detail: { message }
     }));
     showNotification(message, 'error');
 }
 
 // Función para limpiar búsqueda
-function spotifyClearSearch() {
-    document.getElementById('spotify-search').value = '';
-    document.dispatchEvent(new CustomEvent('spotify:clearSearch'));
+function itunesClearSearch() {
+    document.getElementById('itunes-search').value = '';
+    document.dispatchEvent(new CustomEvent('itunes:clearSearch'));
 }
 
 // Función para limpiar selección
-function spotifyClearSelection() {
-    spotifySelectedTrack = null;
-    
+function itunesClearSelection() {
+    itunesSelectedTrack = null;
+
     const fieldNames = [
-        'spotify_track_id', 'spotify_track_name', 'spotify_artist_name',
-        'spotify_album_name', 'spotify_album_image', 'spotify_preview_url',
-        'spotify_external_url'
+        'itunes_track_id', 'itunes_track_name', 'itunes_artist_name',
+        'itunes_collection_name', 'itunes_artwork_url', 'itunes_preview_url',
+        'itunes_track_view_url', 'itunes_track_time_millis', 'itunes_country',
+        'itunes_primary_genre_name'
     ];
 
     fieldNames.forEach(name => {
@@ -195,27 +283,49 @@ function spotifyClearSelection() {
         if (input) input.value = '';
     });
 
-    document.dispatchEvent(new CustomEvent('spotify:trackCleared'));
+    // También limpiar el music_source si era iTunes
+    const musicSourceInput = document.querySelector('[name="music_source"]');
+    if (musicSourceInput && musicSourceInput.value === 'itunes') {
+        musicSourceInput.value = '';
+    }
+
+    document.dispatchEvent(new CustomEvent('itunes:trackCleared'));
     updateSubmitButton();
     showNotification('Selección eliminada', 'info');
 }
 
-// Función para reproducir preview
-function spotifyTogglePreview(previewUrl, trackId) {
-    // Aquí se implementaría la lógica del reproductor
-    console.log('Toggle preview:', previewUrl, trackId);
-    showNotification('Función de reproducción en desarrollo', 'info');
+// Función para reproducir preview de iTunes
+function itunesTogglePreview(previewUrl, trackId) {
+    if (!previewUrl) {
+        showNotification('No hay preview disponible', 'warning');
+        return;
+    }
+
+    // Usar el reproductor global
+    toggleAudioPreview(previewUrl, trackId, 'itunes');
 }
 
-// Función para limpiar selección de track
+// Funciones globales para compatibilidad con componentes
 window.clearSelectedTrack = function () {
-    spotifyClearSelection();
+    // Limpiar selección de iTunes
+    if (itunesSelectedTrack) {
+        itunesClearSelection();
+    }
 };
 
-// Función para realizar búsqueda desde sugerencias
-window.performSearch = function (query) {
-    document.getElementById('spotify-search').value = query;
-    searchSpotify(query);
+// Hacer disponibles las funciones iTunes globalmente
+window.itunesSelectTrack = itunesSelectTrack;
+window.itunesClearSelection = itunesClearSelection;
+window.itunesTogglePreview = itunesTogglePreview;
+window.toggleAudioPreview = toggleAudioPreview;
+window.searchiTunes = searchiTunes;
+
+window.performiTunesSearch = function (query) {
+    const searchInput = document.getElementById('itunes-search');
+    if (searchInput) {
+        searchInput.value = query;
+        searchiTunes(query);
+    }
 };
 
 // Notificación flotante 
@@ -278,23 +388,39 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('tab-imagen')?.addEventListener('click', () => switchTab('imagen'));
     document.getElementById('tab-musica')?.addEventListener('click', () => switchTab('musica'));
 
-    // Event listener para búsqueda de Spotify con debounce
-    const spotifySearch = document.getElementById('spotify-search');
-    if (spotifySearch) {
+    // Event listener para búsqueda de iTunes con debounce
+    const itunesSearch = document.getElementById('itunes-search');
+    if (itunesSearch) {
         // Buscar con retardo al escribir
-        spotifySearch.addEventListener('input', function (e) {
-            clearTimeout(spotifySearchDebounce);
-            spotifySearchDebounce = setTimeout(() => {
-                searchSpotify(e.target.value.trim());
+        itunesSearch.addEventListener('input', function (e) {
+            clearTimeout(itunesSearchDebounce);
+            itunesSearchDebounce = setTimeout(() => {
+                searchiTunes(e.target.value.trim());
             }, 500);
         });
 
         // Mostrar sugerencias al enfocar si el campo está vacío
-        spotifySearch.addEventListener('focus', function (e) {
+        itunesSearch.addEventListener('focus', function (e) {
             if (!e.target.value.trim()) {
-                spotifyShowSuggestions();
+                itunesShowSuggestions();
             }
         });
+    }
+
+    // Event listeners para campos de formulario para actualizar botón submit
+    const tituloInput = document.getElementById('titulo');
+    const descripcionInput = document.getElementById('descripcion');
+
+    if (tituloInput) {
+        tituloInput.addEventListener('input', updateSubmitButton);
+        tituloInput.addEventListener('keyup', updateSubmitButton);
+        tituloInput.addEventListener('change', updateSubmitButton);
+    }
+
+    if (descripcionInput) {
+        descripcionInput.addEventListener('input', updateSubmitButton);
+        descripcionInput.addEventListener('keyup', updateSubmitButton);
+        descripcionInput.addEventListener('change', updateSubmitButton);
     }
 
     // Inicializar con imagen por defecto
@@ -400,8 +526,19 @@ if (document.getElementById('dropzone-register')) {
 }
 
 // Exponer funciones globales para compatibilidad con componentes
-window.selectTrack = spotifySelectTrack;
-window.togglePreview = spotifyTogglePreview;
+window.selectTrack = function (track) {
+    // Solo iTunes ahora
+    itunesSelectTrack(track);
+};
+window.togglePreview = function (previewUrl, trackId) {
+    // Solo iTunes ahora
+    itunesTogglePreview(previewUrl, trackId);
+};
 window.showNotification = showNotification;
-window.searchSpotify = searchSpotify;
+window.searchiTunes = searchiTunes;
+
+// Función global para reproducir preview de música (solo iTunes)
+window.toggleMusicPreview = function (previewUrl, trackId, source) {
+    itunesTogglePreview(previewUrl, trackId);
+};
 
