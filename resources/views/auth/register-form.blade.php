@@ -225,7 +225,7 @@
                     </div>
                 </transition>
                 <!-- Botones navegación -->
-                <div class="flex justify-between mt-8">
+                <div class="flex justify-between mt-8 mb-5">
                     <button x-show="step > 1" type="button" @click="prevStep"
                         class="w-32 focus:outline-none py-2 px-5 rounded-lg shadow-sm text-center text-white bg-blue-700 hover:bg-blue-800 font-medium">Anterior</button>
                     <div class="flex-1"></div>
