@@ -23,17 +23,22 @@ class PostController extends Controller
             ->with('comentarios')
             ->latest()
             ->paginate($postsPerPage);
+             $users = \App\Models\User::latest()->get();
 
         // Verifica si el usuario autenticado es el mismo que el del muro
         return view('layouts.dashboard', [
             'user' => $user,
             'posts' => $posts,
+            'users' => $users,
         ]);
     }
 
     public function create()
     {
-        return view('posts.create');
+        $users = User::latest()->get();
+        return view('posts.create', [
+            'users' => $users,
+        ]);
     }
 
     public function store(Request $request)
@@ -119,9 +124,11 @@ class PostController extends Controller
 
     public function show(User $user, Post $post)
     {
+        $users = \App\Models\User::latest()->get();
         return view('posts.show', [
             'post' => $post,
             'user' => $user,
+            'users' => $users,
         ]);
     }
 
