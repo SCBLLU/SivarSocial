@@ -1,9 +1,9 @@
 @props(['user'])
 
 <a href="{{ route('posts.index', $user) }}"
-    class="flex items-center justify-between group max-w-md mx-auto rounded-lg transition">
+    class="profile-cont flex items-center justify-between group max-w-md mx-auto rounded-lg transition">
     {{-- Contenedor del texto alineado a la derecha --}}
-    <div class="text-right mr-4 flex-1 cursor-pointer">
+    <div class="profile-cont-title text-right mr-4 flex-1 cursor-pointer">
         <h2 class="ml-2 font-bold text-black group-hover:text-[#3B25DD] transition text-base">
             {{ $user->name ?? $user->username }}
         </h2>

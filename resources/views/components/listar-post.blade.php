@@ -1,4 +1,4 @@
-<div class="flex flex-col items-center w-full">
+<div class="flex flex-col items-center w-full justify-center">
     @if ($posts->count())
         @foreach ($posts as $post)
             <div class="bg-white rounded-2xl shadow-lg mb-6 sm:mb-10 w-full max-w-md sm:max-w-lg flex flex-col items-center">
@@ -147,9 +147,9 @@
         @endforeach
 
         <!-- Paginación -->
-        <div class="w-full max-w-md sm:max-w-lg mt-8">
+        <!-- <div class="w-full max-w-md sm:max-w-lg mt-8"> -->
             {{ $posts->links('custom.pagination') }}
-        </div>
+        <!-- </div> -->
 
     @else
         <p class="text-center text-gray-500 text-sm sm:text-base px-4">No hay post, sigue a alguien para ver sus posts</p>

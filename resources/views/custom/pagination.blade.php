@@ -1,4 +1,5 @@
 @if ($paginator->hasPages())
+ <div class="w-full max-w-md sm:max-w-lg mt-8">
     <nav role="navigation" aria-label="{{ __('Pagination Navigation') }}" class="mt-8 mb-6 mx-auto w-fit">
 
         <!-- Paginación móvil simple -->
@@ -87,4 +88,5 @@
             @endif
         </div>
     </nav>
+ </div>
 @endif

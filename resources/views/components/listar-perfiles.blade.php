@@ -4,7 +4,7 @@
             {{-- Solo mostrar usuarios que no sean el usuario actual (si está logueado) --}}
             @if (!auth()->check() || (auth()->check() && $user->id !== auth()->id()))
                 <div class="bg-white rounded-xl shadow-sm mb-3 sm:mb-4 w-full max-w-lg mx-auto">
-                    <div class="flex items-center justify-between p-3 sm:p-6">
+                    <div class="flex items-center justify-between p-3">
                         <a href="{{ route('posts.index', $user) }}" class="flex items-center group flex-1">
                             <img src="{{ $user->imagen ? asset('perfiles/' . $user->imagen) : asset('img/img.jpg') }}"
                                 alt="Avatar de {{ $user->username }}"
@@ -46,6 +46,6 @@
             @endif
         @endforeach
     @else
-        <p class="text-center text-gray-500 text-xs sm:text-sm">No hay perfiles registrados aún.</p>
+        <p class="text-center text-gray-500 text-xs sm:text-sm">No se ha encontrado ningún perfil.</p>
     @endif
 </div>

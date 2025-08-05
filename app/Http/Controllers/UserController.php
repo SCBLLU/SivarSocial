@@ -21,6 +21,20 @@ class UserController extends Controller
     }
 
     /**
+     * Buscar Usuario.
+     */
+    public function buscar(Request $request)
+    {
+        $query = $request->input('buscar');
+        
+        $users = User::where('name', 'like', "%$query%")
+                    ->orWhere('username', 'like', "%$query%")
+                    ->get();
+
+        return view('components.listar-perfiles', compact('users'));
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)

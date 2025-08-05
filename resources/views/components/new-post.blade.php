@@ -1,6 +1,6 @@
 @auth
     <a href="{{ route('posts.create') }}"
-        class="block bg-white border border-gray-200 rounded-2xl shadow-sm p-3 sm:p-4 mb-4 sm:mb-6 transition-colors duration-200 hover:bg-gray-100 hover:border-gray-300 cursor-pointer">
+        class="new-post block bg-white border border-gray-200 rounded-2xl shadow-sm p-3 sm:p-4 mb-4 sm:mb-6 transition-colors duration-200 hover:bg-gray-100 hover:border-gray-300 cursor-pointer">
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2 sm:space-x-3">
                 <img class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-[#3B25DD]"
