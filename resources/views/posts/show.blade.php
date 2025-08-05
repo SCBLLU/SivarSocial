@@ -98,52 +98,33 @@
                             <div
                                 class="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6 relative z-10 gap-3">
                                 @php
-                                    $isItunes = $post->music_source === 'itunes' || !empty($post->itunes_track_id);
+                                    $btnClasses = 'min-w-[100px] px-4 py-2 rounded-full text-xs font-medium flex items-center justify-center gap-1 transition-colors border';
                                 @endphp
 
-                                <div class="flex items-center gap-3">
-                                    @if($isItunes)
-                                        <!-- Apple Music FontAwesome Icon -->
-                                        <i class="fa-brands fa-apple text-white text-xl sm:text-2xl"></i>
-                                    @else
-                                        <!-- Spotify FontAwesome Icon -->
-                                        <i class="fa-brands fa-spotify text-[#1DB954] text-xl sm:text-2xl"></i>
-                                    @endif
+                                <!-- Icono de música minimalista y responsive -->
+                                <div class="flex items-center justify-center">
+                                    <i class="fa-solid fa-music text-white text-sm"></i>
                                 </div>
 
-                                <!-- Botones para ambas plataformas -->
+                                <!-- Botones de reproducción -->
                                 <div class="flex flex-wrap gap-2 justify-center">
                                     @if($post->hasAppleMusicLink())
                                         <a href="{{ $post->getAppleMusicUrl() }}" target="_blank"
-                                            class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs font-medium bg-white text-black hover:bg-gray-100 transition-colors flex items-center gap-1">
+                                            class="{{ $btnClasses }} bg-white text-black hover:bg-gray-100 border-gray-300">
                                             <i class="fa-brands fa-apple text-sm"></i>
-                                            <span class="hidden sm:inline">Apple Music</span>
-                                            <span class="sm:hidden">Apple</span>
+                                            <span>Apple</span>
                                         </a>
                                     @endif
-
                                     @if($post->hasSpotifyLink())
                                         <a href="{{ $post->getSpotifyUrl() }}" target="_blank"
-                                            class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs font-medium bg-[#1DB954] text-white hover:bg-green-700 transition-colors flex items-center gap-1">
-                                            <i class="fa-brands fa-spotify text-sm"></i>
-                                            <span class="hidden sm:inline">Spotify</span>
-                                            <span class="sm:hidden">Spotify</span>
+                                            class="{{ $btnClasses }} bg-[#1DB954] text-black hover:bg-[#1ed760] border-[#222326]">
+                                            <i class="fa-brands fa-spotify text-sm text-black"></i>
+                                            <span>Spotify</span>
                                         </a>
-                                    @endif
-
-                                    @if(!$post->hasAppleMusicLink() && !$post->hasSpotifyLink())
-                                        <!-- Fallback: mostrar el botón original si no hay enlaces cruzados -->
-                                        @if($post->itunes_track_view_url)
-                                            <a href="{{ $post->itunes_track_view_url }}"
-                                                target="_blank"
-                                                class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs font-medium bg-white text-black hover:bg-gray-100 transition-colors">
-                                                Abrir Apple Music
-                                            </a>
-                                        @endif
                                     @endif
                                 </div>
                             </div>
-                            
+
                             <!-- Contenido principal de la canción -->
                             <div class="relative z-10 space-y-4 sm:space-y-6">
                                 @php
@@ -190,19 +171,17 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                                                    h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                        h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
-                                                    <div id="progress-bar"
-                                                        class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                                                    transition-all duration-100 ease-out"
+                                                    <div id="progress-bar" class="absolute left-0 top-0 h-full bg-white rounded-full 
+                                                                            transition-all duration-100 ease-out"
                                                         style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
-                                                    <div id="progress-thumb"
-                                                        class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                                                    shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                                                    opacity-0 transition-all duration-200 ease-out
-                                                                                                    hover:scale-110 active:scale-95"
+                                                    <div id="progress-thumb" class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
+                                                                            shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                            opacity-0 transition-all duration-200 ease-out
+                                                                            hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 

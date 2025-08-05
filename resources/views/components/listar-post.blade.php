@@ -29,21 +29,8 @@
                     <!-- Publicacion de musica -->
                     <div class="w-full relative">
                         <div class="w-full p-3 sm:p-4 bg-[#000000] hover:bg-[#121212] transition-colors duration-200">
-                            <div class="flex items-center justify-between mb-3">
-                                <div class="flex items-center gap-2">
-                                    @php
-                                        $isItunes = $post->music_source === 'itunes' || !empty($post->itunes_track_id);
-                                    @endphp
 
-                                    @if ($isItunes)
-                                        <i class="fa-brands fa-apple text-white text-base sm:text-lg"></i>
-                                    @else
-                                        <i class="fa-brands fa-spotify text-[#1DB954] text-base sm:text-lg"></i>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="flex items-center gap-3 sm:gap-4 text-white">
+                            <div class="flex items-center gap-3 sm:gap-4 text-white py-4">
                                 <!-- Enlace al post (solo imagen y texto) -->
                                 <a href="{{ route('posts.show', ['user' => $post->user ? $post->user->username : 'usuario', 'post' => $post->id]) }}"
                                     class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
