@@ -17,15 +17,7 @@ class Post extends Model
         'imagen',
         'user_id',
         'tipo',
-        // Campos Spotify (mantener para compatibilidad)
-        'spotify_track_id',
-        'spotify_track_name',
-        'spotify_artist_name',
-        'spotify_album_name',
-        'spotify_album_image',
-        'spotify_preview_url',
-        'spotify_external_url',
-        // Campos iTunes (nuevos)
+        // Campos iTunes (para búsquedas principales)
         'itunes_track_id',
         'itunes_track_name',
         'itunes_artist_name',
@@ -37,7 +29,7 @@ class Post extends Model
         'itunes_country',
         'itunes_primary_genre_name',
         'music_source',
-        // Campos para enlaces cruzados entre plataformas
+        // Campos para enlaces cruzados entre plataformas (solo enlaces, no datos de búsqueda)
         'apple_music_url',
         'spotify_web_url',
         'artist_search_term',
@@ -76,71 +68,59 @@ class Post extends Model
     }
 
     /**
-     * Obtener el nombre de la canción (iTunes o Spotify)
+     * Obtener el nombre de la canción (solo iTunes)
      */
     public function getTrackName()
     {
-        return $this->music_source === 'itunes' 
-            ? $this->itunes_track_name 
-            : $this->spotify_track_name;
+        return $this->itunes_track_name;
     }
 
     /**
-     * Obtener el nombre del artista (iTunes o Spotify)
+     * Obtener el nombre del artista (solo iTunes)
      */
     public function getArtistName()
     {
-        return $this->music_source === 'itunes' 
-            ? $this->itunes_artist_name 
-            : $this->spotify_artist_name;
+        return $this->itunes_artist_name;
     }
 
     /**
-     * Obtener el nombre del álbum (iTunes o Spotify)
+     * Obtener el nombre del álbum (solo iTunes)
      */
     public function getAlbumName()
     {
-        return $this->music_source === 'itunes' 
-            ? $this->itunes_collection_name 
-            : $this->spotify_album_name;
+        return $this->itunes_collection_name;
     }
 
     /**
-     * Obtener la imagen del álbum (iTunes o Spotify)
+     * Obtener la imagen del álbum (solo iTunes)
      */
     public function getArtworkUrl()
     {
-        return $this->music_source === 'itunes' 
-            ? $this->itunes_artwork_url 
-            : $this->spotify_album_image;
+        return $this->itunes_artwork_url;
     }
 
     /**
-     * Obtener el preview URL (iTunes o Spotify)
+     * Obtener el preview URL (solo iTunes)
      */
     public function getPreviewUrl()
     {
-        return $this->music_source === 'itunes' 
-            ? $this->itunes_preview_url 
-            : $this->spotify_preview_url;
+        return $this->itunes_preview_url;
     }
 
     /**
-     * Obtener el URL externo (Apple Music o Spotify)
+     * Obtener el URL externo (solo Apple Music)
      */
     public function getExternalUrl()
     {
-        return $this->music_source === 'itunes' 
-            ? $this->itunes_track_view_url 
-            : $this->spotify_external_url;
+        return $this->itunes_track_view_url;
     }
 
     /**
-     * Obtener la duración formateada
+     * Obtener la duración formateada (solo iTunes)
      */
     public function getFormattedDuration()
     {
-        if ($this->music_source === 'itunes' && $this->itunes_track_time_millis) {
+        if ($this->itunes_track_time_millis) {
             $seconds = intval($this->itunes_track_time_millis / 1000);
             $minutes = intval($seconds / 60);
             $seconds = $seconds % 60;
@@ -158,13 +138,11 @@ class Post extends Model
     }
 
     /**
-     * Obtener el género musical
+     * Obtener el género musical (solo iTunes)
      */
     public function getGenre()
     {
-        return $this->music_source === 'itunes' 
-            ? $this->itunes_primary_genre_name 
-            : null;
+        return $this->itunes_primary_genre_name;
     }
 
     /**
@@ -176,11 +154,11 @@ class Post extends Model
     }
 
     /**
-     * Obtener URL de Spotify (prioriza el campo específico, luego el campo original de Spotify)
+     * Obtener URL de Spotify (solo campo de enlace cruzado)
      */
     public function getSpotifyUrl()
     {
-        return $this->spotify_web_url ?: $this->spotify_external_url;
+        return $this->spotify_web_url;
     }
 
     /**

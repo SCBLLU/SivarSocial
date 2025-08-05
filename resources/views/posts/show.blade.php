@@ -133,12 +133,11 @@
 
                                     @if(!$post->hasAppleMusicLink() && !$post->hasSpotifyLink())
                                         <!-- Fallback: mostrar el botón original si no hay enlaces cruzados -->
-                                        @if(($isItunes && $post->itunes_track_view_url) || (!$isItunes && $post->spotify_external_url))
-                                            <a href="{{ $isItunes ? $post->itunes_track_view_url : $post->spotify_external_url }}"
+                                        @if($post->itunes_track_view_url)
+                                            <a href="{{ $post->itunes_track_view_url }}"
                                                 target="_blank"
-                                                class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs font-medium
-                                                    {{ $isItunes ? 'bg-white text-black hover:bg-gray-100' : 'bg-[#1DB954] text-white hover:bg-green-700' }}">
-                                                {{ $isItunes ? 'Abrir Apple Music' : 'Abrir Spotify' }}
+                                                class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs font-medium bg-white text-black hover:bg-gray-100 transition-colors">
+                                                Abrir Apple Music
                                             </a>
                                         @endif
                                     @endif
@@ -148,25 +147,14 @@
                             <!-- Contenido principal de la canción -->
                             <div class="relative z-10 space-y-4 sm:space-y-6">
                                 @php
-                                    $isItunes = $post->music_source === 'itunes' || !empty($post->itunes_track_id);
-
-                                    if ($isItunes) {
-                                        $albumImage = $post->itunes_artwork_url;
-                                        $trackName = $post->itunes_track_name;
-                                        $artistName = $post->itunes_artist_name;
-                                        $albumName = $post->itunes_collection_name;
-                                        $previewUrl = $post->itunes_preview_url;
-                                        $externalUrl = $post->itunes_track_view_url;
-                                        $trackDuration = $post->itunes_track_time_millis ? round($post->itunes_track_time_millis / 1000) : 30;
-                                    } else {
-                                        $albumImage = $post->spotify_album_image;
-                                        $trackName = $post->spotify_track_name;
-                                        $artistName = $post->spotify_artist_name;
-                                        $albumName = $post->spotify_album_name;
-                                        $previewUrl = $post->spotify_preview_url;
-                                        $externalUrl = $post->spotify_external_url;
-                                        $trackDuration = 30; // Spotify previews are always 30 seconds
-                                    }
+                                    // Ahora solo usamos iTunes para las búsquedas principales
+                                    $albumImage = $post->itunes_artwork_url;
+                                    $trackName = $post->itunes_track_name;
+                                    $artistName = $post->itunes_artist_name;
+                                    $albumName = $post->itunes_collection_name;
+                                    $previewUrl = $post->itunes_preview_url;
+                                    $externalUrl = $post->itunes_track_view_url;
+                                    $trackDuration = $post->itunes_track_time_millis ? round($post->itunes_track_time_millis / 1000) : 30;
                                 @endphp
 
                                 <!-- Reproductor de música personalizado -->
@@ -265,17 +253,6 @@
                                     @endif
                                 </div>
 
-                                <!-- Iframe de Spotify si está disponible (como respaldo) -->
-                                @if($post->spotify_track_id && !$isItunes)
-                                    <div class="bg-black/20 rounded-xl p-3 sm:p-4 backdrop-blur-sm">
-                                        <iframe
-                                            src="https://open.spotify.com/embed/track/{{ $post->spotify_track_id }}?utm_source=generator&theme=0"
-                                            width="100%" height="152" frameBorder="0" allowfullscreen=""
-                                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                                            loading="lazy" class="rounded-lg">
-                                        </iframe>
-                                    </div>
-                                @endif
                             </div>
                         </div>
 

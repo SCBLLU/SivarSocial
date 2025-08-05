@@ -57,23 +57,14 @@
                                             $albumName = '';
                                             $externalUrl = '';
                                             $previewUrl = '';
-                                            $isItunes = $post->music_source === 'itunes' || !empty($post->itunes_track_id);
 
-                                            if ($isItunes) {
-                                                $albumImage = $post->itunes_artwork_url;
-                                                $trackName = $post->itunes_track_name;
-                                                $artistName = $post->itunes_artist_name;
-                                                $albumName = $post->itunes_collection_name;
-                                                $externalUrl = $post->itunes_track_view_url;
-                                                $previewUrl = $post->itunes_preview_url;
-                                            } else {
-                                                $albumImage = $post->spotify_album_image;
-                                                $trackName = $post->spotify_track_name;
-                                                $artistName = $post->spotify_artist_name;
-                                                $albumName = $post->spotify_album_name;
-                                                $externalUrl = $post->spotify_external_url;
-                                                $previewUrl = $post->spotify_preview_url;
-                                            }
+                                            // Ahora solo usamos iTunes para las búsquedas principales
+                                            $albumImage = $post->itunes_artwork_url;
+                                            $trackName = $post->itunes_track_name;
+                                            $artistName = $post->itunes_artist_name;
+                                            $albumName = $post->itunes_collection_name;
+                                            $externalUrl = $post->itunes_track_view_url;
+                                            $previewUrl = $post->itunes_preview_url;
                                         @endphp
 
                                         <img src="{{ $albumImage ?: asset('img/img.jpg') }}"
@@ -97,7 +88,7 @@
                                     <div class="flex-shrink-0">
                                         <button type="button"
                                             class="play-button-{{ $post->id }} bg-white/20 hover:bg-white/30 text-white rounded-full p-2 sm:p-3 shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-                                            onclick="toggleMusicPreview('{{ $previewUrl }}', '{{ $post->id }}', '{{ $isItunes ? 'itunes' : 'spotify' }}')"
+                                            onclick="toggleMusicPreview('{{ $previewUrl }}', '{{ $post->id }}', 'itunes')"
                                             title="Reproducir vista previa">
                                             <!-- Icono play -->
                                             <svg class="play-icon-{{ $post->id }} w-5 h-5 sm:w-6 sm:h-6 transition-all duration-200"

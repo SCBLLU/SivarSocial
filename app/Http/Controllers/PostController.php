@@ -63,17 +63,10 @@ class PostController extends Controller
                 'itunes_track_time_millis' => 'nullable|integer',
                 'itunes_country' => 'nullable|string',
                 'itunes_primary_genre_name' => 'nullable|string',
-                // Campos Spotify (mantener para compatibilidad)
-                'spotify_track_id' => 'nullable|string',
-                'spotify_track_name' => 'nullable|string',
-                'spotify_artist_name' => 'nullable|string',
-                'spotify_album_name' => 'nullable|string',
-                'spotify_album_image' => 'nullable|string',
-                'spotify_external_url' => 'nullable|string',
             ]);
 
-            // Validar que al menos uno de los dos sistemas tenga datos
-            if (empty($request->itunes_track_id) && empty($request->spotify_track_id)) {
+            // Validar que tenga datos de iTunes
+            if (empty($request->itunes_track_id)) {
                 return back()->withErrors(['music' => 'Debes seleccionar una canción'])->withInput();
             }
         }
@@ -112,29 +105,6 @@ class PostController extends Controller
                 $postData['artist_search_term'] = $searchTerms['artist'];
                 $postData['track_search_term'] = $searchTerms['track'];
                 $postData['spotify_web_url'] = \App\Services\CrossPlatformMusicService::generateSpotifySearchUrl(
-                    $searchTerms['artist'], 
-                    $searchTerms['track']
-                );
-            }
-            
-            // Campos Spotify (mantener para compatibilidad)
-            if ($request->music_source === 'spotify' || !empty($request->spotify_track_id)) {
-                $postData['spotify_track_id'] = $request->spotify_track_id;
-                $postData['spotify_track_name'] = $request->spotify_track_name;
-                $postData['spotify_artist_name'] = $request->spotify_artist_name;
-                $postData['spotify_album_name'] = $request->spotify_album_name;
-                $postData['spotify_album_image'] = $request->spotify_album_image;
-                $postData['spotify_preview_url'] = $request->spotify_preview_url;
-                $postData['spotify_external_url'] = $request->spotify_external_url;
-                
-                // Generar enlaces cruzados a Apple Music para canciones de Spotify
-                $searchTerms = \App\Services\CrossPlatformMusicService::cleanSearchTerms(
-                    $request->spotify_artist_name, 
-                    $request->spotify_track_name
-                );
-                $postData['artist_search_term'] = $searchTerms['artist'];
-                $postData['track_search_term'] = $searchTerms['track'];
-                $postData['apple_music_url'] = \App\Services\CrossPlatformMusicService::generateAppleMusicSearchUrl(
                     $searchTerms['artist'], 
                     $searchTerms['track']
                 );
