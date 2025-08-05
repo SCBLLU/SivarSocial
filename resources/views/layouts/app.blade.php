@@ -5,8 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @stack('styles')
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <title>SivarSocial</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    @vite(['resources/css/menu-mobile.css'])
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @livewireStyles()
     <!-- Alpine.js - Cargar ANTES del contenido -->
@@ -113,22 +116,16 @@
                 </a>
                 <!-- Menú hamburguesa SIEMPRE a la derecha dentro del navbar -->
                 <div x-data="{ open: false }" class="ml-auto relative">
-                    <button @click="open = !open"
-                        class="md:hidden flex items-center px-3 py-2 border rounded text-blue-700 border-blue-700 focus:outline-none bg-white shadow-lg hover:bg-gray-50 transition-colors">
-                        <svg class="fill-current h-6 w-6" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <title>Menu</title>
-                            <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-                        </svg>
-                    </button>
+
                     <!-- Menú animado y responsivo -->
-                    <nav x-show="open || window.innerWidth >= 768" x-transition:enter="transition ease-out duration-200"
+                    <nav x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
                         x-transition:leave="transition ease-in duration-150"
                         x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                        class="absolute md:static right-0 top-12 md:top-0 bg-white md:bg-transparent rounded-lg md:rounded-none w-56 md:w-auto z-50 flex flex-col md:flex-row gap-8 items-center md:flex transition-all duration-300 ease-in-out"
+                        class="navmax absolute md:static right-0 top-12 md:top-0 bg-white md:bg-transparent rounded-lg md:rounded-none w-56 md:w-auto z-50 flex flex-col md:flex-row gap-8 items-center md:flex transition-all duration-300 ease-in-out"
                         @click.outside="open = false">
-                        <div :class="{'shadow-2xl': open && window.innerWidth < 768}"
-                            class="flex flex-col md:flex-row md:gap-8 md:items-center p-4 md:p-0 bg-white md:bg-transparent rounded-lg md:rounded-none w-full md:w-auto">
+                        <div
+                            class="profile-account flex flex-col md:flex-row md:gap-8 md:items-center p-4 md:p-0 bg-white md:bg-transparent rounded-lg md:rounded-none w-full md:w-auto">
                             @auth
                                 @php
                                     // Detectar si estás en tu propio perfil
@@ -197,7 +194,13 @@
             </div>
         </header>
 
-        <main class="container mx-auto mt-10 p-5">
+         <!-- menu para mobile -->
+        @include('layouts.menu-mobile')
+        @yield('menu-mobile')
+        <!-- fin menu para mobile -->
+
+        <div class="contenido">
+        <main class="container mx-auto mt-10 p-5 mb-5">
             <h2 class="font-bold text-center text-3xl mb-10">
                 @yield('titulo')
             </h2>
@@ -207,9 +210,14 @@
             </div>
         </main>
 
-        <footer class="text-center p-5 text-gray-300 font-bold uppercase">
+         <footer class="text-center p-5 text-gray-300 font-bold uppercase">
             <p class="text-stone-300">Todos los Derechos reservados | SivarSocial &copy; {{ now()->year }}</p>
         </footer>
+        </div>
+        <!-- menu de perfil para mobile -->
+        @yield('lista-perfiles-mobile')
+        <!-- fin menu de perfil para mobile -->
+
     </div>
     @livewireScripts()
 
@@ -221,6 +229,111 @@
             }
         }
     </style>
+        <script>
+      function activarInput() {
+        document.getElementById("buscar").focus();
+        document.getElementById("buscar2").focus();
+      }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const camposBusqueda = [
+                { inputId: 'buscar', resultIds: ['resultados-busqueda'] },
+                { inputId: 'buscar2', resultIds: ['resultados-busqueda2'] }
+            ];
+
+            camposBusqueda.forEach(campo => {
+                const input = document.getElementById(campo.inputId);
+                if (input) {
+                    input.addEventListener('keyup', function () {
+                        const query = this.value;
+
+                        fetch(`/buscar-usuarios?buscar=${encodeURIComponent(query)}`)
+                            .then(response => response.text())
+                            .then(html => {
+                                campo.resultIds.forEach(id => {
+                                    const destino = document.getElementById(id);
+                                    if (destino) {
+                                        destino.innerHTML = html;
+                                    }
+                                });
+                            });
+                    });
+                }
+            });
+        });
+    </script>
+    <script>
+        let panel = document.getElementById("perfilPanel");
+        let overlay = document.getElementById("overlay");
+        let dragHandle = document.getElementById("dragHandle");
+
+        let startY = 0;
+        let currentY = 0;
+        let dragging = false;
+
+        function openComments() {
+            panel.style.transition = "";
+            overlay.classList.remove("hidden");
+            setTimeout(() => overlay.classList.remove("opacity-0"), 10);
+
+            panel.classList.remove("translate-y-full");
+            panel.style.transform = "translateY(0)";
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeComments() {
+            overlay.classList.add("opacity-0");
+            setTimeout(() => overlay.classList.add("hidden"), 300);
+
+            panel.classList.add("translate-y-full");
+            panel.style.transform = "";
+            document.body.style.overflow = "";
+        }
+
+        window.addEventListener("resize", function () {
+            if (window.innerWidth > 768) {
+                closeComments();
+            }
+        });
+
+        dragHandle.addEventListener('touchstart', function (e) {
+          dragging = true;
+          startY = e.touches[0].clientY;
+          panel.style.transition = "none";
+        }, { passive: true });
+
+        dragHandle.addEventListener('touchmove', function (e) {
+          if (!dragging) return;
+          currentY = e.touches[0].clientY;
+          const diff = currentY - startY;
+          if (diff > 0) {
+            panel.style.transform = `translateY(${diff}px)`;
+          }
+        }, { passive: true });
+
+        dragHandle.addEventListener('touchend', function () {
+          dragging = false;
+          const diff = currentY - startY;
+          panel.style.transition = "transform 0.2s";
+
+          if (diff > 100) {
+                panel.style.transform = `translateY(100%)`;
+                setTimeout(() => closeComments(), 300);
+            } else {
+                panel.style.transform = `translateY(0px)`;
+            }
+        });
+
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const panel = document.getElementById("perfilPanel");
+
+            // Verifica si tiene una transición inline específica
+            if (panel.style.transition.includes("transform")) {
+                panel.style.transition = ""; // Quita la transición inline
+            }
+        });
+    </script>
 </body>
 
 </html>
