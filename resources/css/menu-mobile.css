@@ -1646,7 +1646,7 @@ main {
 /* Prevenir elementos que puedan causar scroll horizontal */
 img, video, iframe {
   max-width: 100%;
-  height: auto;
+  /* height: auto; Maldito CSS  */
 }
 
 
