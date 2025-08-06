@@ -96,6 +96,111 @@ function updateSubmitButton() {
 let currentAudio = null;
 let currentTrackId = null;
 
+// Función para guardar el estado actual del audio
+function saveAudioState() {
+    if (currentAudio && currentTrackId && !currentAudio.paused) {
+        const audioState = {
+            trackId: currentTrackId,
+            previewUrl: currentAudio.src,
+            currentTime: currentAudio.currentTime,
+            isPlaying: !currentAudio.paused,
+            timestamp: Date.now()
+        };
+        sessionStorage.setItem('sivarsocial_audio_state', JSON.stringify(audioState));
+    }
+}
+
+// Función para restaurar el estado del audio
+function restoreAudioState() {
+    // Verificar si estamos en una página de perfil - NO restaurar audio en perfiles
+    const currentPath = window.location.pathname;
+
+    // Detectar páginas de perfil:
+    // - /editar-perfil
+    // - /{username} (rutas de perfil de usuario)
+    // Excluir: /posts/create, /{username}/posts/{id}, etc.
+    const isEditProfile = currentPath === '/editar-perfil';
+    const isUserProfile = currentPath.split('/').length === 2 &&
+        currentPath !== '/' &&
+        !currentPath.includes('/posts') &&
+        !currentPath.includes('/login') &&
+        !currentPath.includes('/register') &&
+        !currentPath.includes('/spotify') &&
+        !currentPath.includes('/itunes') &&
+        !currentPath.includes('/imagenes');
+
+    if (isEditProfile || isUserProfile) {
+        // Si estamos en un perfil, limpiar el estado sin restaurar
+        sessionStorage.removeItem('sivarsocial_audio_state');
+        return;
+    }
+
+    const savedState = sessionStorage.getItem('sivarsocial_audio_state');
+    if (savedState) {
+        try {
+            const audioState = JSON.parse(savedState);
+            // Solo restaurar si la sesión es reciente (menos de 5 minutos)
+            const timeDiff = Date.now() - audioState.timestamp;
+            if (timeDiff < 300000 && audioState.isPlaying) { // 5 minutos = 300000ms
+                // Buscar el botón del track correspondiente
+                const playButton = document.querySelector(`.play-button-${audioState.trackId}`);
+                if (playButton && audioState.previewUrl) {
+                    // Restaurar audio con el tiempo guardado
+                    setTimeout(() => {
+                        toggleAudioPreview(audioState.previewUrl, audioState.trackId, 'restore');
+                        // Saltar al tiempo guardado después de que el audio se cargue
+                        if (currentAudio) {
+                            currentAudio.addEventListener('canplay', function () {
+                                if (audioState.currentTime > 0) {
+                                    currentAudio.currentTime = audioState.currentTime;
+                                }
+                            }, { once: true });
+                        }
+                    }, 200); // Reducido de 500ms a 200ms
+                }
+            }
+            // Limpiar el estado guardado después de restaurar o si es muy viejo
+            sessionStorage.removeItem('sivarsocial_audio_state');
+        } catch (error) {
+            console.error('Error al restaurar estado del audio:', error);
+            sessionStorage.removeItem('sivarsocial_audio_state');
+        }
+    }
+
+    // Solo intentar restaurar el estado local si existe la función Y no viene de navegación externa
+    if (typeof window.restoreLocalAudioState === 'function') {
+        // Verificar si viene de una navegación interna apropiada
+        const referrer = document.referrer;
+        const isInternalNavigation = referrer && referrer.includes(window.location.origin);
+        const isNotFromList = !referrer.includes('/posts') || referrer.includes('/posts/');
+
+        if (isInternalNavigation && isNotFromList) {
+            window.restoreLocalAudioState();
+        }
+    }
+}
+
+// Función global para pausar todo el audio
+function pauseAllAudio() {
+    // Pausar el reproductor global de app.js
+    if (currentAudio && !currentAudio.paused) {
+        saveAudioState(); // Guardar estado antes de pausar
+        currentAudio.pause();
+        updatePlayButton(currentTrackId, false);
+        currentTrackId = null;
+    }
+
+    // También pausar cualquier reproductor local en show.blade.php
+    if (typeof window.pauseAudio === 'function') {
+        window.pauseAudio();
+    }
+
+    // Guardar estado del reproductor local si existe
+    if (typeof window.saveLocalAudioState === 'function') {
+        window.saveLocalAudioState();
+    }
+}
+
 // Función global para reproducir previews de audio
 function toggleAudioPreview(previewUrl, trackId, source) {
     // Si ya hay un audio reproduciéndose
@@ -126,6 +231,11 @@ function toggleAudioPreview(previewUrl, trackId, source) {
         currentAudio.play().catch(error => {
             console.error('Error al reproducir:', error);
             showNotification('Error al reproducir el preview', 'error');
+        }).then(() => {
+            // Guardar estado cuando empiece a reproducir
+            if (source !== 'restore') {
+                saveAudioState();
+            }
         });
     });
 
@@ -175,7 +285,7 @@ let itunesCurrentTracks = [];
 let itunesSelectedTrack = null;
 let itunesSearchDebounce = null;
 
-// Función principal para búsqueda de iTunes
+// Función global para reducir el tiempo de búsqueda con debounce más agresivo
 async function searchiTunes(query) {
     if (!query || query.trim() === '') {
         itunesShowSuggestions();
@@ -391,12 +501,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // Event listener para búsqueda de iTunes con debounce
     const itunesSearch = document.getElementById('itunes-search');
     if (itunesSearch) {
-        // Buscar con retardo al escribir
+        // Buscar con retardo al escribir (más rápido)
         itunesSearch.addEventListener('input', function (e) {
             clearTimeout(itunesSearchDebounce);
             itunesSearchDebounce = setTimeout(() => {
                 searchiTunes(e.target.value.trim());
-            }, 500);
+            }, 300); // Reducido de 500ms a 300ms para respuesta más rápida
         });
 
         // Mostrar sugerencias al enfocar si el campo está vacío
@@ -426,6 +536,17 @@ document.addEventListener('DOMContentLoaded', function () {
     // Inicializar con imagen por defecto
     switchTab('imagen');
 
+    // Restaurar estado del audio al cargar la página
+    setTimeout(() => {
+        restoreAudioState();
+    }, 300); // Reducido de 1000ms a 300ms para respuesta más rápida
+
+    // Guardar estado del audio periódicamente mientras se reproduce
+    setInterval(() => {
+        if (currentAudio && !currentAudio.paused && currentTrackId) {
+            saveAudioState();
+        }
+    }, 1500); // Reducido de 2000ms a 1500ms para mejor sincronización
 });
 
 // DROPZONE PARA CREAR POSTS
@@ -478,11 +599,11 @@ if (document.getElementById('dropzone-register')) {
     let dropzoneRegister = new Dropzone('#dropzone-register', {
         url: '/imagenes',
         dictDefaultMessage: 'Arrastra aquí tu imagen de perfil o haz clic',
-        acceptedFiles: '.jpg,.jpeg,.png,.gif',
+        acceptedFiles: '.jpg,.jpeg,.png',
         addRemoveLinks: true,
         dictRemoveFile: 'Eliminar',
         maxFiles: 1,
-        maxFilesize: 2,
+        maxFilesize: 20,
         uploadMultiple: false,
         paramName: 'imagen',
         headers: {
@@ -534,6 +655,9 @@ window.togglePreview = function (previewUrl, trackId) {
     // Solo iTunes ahora
     itunesTogglePreview(previewUrl, trackId);
 };
+window.pauseAllAudio = pauseAllAudio;
+window.restoreAudioState = restoreAudioState;
+window.saveAudioState = saveAudioState;
 window.showNotification = showNotification;
 window.searchiTunes = searchiTunes;
 
