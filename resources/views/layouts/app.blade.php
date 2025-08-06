@@ -278,7 +278,7 @@
 
             panel.classList.remove("translate-y-full");
             panel.style.transform = "translateY(0)";
-            document.body.style.overflow = "hidden";
+            document.documentElement.style.overflow = "hidden";
 
             document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff');
         }
@@ -289,7 +289,7 @@
 
             panel.classList.add("translate-y-full");
             panel.style.transform = "";
-            document.body.style.overflow = "";
+            document.documentElement.style.overflow = "";
 
             document.querySelector('meta[name="theme-color"]').setAttribute('content', '');
         }
