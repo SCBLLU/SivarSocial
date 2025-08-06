@@ -16,7 +16,7 @@
                 <p class="text-sm text-white/60">Haz clic o arrastra tu imagen aquí</p>
             </div>
         </form>
-        <p class="text-gray-300 text-sm text-center mt-4">PNG, JPG, GIF. Máx 2MB.</p>
+        <p class="text-gray-300 text-sm text-center mt-4">JPG, JPEG, PNG. Máx 20MB.</p>
     </div>
 
     <!-- Contenido para post de música -->

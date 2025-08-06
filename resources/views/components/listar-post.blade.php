@@ -155,3 +155,26 @@
         <p class="text-center text-gray-500 text-sm sm:text-base px-4">No hay post, sigue a alguien para ver sus posts</p>
     @endif
 </div>
+
+<script>
+    // Pausar audio al salir de la página
+    window.addEventListener('beforeunload', function() {
+        if (window.pauseAllAudio) {
+            window.pauseAllAudio();
+        }
+    });
+
+    // Pausar audio al cambiar de página (para SPAs como Livewire)
+    document.addEventListener('livewire:navigating', function() {
+        if (window.pauseAllAudio) {
+            window.pauseAllAudio();
+        }
+    });
+
+    // Pausar audio cuando la página se oculta
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden && window.pauseAllAudio) {
+            window.pauseAllAudio();
+        }
+    });
+</script>

@@ -96,6 +96,15 @@ function updateSubmitButton() {
 let currentAudio = null;
 let currentTrackId = null;
 
+// Función global para pausar todo el audio
+function pauseAllAudio() {
+    if (currentAudio && !currentAudio.paused) {
+        currentAudio.pause();
+        updatePlayButton(currentTrackId, false);
+        currentTrackId = null;
+    }
+}
+
 // Función global para reproducir previews de audio
 function toggleAudioPreview(previewUrl, trackId, source) {
     // Si ya hay un audio reproduciéndose
@@ -478,11 +487,11 @@ if (document.getElementById('dropzone-register')) {
     let dropzoneRegister = new Dropzone('#dropzone-register', {
         url: '/imagenes',
         dictDefaultMessage: 'Arrastra aquí tu imagen de perfil o haz clic',
-        acceptedFiles: '.jpg,.jpeg,.png,.gif',
+        acceptedFiles: '.jpg,.jpeg,.png',
         addRemoveLinks: true,
         dictRemoveFile: 'Eliminar',
         maxFiles: 1,
-        maxFilesize: 2,
+        maxFilesize: 20,
         uploadMultiple: false,
         paramName: 'imagen',
         headers: {
@@ -534,6 +543,7 @@ window.togglePreview = function (previewUrl, trackId) {
     // Solo iTunes ahora
     itunesTogglePreview(previewUrl, trackId);
 };
+window.pauseAllAudio = pauseAllAudio;
 window.showNotification = showNotification;
 window.searchiTunes = searchiTunes;
 
