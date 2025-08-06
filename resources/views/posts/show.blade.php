@@ -110,6 +110,7 @@
                                 <div class="flex flex-wrap gap-2 justify-center">
                                     @if($post->hasAppleMusicLink())
                                         <a href="{{ $post->getAppleMusicUrl() }}" target="_blank"
+                                            onclick="if(window.pauseAllAudio) window.pauseAllAudio();"
                                             class="{{ $btnClasses }} bg-white text-black hover:bg-gray-100 border-gray-300">
                                             <i class="fa-brands fa-apple text-sm"></i>
                                             <span>Apple</span>
@@ -117,6 +118,7 @@
                                     @endif
                                     @if($post->hasSpotifyLink())
                                         <a href="{{ $post->getSpotifyUrl() }}" target="_blank"
+                                            onclick="if(window.pauseAllAudio) window.pauseAllAudio();"
                                             class="{{ $btnClasses }} bg-[#1DB954] text-black hover:bg-[#1ed760] border-[#222326]">
                                             <i class="fa-brands fa-spotify text-sm text-black"></i>
                                             <span>Spotify</span>
@@ -171,17 +173,19 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                        h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                                                h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
-                                                    <div id="progress-bar" class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                            transition-all duration-100 ease-out"
+                                                    <div id="progress-bar"
+                                                        class="absolute left-0 top-0 h-full bg-white rounded-full 
+                                                                                                    transition-all duration-100 ease-out"
                                                         style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
-                                                    <div id="progress-thumb" class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                            shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                            opacity-0 transition-all duration-200 ease-out
-                                                                            hover:scale-110 active:scale-95"
+                                                    <div id="progress-thumb"
+                                                        class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
+                                                                                                    shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                                                    opacity-0 transition-all duration-200 ease-out
+                                                                                                    hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 
@@ -224,6 +228,7 @@
                                             <p class="text-gray-400 text-sm">Vista previa no disponible</p>
                                             @if($externalUrl)
                                                 <a href="{{ $externalUrl }}" target="_blank"
+                                                    onclick="if(window.pauseAllAudio) window.pauseAllAudio();"
                                                     class="inline-block mt-3 text-white bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full text-sm transition-colors">
                                                     Escuchar en {{ $isItunes ? 'iTunes' : 'Spotify' }}
                                                 </a>
@@ -531,6 +536,25 @@
                 pauseAudio();
             }
 
+            // Verificar si hay un estado guardado para esta canción
+            const savedState = sessionStorage.getItem('sivarsocial_show_audio_state');
+            let savedTime = 0;
+
+            if (savedState) {
+                try {
+                    const audioState = JSON.parse(savedState);
+                    const currentPostId = window.location.pathname.split('/').pop();
+
+                    // Si es la misma canción y el mismo post, usar el tiempo guardado
+                    if (audioState.previewUrl === previewUrl && audioState.postId === currentPostId) {
+                        savedTime = audioState.currentTime || 0;
+                        console.log('Restaurando desde el tiempo:', savedTime);
+                    }
+                } catch (error) {
+                    console.error('Error al leer estado guardado:', error);
+                }
+            }
+
             // Crear nuevo audio
             currentPreviewAudio = new Audio(previewUrl);
             currentPreviewAudio.volume = 0.7;
@@ -546,7 +570,10 @@
 
             // Eventos del audio
             currentPreviewAudio.addEventListener('loadedmetadata', () => {
-                // Audio listo para reproducir
+                // Si hay tiempo guardado, establecerlo
+                if (savedTime > 0 && savedTime < currentPreviewAudio.duration) {
+                    currentPreviewAudio.currentTime = savedTime;
+                }
             });
 
             currentPreviewAudio.addEventListener('timeupdate', () => {
@@ -562,17 +589,22 @@
                         const currentTime = formatTime(currentPreviewAudio.currentTime);
                         currentTimeDisplay.textContent = currentTime;
                     }
+
+                    // Guardar estado mientras se reproduce
+                    saveLocalAudioState();
                 }
             });
 
             currentPreviewAudio.addEventListener('ended', () => {
                 resetPlayer();
+                clearLocalAudioState();
             });
 
             currentPreviewAudio.addEventListener('error', (e) => {
                 console.error('Error al cargar audio:', e);
                 showNotification('Error al cargar la vista previa', 'error');
                 resetPlayer();
+                clearLocalAudioState();
             });
 
             // Reproducir
@@ -580,12 +612,28 @@
                 console.error('Error al reproducir:', error);
                 resetPlayer();
                 showNotification('Error al reproducir vista previa', 'error');
+                clearLocalAudioState();
+            }).then(() => {
+                // Guardar estado inicial cuando empiece a reproducir
+                if (currentPreviewAudio && !currentPreviewAudio.paused) {
+                    const audioState = {
+                        previewUrl: currentPreviewAudio.src,
+                        currentTime: currentPreviewAudio.currentTime,
+                        isPlaying: true,
+                        timestamp: Date.now(),
+                        page: 'show',
+                        postId: window.location.pathname.split('/').pop(),
+                        userInitiated: true
+                    };
+                    sessionStorage.setItem('sivarsocial_show_audio_state', JSON.stringify(audioState));
+                }
             });
         }
 
-        // Función para pausar el audio
+        // Función para pausar el audio local
         function pauseAudio() {
             if (currentPreviewAudio) {
+                saveLocalAudioState(); // Guardar estado antes de pausar
                 currentPreviewAudio.pause();
 
                 const playIcon = document.querySelector('.play-button-main-track .play-icon-main-track');
@@ -597,6 +645,99 @@
                 }
             }
         }
+
+        // Función para guardar el estado del audio local
+        function saveLocalAudioState() {
+            if (currentPreviewAudio && !currentPreviewAudio.paused && currentPreviewAudio.src) {
+                const audioState = {
+                    previewUrl: currentPreviewAudio.src,
+                    currentTime: currentPreviewAudio.currentTime,
+                    isPlaying: !currentPreviewAudio.paused,
+                    timestamp: Date.now(),
+                    page: 'show', // Identificar que es de la página show
+                    postId: window.location.pathname.split('/').pop(), // ID del post actual
+                    userInitiated: true // Marcar que fue iniciado por el usuario
+                };
+                sessionStorage.setItem('sivarsocial_show_audio_state', JSON.stringify(audioState));
+            }
+        }
+
+        // Función para verificar si es una navegación desde listar-post
+        function isNavigatingFromList() {
+            const referrer = document.referrer;
+            return referrer && !referrer.includes('/posts/') && referrer.includes(window.location.origin);
+        }
+
+        // Función mejorada para restaurar solo cuando sea apropiado
+        function restoreLocalAudioStateIfAppropriate() {
+            // No restaurar si viene directamente desde la lista de posts
+            if (isNavigatingFromList()) {
+                sessionStorage.removeItem('sivarsocial_show_audio_state');
+                return;
+            }
+
+            // Solo restaurar en casos específicos
+            restoreLocalAudioState();
+        }
+
+        // Función para restaurar el estado del audio local
+        function restoreLocalAudioState() {
+            const savedState = sessionStorage.getItem('sivarsocial_show_audio_state');
+            if (savedState) {
+                try {
+                    const audioState = JSON.parse(savedState);
+                    const currentPostId = window.location.pathname.split('/').pop();
+
+                    // Solo restaurar si es el mismo post, la sesión es reciente (menos de 5 minutos)
+                    // Y el usuario venía de la misma página (no de navegación externa)
+                    const timeDiff = Date.now() - audioState.timestamp;
+                    const wasRecentlyPlaying = timeDiff < 300000; // 5 minutos
+                    const isSamePost = audioState.postId === currentPostId;
+                    const wasPlayingOnThisPage = audioState.isPlaying && audioState.page === 'show';
+
+                    // Verificar si viene de navegación interna (no es la primera visita a la página)
+                    const hasNavigationHistory = window.performance.navigation.type === 1 || // reload
+                        document.referrer.includes(window.location.origin); // viene del mismo sitio
+
+                    if (wasRecentlyPlaying && isSamePost && wasPlayingOnThisPage && hasNavigationHistory) {
+                        // Buscar el botón de reproducir principal
+                        const mainPlayButton = document.getElementById('main-play-btn');
+                        if (mainPlayButton && audioState.previewUrl) {
+                            // Simular click en el botón después de un breve delay
+                            setTimeout(() => {
+                                mainPlayButton.click();
+                                // Saltar al tiempo guardado después de que el audio se cargue
+                                if (currentPreviewAudio) {
+                                    const checkAudioReady = () => {
+                                        if (currentPreviewAudio.readyState >= 2) {
+                                            currentPreviewAudio.currentTime = audioState.currentTime;
+                                        } else {
+                                            setTimeout(checkAudioReady, 100);
+                                        }
+                                    };
+                                    checkAudioReady();
+                                }
+                            }, 300);
+                        }
+                    }
+                    // Limpiar el estado después de intentar restaurar
+                    sessionStorage.removeItem('sivarsocial_show_audio_state');
+                } catch (error) {
+                    console.error('Error al restaurar estado del audio local:', error);
+                    sessionStorage.removeItem('sivarsocial_show_audio_state');
+                }
+            }
+        }
+
+        // Función para limpiar el estado del audio local
+        function clearLocalAudioState() {
+            sessionStorage.removeItem('sivarsocial_show_audio_state');
+        }
+
+        // Exponer las funciones pauseAudio y restauración globalmente para que app.js pueda accederlas
+        window.pauseAudio = pauseAudio;
+        window.restoreLocalAudioState = restoreLocalAudioStateIfAppropriate;
+        window.saveLocalAudioState = saveLocalAudioState;
 
         // Función para resetear el reproductor
         function resetPlayer() {
@@ -802,6 +943,13 @@
             // Ocultar ambos tipos de mensajes
             hideMessage('success-message');
             hideMessage('mensaje-success');
+
+            // Guardar estado del audio local periódicamente mientras se reproduce
+            setInterval(() => {
+                if (currentPreviewAudio && !currentPreviewAudio.paused) {
+                    saveLocalAudioState();
+                }
+            }, 2000); // Cada 2 segundos
         });
 
         // Para componentes Livewire (cuando se actualice el contenido)
@@ -840,24 +988,53 @@
         }
 
         // Pausar audio al salir de la página
-        window.addEventListener('beforeunload', function() {
+        window.addEventListener('beforeunload', function () {
             if (window.pauseAllAudio) {
                 window.pauseAllAudio();
             }
         });
 
         // Pausar audio al cambiar de página (para SPAs como Livewire)
-        document.addEventListener('livewire:navigating', function() {
+        document.addEventListener('livewire:navigating', function () {
             if (window.pauseAllAudio) {
                 window.pauseAllAudio();
             }
         });
 
         // Pausar audio cuando la página se oculta
-        document.addEventListener('visibilitychange', function() {
-            if (document.hidden && window.pauseAllAudio) {
-                window.pauseAllAudio();
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) {
+                // Guardar estado antes de pausar
+                if (currentPreviewAudio && !currentPreviewAudio.paused) {
+                    saveLocalAudioState();
+                }
+                // Pausar audio local
+                pauseAudio();
+                // También pausar audio global si existe
+                if (window.pauseAllAudio) {
+                    window.pauseAllAudio();
+                }
             }
+        });
+
+        // Restaurar audio al cargar la página
+        document.addEventListener('DOMContentLoaded', function () {
+            // No restaurar automáticamente - el usuario debe presionar play
+            setTimeout(() => {
+                if (window.restoreAudioState) {
+                    window.restoreAudioState();
+                }
+            }, 500);
+        });
+
+        // También restaurar cuando Livewire termine de navegar
+        document.addEventListener('livewire:navigated', function () {
+            // No restaurar automáticamente el audio local - el usuario debe presionar play
+            setTimeout(() => {
+                if (window.restoreAudioState) {
+                    window.restoreAudioState();
+                }
+            }, 500);
         });
     </script>
 @endsection

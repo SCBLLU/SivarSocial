@@ -148,7 +148,7 @@
 
         <!-- Paginación -->
         <!-- <div class="w-full max-w-md sm:max-w-lg mt-8"> -->
-            {{ $posts->links('custom.pagination') }}
+        {{ $posts->links('custom.pagination') }}
         <!-- </div> -->
 
     @else
@@ -157,24 +157,35 @@
 </div>
 
 <script>
+    // Limpiar estados de audio local al cargar la página de lista
+    document.addEventListener('DOMContentLoaded', function () {
+        // Limpiar cualquier estado de audio local de show.blade.php para evitar reproducciones no deseadas
+        sessionStorage.removeItem('sivarsocial_show_audio_state');
+    });
+
     // Pausar audio al salir de la página
-    window.addEventListener('beforeunload', function() {
+    window.addEventListener('beforeunload', function () {
         if (window.pauseAllAudio) {
             window.pauseAllAudio();
         }
     });
 
     // Pausar audio al cambiar de página (para SPAs como Livewire)
-    document.addEventListener('livewire:navigating', function() {
+    document.addEventListener('livewire:navigating', function () {
         if (window.pauseAllAudio) {
             window.pauseAllAudio();
         }
     });
 
-    // Pausar audio cuando la página se oculta
-    document.addEventListener('visibilitychange', function() {
+    // Pausar audio cuando la página se oculta 
+    document.addEventListener('visibilitychange', function () {
         if (document.hidden && window.pauseAllAudio) {
             window.pauseAllAudio();
+        } else if (!document.hidden && window.restoreAudioState) {
+            setTimeout(() => {
+                window.restoreAudioState();
+            }, 200);
         }
     });
+
 </script>
