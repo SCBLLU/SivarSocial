@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="theme-color" content=""> 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @stack('styles')
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
@@ -278,6 +279,8 @@
             panel.classList.remove("translate-y-full");
             panel.style.transform = "translateY(0)";
             document.body.style.overflow = "hidden";
+
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff');
         }
 
         function closeComments() {
@@ -287,6 +290,8 @@
             panel.classList.add("translate-y-full");
             panel.style.transform = "";
             document.body.style.overflow = "";
+
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', '');
         }
 
         window.addEventListener("resize", function () {

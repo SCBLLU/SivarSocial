@@ -58,6 +58,18 @@
 
         <!-- Fin Mensajes -->
 
+      @elseif(Route::is('perfil.index'))
+        <li class="menu__item">
+          <a class="menu__link btn" href="{{ url('/') }}#home">
+          <i class='bx bx-home-smile'></i>
+          </a>
+        </li>
+        <li class="menu__item">
+          <a class="menu__link btn" href="{{ route('posts.create') }}">
+          <i class='bx bx-plus'></i>
+          </a>
+        </li>
+
       @else
 
         <li class="menu__item">
