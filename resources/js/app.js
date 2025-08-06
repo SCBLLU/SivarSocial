@@ -558,7 +558,7 @@ if (document.getElementById('dropzone')) {
         addRemoveLinks: true,
         dictRemoveFile: 'Eliminar archivo',
         maxFiles: 1,
-        maxFilesize: 2,
+        maxFilesize: 20,
         uploadMultiple: false,
         paramName: 'imagen',
         headers: {
