@@ -54,7 +54,7 @@ class UserController extends Controller
                 'username' => 'required|string|max:15|unique:users',
                 'email' => 'required|string|email|max:45|unique:users',
                 'password' => 'required|string|min:6|confirmed',
-                'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'image' => 'required|image|mimes:jpeg,png,jpg|max:20480',
                 'gender' => 'required|in:Male,Female',
                 'profession' => 'required|string|max:50',
             ]);

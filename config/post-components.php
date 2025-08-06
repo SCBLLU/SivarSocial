@@ -62,7 +62,7 @@ return [
     // Configuración de dropzone
     'dropzone' => [
         'accepted_files' => 'image/*',
-        'max_file_size' => 2, // MB
+        'max_file_size' => 20, // MB
         'max_files' => 1,
         'add_remove_links' => true,
         'dictDefaultMessage' => 'Arrastra aquí tu imagen o haz clic para seleccionar'

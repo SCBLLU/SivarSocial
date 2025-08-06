@@ -11,7 +11,7 @@ class ImagenController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'imagen' => 'required|image|max:2048',
+            'imagen' => 'required|image|max:20480', // 20 MB = 20480 KB
         ]);
         $imagen = $request->file('imagen');
         $nombreImagen = Str::uuid() . '.' . $imagen->extension();
@@ -23,7 +23,7 @@ class ImagenController extends Controller
     public function storePerfil(Request $request)
     {
         $request->validate([
-            'imagen' => 'required|image|max:2048',
+            'imagen' => 'required|image|max:20480', // 20 MB = 20480 KB
         ]);
         $imagen = $request->file('imagen');
         $nombreImagen = Str::uuid() . '.' . $imagen->extension();
