@@ -384,11 +384,11 @@
             const dropzoneRegister = new Dropzone('#dropzone-register', {
                 url: '/imagenes',
                 dictDefaultMessage: 'Arrastra aquí tu imagen de perfil o haz clic',
-                acceptedFiles: '.jpg,.jpeg,.png,.gif',
+                acceptedFiles: '.jpg,.jpeg,.png',
                 addRemoveLinks: true,
                 dictRemoveFile: 'Eliminar archivo',
                 maxFiles: 1,
-                maxFilesize: 2, // MB
+                maxFilesize: 20, // MB
                 uploadMultiple: false,
                 paramName: 'imagen',
                 headers: {

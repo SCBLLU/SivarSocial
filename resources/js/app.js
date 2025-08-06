@@ -554,7 +554,7 @@ if (document.getElementById('dropzone')) {
     let dropzone = new Dropzone('#dropzone', {
         url: '/imagenes',
         dictDefaultMessage: 'Sube tu post aquí',
-        acceptedFiles: '.jpg,.jpeg,.png,.gif',
+        acceptedFiles: '.jpg,.jpeg,.png',
         addRemoveLinks: true,
         dictRemoveFile: 'Eliminar archivo',
         maxFiles: 1,

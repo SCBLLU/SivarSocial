@@ -53,7 +53,7 @@ class PerfilController extends Controller
             ],
             'profession' => ['nullable', 'string', 'max:255'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'imagen' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048']
+            'imagen' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:20480']
         ]);
 
         // Verificar y aplicar cambios solo si son diferentes
