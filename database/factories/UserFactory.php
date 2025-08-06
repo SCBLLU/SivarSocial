@@ -23,12 +23,32 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $genders = ['Male', 'Female'];
+        $professions = [
+            'Desarrollador de Software',
+            'Diseñador Gráfico', 
+            'Marketing Digital',
+            'Fotógrafo',
+            'Músico',
+            'Escritor',
+            'Profesor',
+            'Médico',
+            'Ingeniero',
+            'Artista',
+            'Estudiante',
+            'Emprendedor'
+        ];
+
         return [
             'name' => fake()->name(),
+            'username' => fake()->unique()->userName(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'imagen' => fake()->uuid() . '.jpg',
+            'gender' => fake()->randomElement($genders),
+            'profession' => fake()->randomElement($professions),
         ];
     }
 
