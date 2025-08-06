@@ -1214,9 +1214,7 @@ a {
   min-height: 87dvh;
   grid-template-rows: 1fr;
   overflow-x: hidden; /* Evitar overflow horizontal */
-  max-width: 100vw; /* Limitar ancho máximo */
   width: 100%;
-  position: relative;
 }
 
 .encabezado i.bx.bx-group {
@@ -1374,12 +1372,10 @@ i.bx.bx-search-alt-2 {
 
   .header2 {
     visibility: visible;
-    z-index: 1000; /* Aumentar z-index para evitar conflictos */
   }
 
   .header {
     visibility: visible;
-    z-index: 1001; /* Z-index más alto para el header principal */
   }
 
   a.profile-cont .profile-cont-title {
@@ -1409,6 +1405,11 @@ i.bx.bx-search-alt-2 {
   div#users-container {
       display: none;
   }
+
+/*  .flex {
+      display: flex;
+      flex-wrap: wrap;
+  }*/
 
   .gap-8 {
       gap: 0;
