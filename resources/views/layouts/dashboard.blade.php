@@ -44,7 +44,7 @@
             <div class="mt-2 space-y-1 text-xs sm:text-sm text-gray-800">
                 <p><span class="font-semibold">{{ $user->followers->count() }}</span> Seguidores</p>
                 <p><span class="font-semibold">{{ $user->following->count() }}</span> Siguiendo</p>
-                <p><span class="font-semibold">{{ $posts->count() }}</span> Publicaciones</p>
+                <p><span class="font-semibold">{{ $totalPosts }}</span> Publicaciones</p>
             </div>
 
             {{-- Acciones dinámicas --}}

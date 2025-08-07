@@ -1,17 +1,29 @@
 @extends('layouts.app')
 
 @push('scripts')
-    <script src="//unpkg.com/alpinejs" defer></script>
-    <style>
+    <style src="//unpkg.com/alpinejs" defer>
+        </script><style>[x-cloak] {
+            display: none !important;
+        }
+
+        /* Asegurar que el modal esté completamente oculto inicialmente */
+        .modal-backdrop[style*="display: none"] {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+
+        /* Prevenir flash de contenido Alpine.js */
         [x-cloak] {
             display: none !important;
         }
 
-        /* Prevenir flash de contenido Alpine.js */
+        /* Asegurar visibilidad correcta de elementos con x-show */
         [x-show]:not([style*="display: none"]) {
             visibility: visible !important;
         }
 
+        /* Ocultar elementos con x-show false por defecto */
         [x-show][style*="display: none"] {
             display: none !important;
             visibility: hidden !important;
@@ -59,7 +71,8 @@
                                 <!-- Menú de opciones (solo para el propietario) -->
                                 @auth
                                     @if ($post->user_id === Auth::user()->id)
-                                        <div class="relative" x-data="{ showMusicMenu: false }">
+                                        <div class="relative" x-data="{ showMusicMenu: false }"
+                                            @close-menus.window="showMusicMenu = false">
                                             <button @click="showMusicMenu = !showMusicMenu"
                                                 class="p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
                                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -88,7 +101,7 @@
                                                 <hr class="my-1">
 
                                                 <!-- Opción Eliminar -->
-                                                <button @click="showMusicMenu = false" onclick="confirmDeleteMusic()"
+                                                <button onclick="openDeleteModal()"
                                                     class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
                                                     <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
@@ -191,19 +204,19 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                                                                                                h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                                                                                                            h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
                                                     <div id="progress-bar"
                                                         class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                                                                                                    transition-all duration-100 ease-out"
+                                                                                                                                                                transition-all duration-100 ease-out"
                                                         style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
                                                     <div id="progress-thumb"
                                                         class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                                                                                                    shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                                                                                                    opacity-0 transition-all duration-200 ease-out
-                                                                                                                                                    hover:scale-110 active:scale-95"
+                                                                                                                                                                shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                                                                                                                opacity-0 transition-all duration-200 ease-out
+                                                                                                                                                                hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 
@@ -317,7 +330,8 @@
                                 <!-- Menú de opciones (solo para el propietario) -->
                                 @auth
                                     @if ($post->user_id === Auth::user()->id)
-                                        <div class="relative" x-data="{ showImageMenu: false }">
+                                        <div class="relative" x-data="{ showImageMenu: false }"
+                                            @close-menus.window="showImageMenu = false">
                                             <button @click="showImageMenu = !showImageMenu"
                                                 class="p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
                                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -346,7 +360,7 @@
                                                 <hr class="my-1">
 
                                                 <!-- Opción Eliminar -->
-                                                <button @click="showImageMenu = false" onclick="confirmDeleteImage()"
+                                                <button onclick="openDeleteModal()"
                                                     class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
                                                     <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
@@ -518,6 +532,52 @@
                             </div>
                         @endauth
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal simple para eliminar post usando JavaScript puro -->
+    <div id="deletePostModal" class="fixed inset-0 bg-black bg-opacity-50 justify-center items-center z-50 p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full mx-4 transform transition-all scale-95 opacity-0"
+            id="deleteModalContent">
+            <div class="p-6">
+                <!-- Icono de advertencia -->
+                <div class="flex justify-center mb-4">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Título y mensaje -->
+                <div class="text-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">¿Eliminar publicación?</h3>
+                    <p class="text-gray-600 text-sm">
+                        Esta acción eliminará permanentemente la publicación
+                        @if($post->tipo === 'imagen')
+                            y la imagen asociada.
+                        @endif
+                        <span class="font-semibold text-red-600">No se puede deshacer.</span>
+                    </p>
+                </div>
+
+                <!-- Botones -->
+                <div class="flex gap-3">
+                    <button onclick="closeDeleteModal()"
+                        class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition duration-200">
+                        Cancelar
+                    </button>
+                    <form method="POST" action="{{ route('posts.destroy', $post) }}" class="flex-1" id="deletePostForm">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                            class="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition duration-200">
+                            Eliminar
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -1052,6 +1112,49 @@
                     window.restoreAudioState();
                 }
             }, 500);
+        });
+
+        // JavaScript puro para el modal de eliminar post
+        function openDeleteModal() {
+            // Cerrar los menús de Alpine.js
+            document.dispatchEvent(new CustomEvent('close-menus'));
+
+            const modal = document.getElementById('deletePostModal');
+            const content = document.getElementById('deleteModalContent');
+
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.remove('hidden');
+                content.style.transform = 'scale(1)';
+                content.style.opacity = '1';
+            }, 10);
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('deletePostModal');
+            const content = document.getElementById('deleteModalContent');
+
+            content.style.transform = 'scale(0.95)';
+            content.style.opacity = '0';
+
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('deletePostModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeDeleteModal();
+            }
+        });
+
+        // Cerrar modal con ESC
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeDeleteModal();
+            }
         });
     </script>
 @endsection

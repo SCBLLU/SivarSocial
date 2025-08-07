@@ -76,6 +76,13 @@ class ComentarioController extends Controller
      */
     public function destroy(Comentario $comentario)
     {
-        //
+        // Verificar que el usuario autenticado es el propietario del comentario
+        if ($comentario->user_id !== Auth::id()) {
+            return back()->with('error', 'No tienes permisos para eliminar este comentario');
+        }
+
+        $comentario->delete();
+
+        return back()->with('success', 'Comentario eliminado correctamente');
     }
 }
