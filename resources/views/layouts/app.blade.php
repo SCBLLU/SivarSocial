@@ -238,7 +238,7 @@
             </main>
 
             <footer class="text-center p-5 text-gray-300 font-bold uppercase">
-                <p class="text-stone-300">Todos los Derechos reservados | SivarSocial &copy; {{ now()->year }}</p>
+                <small>SivarSocial &copy; {{ now()->year }}</small>
             </footer>
         </div>
         <!-- menu de perfil para mobile -->
