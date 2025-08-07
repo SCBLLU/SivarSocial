@@ -8,7 +8,7 @@
     @stack('styles')
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <title>SivarSocial</title>
-    @vite(['resources/css/app.css', 'resources/css/menu-mobile.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/menu-mobile.css', 'resources/css/likes-modal.css', 'resources/js/app.js'])
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @livewireStyles()
@@ -221,35 +221,39 @@
             </div>
         </header>
 
-         <!-- menu para mobile -->
+        <!-- menu para mobile -->
         @include('layouts.menu-mobile')
         @yield('menu-mobile')
         <!-- fin menu para mobile -->
 
         <div class="contenido">
-        @if(Route::is('recuperar', 'code.verific', 'restablecer'))
-            @yield('contenido-recover')
-        @else
-            <main class="container mx-auto mt-10 p-5 mb-5">
-                <h2 class="font-bold text-center text-3xl mb-10">
-                    @yield('titulo')
-                </h2>
+            @if(Route::is('recuperar', 'code.verific', 'restablecer'))
+                @yield('contenido-recover')
+            @else
+                <main class="container mx-auto mt-10 p-5 mb-5">
+                    <h2 class="font-bold text-center text-3xl mb-10">
+                        @yield('titulo')
+                    </h2>
 
-                <div>
-                    @yield('contenido')
-                </div>
-            </main>
-        @endif
+                    <div>
+                        @yield('contenido')
+                    </div>
+                </main>
+            @endif
 
-        <footer class="text-center p-5 text-gray-300 font-bold uppercase">
-            <small>SivarSocial &copy; {{ now()->year }}</small>
-        </footer>
+            <footer class="text-center p-5 text-gray-300 font-bold uppercase">
+                <small>SivarSocial &copy; {{ now()->year }}</small>
+            </footer>
         </div>
         <!-- menu de perfil para mobile -->
         @yield('lista-perfiles-mobile')
         <!-- fin menu de perfil para mobile -->
 
     </div>
+
+    <!-- Modal Global de Likes -->
+    <livewire:likes-modal />
+
     @livewireScripts()
 
     <style>

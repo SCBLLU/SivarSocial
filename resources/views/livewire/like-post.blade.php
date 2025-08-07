@@ -40,9 +40,16 @@
     @endauth
 
     <div class="flex flex-col items-start">
-        <span
-            class="text-sm font-medium {{ $color === 'white' ? 'text-white' : ($color === 'red' ? 'text-gray-600' : 'text-purple-600') }}">
-            {{ $likes }}
-        </span>
+        @if($likes > 0)
+            <button wire:click="$dispatch('openLikesModal', { postId: {{ $post->id }} })"
+                class="text-sm font-medium {{ $color === 'white' ? 'text-white hover:text-gray-200' : ($color === 'red' ? 'text-gray-600 hover:text-gray-800' : 'text-purple-600 hover:text-purple-800') }} transition-colors hover:underline">
+                {{ $likes }}
+            </button>
+        @else
+            <span
+                class="text-sm font-medium {{ $color === 'white' ? 'text-white' : ($color === 'red' ? 'text-gray-600' : 'text-purple-600') }}">
+                {{ $likes }}
+            </span>
+        @endif
     </div>
 </div>
