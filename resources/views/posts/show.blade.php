@@ -1,5 +1,24 @@
 @extends('layouts.app')
 
+@push('scripts')
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+
+        /* Prevenir flash de contenido Alpine.js */
+        [x-show]:not([style*="display: none"]) {
+            visibility: visible !important;
+        }
+
+        [x-show][style*="display: none"] {
+            display: none !important;
+            visibility: hidden !important;
+        }
+    </style>
+@endpush
+
 @section('titulo')
     <div class="flex items-center justify-center relative w-full">
         <a href="{{ url()->previous() }}"
@@ -45,13 +64,12 @@
                                                 class="p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
                                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                     <path
-                                                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z">
-                                                    </path>
+                                                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                                 </svg>
                                             </button>
 
                                             <!-- Dropdown menu -->
-                                            <div x-show="showMusicMenu" @click.away="showMusicMenu = false" x-transition
+                                            <div x-show="showMusicMenu" x-cloak @click.away="showMusicMenu = false" x-transition
                                                 class="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1">
 
                                                 <!-- Opción Editar (preparada para futura implementación) -->
@@ -173,19 +191,19 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                                                h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                                                                                                h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
                                                     <div id="progress-bar"
                                                         class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                                                    transition-all duration-100 ease-out"
+                                                                                                                                                    transition-all duration-100 ease-out"
                                                         style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
                                                     <div id="progress-thumb"
                                                         class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                                                    shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                                                    opacity-0 transition-all duration-200 ease-out
-                                                                                                    hover:scale-110 active:scale-95"
+                                                                                                                                                    shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                                                                                                    opacity-0 transition-all duration-200 ease-out
+                                                                                                                                                    hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 
@@ -304,13 +322,12 @@
                                                 class="p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
                                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                     <path
-                                                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z">
-                                                    </path>
+                                                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                                 </svg>
                                             </button>
 
                                             <!-- Dropdown menu -->
-                                            <div x-show="showImageMenu" @click.away="showImageMenu = false" x-transition
+                                            <div x-show="showImageMenu" x-cloak @click.away="showImageMenu = false" x-transition
                                                 class="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1">
 
                                                 <!-- Opción Editar (preparada para futura implementación) -->
