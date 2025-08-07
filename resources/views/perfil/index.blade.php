@@ -2,6 +2,34 @@
 
 @push('scripts')
     <script src="//unpkg.com/alpinejs" defer></script>
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+
+        /* Asegurar que el modal esté completamente oculto inicialmente */
+        .modal-backdrop[style*="display: none"] {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+
+        /* Prevenir flash de contenido Alpine.js */
+        [x-cloak] {
+            display: none !important;
+        }
+
+        /* Asegurar visibilidad correcta de elementos con x-show */
+        [x-show]:not([style*="display: none"]) {
+            visibility: visible !important;
+        }
+
+        /* Ocultar elementos con x-show false por defecto */
+        [x-show][style*="display: none"] {
+            display: none !important;
+            visibility: hidden !important;
+        }
+    </style>
 @endpush
 
 @section('titulo')
@@ -18,25 +46,40 @@
 
 @section('contenido')
     <div class="min-h-screen flex items-center justify-center py-8 px-4">
-        <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 relative"
-            x-data="{ openDelete: false, showMenu: false }">
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 relative" x-data="{ 
+                        openDelete: false, 
+                        showMenu: false,
+                        init() {
+                            // Asegurar que los modales inicien cerrados y prevenir cualquier flash
+                            this.openDelete = false;
+                            this.showMenu = false;
+                            // Usar nextTick para asegurar que DOM esté listo
+                            this.$nextTick(() => {
+                                this.openDelete = false;
+                                this.showMenu = false;
+                            });
+                        }
+                    }" x-cloak>
             <!-- Menú de tres puntos -->
             <div class="absolute top-4 right-4">
                 <button @click="showMenu = !showMenu"
-                    class="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100">
+                    class="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path
-                            d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z">
-                        </path>
+                            d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                     </svg>
                 </button>
                 <!-- Dropdown menu -->
-                <div x-show="showMenu" @click.away="showMenu = false" x-transition
-                    class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 py-2">
+                <div x-show="showMenu" x-cloak x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-95" @click.away="showMenu = false"
+                    class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 py-2"
+                    style="display: none;">
 
                     {{-- Eliminar cuenta --}}
                     <button @click="openDelete = true; showMenu = false"
-                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center transition-colors">
                         <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -204,9 +247,16 @@
             </script>
 
             {{-- modal de confirmación para eliminar cuenta --}}
-            <div x-show="openDelete" x-transition
-                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 modal-backdrop">
-                <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 transform transition-all">
+            <div x-show="openDelete" x-cloak x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 modal-backdrop"
+                style="display: none;">
+                <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 transform transition-all"
+                    x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95"
+                    x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
                     <div class="text-center">
                         <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
                             <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

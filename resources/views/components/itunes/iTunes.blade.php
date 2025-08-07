@@ -26,11 +26,6 @@
                 class="w-full pl-12 pr-12 py-3 bg-gray-900 border border-gray-700 text-white rounded-full placeholder-gray-400 focus:outline-none focus:border-white focus:bg-gray-800 transition-all duration-200"
                 placeholder="¿Qué quieres compartir?" autocomplete="off" @focus="handleInputFocus()"
                 @blur="handleInputBlur()">
-
-            <!-- Loading spinner -->
-            <div x-show="currentState === 'loading'" class="absolute inset-y-0 right-0 pr-4 flex items-center">
-                <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
-            </div>
         </div>
 
         <!-- Contenedor de resultados dinámico -->
@@ -42,7 +37,7 @@
             <div x-show="currentState === 'loading'" x-transition
                 class="flex items-center justify-center py-6 bg-black/50 rounded-lg">
                 <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-2"></div>
-                <span class="text-white text-sm">Buscando en iTunes...</span>
+                <span class="text-white text-sm">Buscando en canciones...</span>
             </div>
 
             <!-- Resultados de búsqueda (similar al buscador de iTunes) -->

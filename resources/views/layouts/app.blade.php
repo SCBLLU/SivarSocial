@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="theme-color" content=""> 
+    <meta name="theme-color" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @stack('styles')
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
@@ -15,6 +15,44 @@
     <!-- Alpine.js - Cargar ANTES del contenido -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://kit.fontawesome.com/6305bb531f.js" crossorigin="anonymous"></script>
+
+    <!-- Estilos para prevenir flash de contenido Alpine.js -->
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+
+        /* Prevenir flash de contenido Alpine.js */
+        [x-show]:not([style*="display: none"]) {
+            visibility: visible !important;
+        }
+
+        [x-show][style*="display: none"] {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        /* Asegurar que los menús desplegables estén ocultos inicialmente */
+        .dropdown-menu[x-show] {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+
+        /* Ocultar específicamente el dropdown cuando tiene x-show y no está activo */
+        .dropdown-menu[x-show][style*="display: none"] {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+
+        /* Forzar estado inicial para cualquier elemento con Alpine.js */
+        [x-data] .dropdown-menu {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+    </style>
 </head>
 
 <body style="background-color: #0f02a4; color: white;">
@@ -115,15 +153,11 @@
                         alt="LOGO" class="navbar-logo-responsive">
                 </a>
                 <!-- Menú hamburguesa SIEMPRE a la derecha dentro del navbar -->
-                <div x-data="{ open: false }" class="ml-auto relative">
+                <div class="ml-auto relative">
 
                     <!-- Menú animado y responsivo -->
-                    <nav x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-                        x-transition:leave="transition ease-in duration-150"
-                        x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                        class="navmax absolute md:static right-0 top-12 md:top-0 bg-white md:bg-transparent rounded-lg md:rounded-none w-56 md:w-auto z-50 flex flex-col md:flex-row gap-8 items-center md:flex transition-all duration-300 ease-in-out"
-                        @click.outside="open = false">
+                    <nav
+                        class="navmax absolute md:static right-0 top-12 md:top-0 bg-white md:bg-transparent rounded-lg md:rounded-none w-56 md:w-auto z-50 hidden md:flex flex-col md:flex-row gap-8 items-center transition-all duration-300 ease-in-out">
                         <div
                             class="profile-account flex flex-col md:flex-row md:gap-8 md:items-center p-4 md:p-0 bg-white md:bg-transparent rounded-lg md:rounded-none w-full md:w-auto">
                             @auth
@@ -143,8 +177,7 @@
                                 @if ($isProfile)
                                     {{-- Solo mostrar PUBLICACIONES cuando estás en tu propio perfil --}}
                                     <a href="{{ route('home') }}"
-                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 text-center md:text-left hover:underline flex items-center gap-2 justify-center"
-                                        @click="open = false">
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 text-center md:text-left hover:underline flex items-center gap-2 justify-center">
                                         PUBLICACIONES
                                     </a>
                                 @else
@@ -155,35 +188,29 @@
                             @guest
                                 @if (request()->routeIs('login'))
                                     <a href="{{ route('home') }}"
-                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
-                                        @click="open = false">
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline">
                                         PUBLICACIONES
                                     </a>
                                     <a href="{{ url('/register') }}"
-                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
-                                        @click="open = false">
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline">
                                         CREAR CUENTA
                                     </a>
                                 @elseif (request()->routeIs('register'))
                                     <a href="{{ route('home') }}"
-                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
-                                        @click="open = false">
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline">
                                         PUBLICACIONES
                                     </a>
                                     <a href="{{ route('login') }}"
-                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
-                                        @click="open = false">
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline">
                                         INICIAR SESIÓN
                                     </a>
                                 @else
                                     <a href="{{ route('login') }}"
-                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
-                                        @click="open = false">
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline">
                                         INICIAR SESIÓN
                                     </a>
                                     <a href="{{ url('/register') }}"
-                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline"
-                                        @click="open = false">
+                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline">
                                         CREAR CUENTA
                                     </a>
                                 @endif
@@ -194,25 +221,25 @@
             </div>
         </header>
 
-         <!-- menu para mobile -->
+        <!-- menu para mobile -->
         @include('layouts.menu-mobile')
         @yield('menu-mobile')
         <!-- fin menu para mobile -->
 
         <div class="contenido">
-        <main class="container mx-auto mt-10 p-5 mb-5">
-            <h2 class="font-bold text-center text-3xl mb-10">
-                @yield('titulo')
-            </h2>
+            <main class="container mx-auto mt-10 p-5 mb-5">
+                <h2 class="font-bold text-center text-3xl mb-10">
+                    @yield('titulo')
+                </h2>
 
-            <div>
-                @yield('contenido')
-            </div>
-        </main>
+                <div>
+                    @yield('contenido')
+                </div>
+            </main>
 
-         <footer class="text-center p-5 text-gray-300 font-bold uppercase">
-            <p class="text-stone-300">Todos los Derechos reservados | SivarSocial &copy; {{ now()->year }}</p>
-        </footer>
+            <footer class="text-center p-5 text-gray-300 font-bold uppercase">
+                <p class="text-stone-300">Todos los Derechos reservados | SivarSocial &copy; {{ now()->year }}</p>
+            </footer>
         </div>
         <!-- menu de perfil para mobile -->
         @yield('lista-perfiles-mobile')
@@ -229,11 +256,11 @@
             }
         }
     </style>
-        <script>
-      function activarInput() {
-        document.getElementById("buscar").focus();
-        document.getElementById("buscar2").focus();
-      }
+    <script>
+        function activarInput() {
+            document.getElementById("buscar").focus();
+            document.getElementById("buscar2").focus();
+        }
 
         document.addEventListener('DOMContentLoaded', function () {
             const camposBusqueda = [
@@ -301,26 +328,26 @@
         });
 
         dragHandle.addEventListener('touchstart', function (e) {
-          dragging = true;
-          startY = e.touches[0].clientY;
-          panel.style.transition = "none";
+            dragging = true;
+            startY = e.touches[0].clientY;
+            panel.style.transition = "none";
         }, { passive: true });
 
         dragHandle.addEventListener('touchmove', function (e) {
-          if (!dragging) return;
-          currentY = e.touches[0].clientY;
-          const diff = currentY - startY;
-          if (diff > 0) {
-            panel.style.transform = `translateY(${diff}px)`;
-          }
+            if (!dragging) return;
+            currentY = e.touches[0].clientY;
+            const diff = currentY - startY;
+            if (diff > 0) {
+                panel.style.transform = `translateY(${diff}px)`;
+            }
         }, { passive: true });
 
         dragHandle.addEventListener('touchend', function () {
-          dragging = false;
-          const diff = currentY - startY;
-          panel.style.transition = "transform 0.2s";
+            dragging = false;
+            const diff = currentY - startY;
+            panel.style.transition = "transform 0.2s";
 
-          if (diff > 100) {
+            if (diff > 100) {
                 panel.style.transform = `translateY(100%)`;
                 setTimeout(() => closeComments(), 300);
             } else {
