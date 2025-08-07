@@ -221,12 +221,15 @@
             </div>
         </header>
 
-        <!-- menu para mobile -->
+         <!-- menu para mobile -->
         @include('layouts.menu-mobile')
         @yield('menu-mobile')
         <!-- fin menu para mobile -->
 
         <div class="contenido">
+        @if(Route::is('recuperar', 'code.verific', 'restablecer'))
+            @yield('contenido-recover')
+        @else
             <main class="container mx-auto mt-10 p-5 mb-5">
                 <h2 class="font-bold text-center text-3xl mb-10">
                     @yield('titulo')
@@ -236,10 +239,11 @@
                     @yield('contenido')
                 </div>
             </main>
+        @endif
 
-            <footer class="text-center p-5 text-gray-300 font-bold uppercase">
-                <small>SivarSocial &copy; {{ now()->year }}</small>
-            </footer>
+        <footer class="text-center p-5 text-gray-300 font-bold uppercase">
+            <small>SivarSocial &copy; {{ now()->year }}</small>
+        </footer>
         </div>
         <!-- menu de perfil para mobile -->
         @yield('lista-perfiles-mobile')
