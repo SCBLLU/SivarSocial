@@ -173,7 +173,7 @@
                                     {{-- Badge de tipo de contenido - visible siempre en móvil --}}
                                     <div
                                         class="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-1.5 py-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
-                                        <div class="flex items-center space-x-1">
+                                        <div class="flex items-center space-x-0.5">
                                             <div class="w-1 h-1 bg-green-400 rounded-full animate-pulse"></div>
                                             <span class="text-white text-[10px] font-medium">Música</span>
                                         </div>
@@ -203,10 +203,10 @@
 
                                     {{-- Badge de tipo de contenido - visible siempre en móvil --}}
                                     <div
-                                        class="badge absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
-                                        <div class="flex items-center space-x-1">
-                                            <div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
-                                            <span class="text-white text-xs font-medium">Imagen</span>
+                                        class="badge absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-1.5 py-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+                                        <div class="flex items-center space-x-0.5">
+                                            <div class="w-1 h-1 bg-blue-400 rounded-full animate-pulse"></div>
+                                            <span class="text-white text-[10px] font-medium">Imagen</span>
                                         </div>
                                     </div>
                                 </div>
