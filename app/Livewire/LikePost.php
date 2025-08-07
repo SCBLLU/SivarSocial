@@ -16,6 +16,8 @@ class LikePost extends Component
     public function mount($post, $color = 'purple')
     {
         $this->post = $post;
+        // Asegurar que las relaciones están cargadas
+        $this->post->loadMissing('likes');
         $this->isLiked = Auth::check() ? $post->checkLike(Auth::user()) : false;
         $this->likes = $post->likes->count();
         $this->color = $color;
@@ -27,6 +29,9 @@ class LikePost extends Component
         if (!Auth::check()) {
             return;
         }
+
+        // Debug log para verificar que se ejecuta
+        Log::info('LikePost clickLike ejecutado para usuario: ' . Auth::user()->id . ' en post: ' . $this->post->id);
 
         try {
             // Permitir dar like a cualquier post, incluidos los propios
@@ -43,10 +48,17 @@ class LikePost extends Component
                 $this->isLiked = true;
                 $this->likes++;
             }
-            
-            // Refrescar la relación likes
+
+            // Refrescar la relación likes para asegurar sincronización
             $this->post->load('likes');
-            
+            $this->likes = $this->post->likes->count();
+
+            // Agregar feedback visual
+            if ($this->isLiked) {
+                session()->flash('like_success', 'Like agregado correctamente');
+            } else {
+                session()->flash('like_success', 'Like removido correctamente');
+            }
         } catch (\Exception $e) {
             // Log del error para debugging
             Log::error('Error en LikePost: ' . $e->getMessage());

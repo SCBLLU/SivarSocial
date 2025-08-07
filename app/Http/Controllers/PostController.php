@@ -19,16 +19,21 @@ class PostController extends Controller
     {
         $postsPerPage = config('pagination.posts_per_page', 6);
 
-        $posts = Post::where('user_id', $user->id)
+        $posts = $user->posts()
             ->with('comentarios')
             ->latest()
             ->paginate($postsPerPage);
-             $users = \App\Models\User::latest()->get();
+
+        // Obtener el total de publicaciones del usuario (sin paginación)
+        $totalPosts = $user->posts()->count();
+
+        $users = \App\Models\User::latest()->get();
 
         // Verifica si el usuario autenticado es el mismo que el del muro
         return view('layouts.dashboard', [
             'user' => $user,
             'posts' => $posts,
+            'totalPosts' => $totalPosts,
             'users' => $users,
         ]);
     }
@@ -88,7 +93,7 @@ class PostController extends Controller
             $postData['imagen'] = $request->imagen;
         } else if ($request->tipo === 'musica') {
             $postData['music_source'] = $request->music_source ?? 'itunes';
-            
+
             // Campos iTunes
             if ($request->music_source === 'itunes' || !empty($request->itunes_track_id)) {
                 $postData['itunes_track_id'] = $request->itunes_track_id;
@@ -101,16 +106,16 @@ class PostController extends Controller
                 $postData['itunes_track_time_millis'] = $request->itunes_track_time_millis;
                 $postData['itunes_country'] = $request->itunes_country;
                 $postData['itunes_primary_genre_name'] = $request->itunes_primary_genre_name;
-                
+
                 // Generar enlaces cruzados a Spotify para canciones de iTunes
                 $searchTerms = \App\Services\CrossPlatformMusicService::cleanSearchTerms(
-                    $request->itunes_artist_name, 
+                    $request->itunes_artist_name,
                     $request->itunes_track_name
                 );
                 $postData['artist_search_term'] = $searchTerms['artist'];
                 $postData['track_search_term'] = $searchTerms['track'];
                 $postData['spotify_web_url'] = \App\Services\CrossPlatformMusicService::generateSpotifySearchUrl(
-                    $searchTerms['artist'], 
+                    $searchTerms['artist'],
                     $searchTerms['track']
                 );
             }
@@ -124,6 +129,9 @@ class PostController extends Controller
 
     public function show(User $user, Post $post)
     {
+        // Cargar las relaciones necesarias para el post
+        $post->load(['likes', 'comentarios', 'user']);
+
         $users = \App\Models\User::latest()->get();
         return view('posts.show', [
             'post' => $post,
@@ -136,14 +144,16 @@ class PostController extends Controller
     {
         $this->authorize('delete', $post);
 
-        $post->delete();
-
-        //eliminar la imagen
-        $imagePath = public_path('uploads/' . $post->imagen);
-
-        if (file_exists($imagePath)) {
-            unlink($imagePath);
+        // Eliminar la imagen ANTES de eliminar el post
+        if ($post->imagen && !empty($post->imagen)) {
+            $imagePath = public_path('uploads/' . $post->imagen);
+            if (file_exists($imagePath) && is_file($imagePath)) {
+                unlink($imagePath);
+            }
         }
+
+        // Eliminar el post después de eliminar la imagen
+        $post->delete();
 
         // Redirigir al muro del usuario autenticado
         return redirect()->route('posts.index', ['user' => Auth::user()])
