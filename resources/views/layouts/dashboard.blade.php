@@ -1,41 +1,9 @@
 @extends('layouts.app')
 
 @push('scripts')
-    <script src="//unpkg.com/alpinejs" defer></script>
     <style>
         [x-cloak] {
             display: none !important;
-        }
-
-        /* Prevenir flash de contenido Alpine.js */
-        [x-show]:not([style*="display: none"]) {
-            visibility: visible !important;
-        }
-
-        [x-show][style*="display: none"] {
-            display: none !important;
-            visibility: hidden !important;
-        }
-
-        /* Asegurar que el menú desplegable esté oculto inicialmente */
-        .dropdown-menu[x-show] {
-            display: none !important;
-            opacity: 0 !important;
-            visibility: hidden !important;
-        }
-
-        /* Ocultar específicamente el dropdown cuando tiene x-show y no está activo */
-        .dropdown-menu[x-show][style*="display: none"] {
-            display: none !important;
-            opacity: 0 !important;
-            visibility: hidden !important;
-        }
-
-        /* Forzar estado inicial para cualquier elemento con Alpine.js */
-        [x-data] .dropdown-menu {
-            display: none !important;
-            opacity: 0 !important;
-            visibility: hidden !important;
         }
     </style>
 @endpush
@@ -129,21 +97,7 @@
         {{-- Botón menú (3 puntos) --}}
         @auth
             @if ($user->id === auth()->id())
-                <div class="absolute top-4 right-4 sm:top-6 sm:right-6 z-10" x-data="{ 
-                    open: false,
-                    init() {
-                        // Asegurar que el menú esté completamente oculto al inicio
-                        this.open = false;
-                        // Forzar el estado cerrado después de la inicialización
-                        this.$nextTick(() => {
-                            this.open = false;
-                            // Doble verificación para evitar el flash
-                            setTimeout(() => {
-                                this.open = false;
-                            }, 10);
-                        });
-                    }
-                }" x-cloak>
+                <div class="absolute top-4 right-4 sm:top-6 sm:right-6 z-10" x-data="{ open: false }" x-cloak>
                     <button @click="open = !open"
                         class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center border border-gray-400 rounded-full hover:bg-gray-100 transition">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
@@ -152,9 +106,14 @@
                         </svg>
                     </button>
                     {{-- Menú desplegable --}}
-                    <div x-show="open" x-cloak @click.away="open = false" x-transition
-                        class="absolute right-0 mt-2 w-44 sm:w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-2 dropdown-menu"
-                        style="display: none !important; opacity: 0; visibility: hidden;">
+                    <div x-show="open" x-cloak @click.away="open = false" 
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         x-transition:enter-end="opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 scale-100"
+                         x-transition:leave-end="opacity-0 scale-95"
+                        class="absolute right-0 mt-2 w-44 sm:w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-2">
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
                             <button type="submit"
@@ -211,12 +170,12 @@
                                         </div>                                       
                                     </div>
 
-                                    {{-- Badge de tipo de contenido --}}
+                                    {{-- Badge de tipo de contenido - visible siempre en móvil --}}
                                     <div
-                                        class="absolute top-2 left-2 bg-black/60 backdrop-blur-sm rounded-full px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        <div class="flex items-center space-x-1">
-                                            <div class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
-                                            <span class="text-white text-xs font-medium">Música</span>
+                                        class="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-1.5 py-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+                                        <div class="flex items-center space-x-0.5">
+                                            <div class="w-1 h-1 bg-green-400 rounded-full animate-pulse"></div>
+                                            <span class="text-white text-[10px] font-medium">Música</span>
                                         </div>
                                     </div>
                                 </div>
@@ -242,12 +201,12 @@
                                         </div>                                       
                                     </div>
 
-                                    {{-- Badge de tipo de contenido --}}
+                                    {{-- Badge de tipo de contenido - visible siempre en móvil --}}
                                     <div
-                                        class="badge absolute top-2 left-2 bg-black/60 backdrop-blur-sm rounded-full px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        <div class="flex items-center space-x-1">
-                                            <div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
-                                            <span class="text-white text-xs font-medium">Imagen</span>
+                                        class="badge absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-1.5 py-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+                                        <div class="flex items-center space-x-0.5">
+                                            <div class="w-1 h-1 bg-blue-400 rounded-full animate-pulse"></div>
+                                            <span class="text-white text-[10px] font-medium">Imagen</span>
                                         </div>
                                     </div>
                                 </div>
@@ -255,6 +214,11 @@
                         </a>
                     </div>
                 @endforeach
+            </div>
+
+            {{-- Paginación --}}
+            <div class="flex justify-center w-full">
+                {{ $posts->links() }}
             </div>
 
         @else
