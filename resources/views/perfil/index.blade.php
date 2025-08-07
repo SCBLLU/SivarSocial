@@ -47,19 +47,19 @@
 @section('contenido')
     <div class="min-h-screen flex items-center justify-center py-8 px-4">
         <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 relative" x-data="{ 
-                        openDelete: false, 
-                        showMenu: false,
-                        init() {
-                            // Asegurar que los modales inicien cerrados y prevenir cualquier flash
-                            this.openDelete = false;
-                            this.showMenu = false;
-                            // Usar nextTick para asegurar que DOM esté listo
-                            this.$nextTick(() => {
-                                this.openDelete = false;
-                                this.showMenu = false;
-                            });
-                        }
-                    }" x-cloak>
+                                openDelete: false, 
+                                showMenu: false,
+                                init() {
+                                    // Asegurar que los modales inicien cerrados y prevenir cualquier flash
+                                    this.openDelete = false;
+                                    this.showMenu = false;
+                                    // Usar nextTick para asegurar que DOM esté listo
+                                    this.$nextTick(() => {
+                                        this.openDelete = false;
+                                        this.showMenu = false;
+                                    });
+                                }
+                            }" x-cloak>
             <!-- Menú de tres puntos -->
             <div class="absolute top-4 right-4">
                 <button @click="showMenu = !showMenu"
@@ -246,41 +246,53 @@
                 });
             </script>
 
-            {{-- modal de confirmación para eliminar cuenta --}}
-            <div x-show="openDelete" x-cloak x-transition:enter="transition ease-out duration-300"
+            {{-- Modal simple y minimalista para eliminar cuenta --}}
+            <div x-show="openDelete" x-cloak x-transition:enter="transition ease-out duration-200"
                 x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-                x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+                x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
                 x-transition:leave-end="opacity-0"
-                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 modal-backdrop"
+                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
                 style="display: none;">
-                <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 transform transition-all"
-                    x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95"
-                    x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-200"
+                <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full mx-4 transform transition-all"
+                    x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95"
+                    x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-150"
                     x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
-                    <div class="text-center">
-                        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                            <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                            </svg>
+
+                    <div class="p-6">
+                        <!-- Icono de advertencia -->
+                        <div class="flex justify-center mb-4">
+                            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                            </div>
                         </div>
-                        <h3 class="text-lg font-medium text-gray-700 mb-2">¿Estás seguro?</h3>
-                        <p class="text-sm text-gray-500 mb-6">Esta acción es irreversible y eliminará todos tus datos
-                            permanentemente.</p>
-                    </div>
-                    <div class="flex gap-3">
-                        <button @click="openDelete = false"
-                            class="flex-1 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 font-medium transition duration-200">
-                            Cancelar
-                        </button>
-                        <form method="POST" action="{{ route('user.destroy') }}" class="flex-1">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                class="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition duration-200">
-                                Eliminar
+
+                        <!-- Título y mensaje -->
+                        <div class="text-center mb-6">
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">¿Eliminar cuenta?</h3>
+                            <p class="text-gray-600 text-sm">
+                                Esta acción eliminará permanentemente tu cuenta y todos tus datos.
+                                <span class="font-semibold text-red-600">No se puede deshacer.</span>
+                            </p>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="flex gap-3">
+                            <button @click="openDelete = false"
+                                class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition duration-200">
+                                Cancelar
                             </button>
-                        </form>
+                            <form method="POST" action="{{ route('user.destroy') }}" class="flex-1">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                    class="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition duration-200">
+                                    Eliminar
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
