@@ -271,6 +271,12 @@ i.bx.bx-search-alt-2 {
     color: #d1d5dc;
 }
 
+@media (min-width: 436px) and (max-width: 1380px) {
+  .text-width {
+    width: 400px;
+  }
+}
+
 .header2 {
   position: fixed;
   left: 50%;
@@ -349,7 +355,7 @@ i.bx.bx-search-alt-2 {
 
   #perfilPanel {
     z-index: 1005;
-}
+  }
 
   a.profile-cont .profile-cont-title {
     display: none;
@@ -372,15 +378,15 @@ i.bx.bx-search-alt-2 {
   }
 
   .profile-account {
-      visibility: hidden;
+    visibility: hidden;
   }
 
   div#users-container {
-      display: none;
+     display: none;
   }
 
   .gap-8 {
-      gap: 0;
+     gap: 0;
   }
 }
 
@@ -389,6 +395,18 @@ i.bx.bx-search-alt-2 {
     width: 450px;
     margin-left: auto;
     margin-right: auto;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  .control-rr {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 395px) {
+  .control-rr {
+    flex-direction: column;
   }
 }
 
