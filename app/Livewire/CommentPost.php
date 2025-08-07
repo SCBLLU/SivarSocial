@@ -13,8 +13,24 @@ class CommentPost extends Component
     public function mount($post, $color = 'gray')
     {
         $this->post = $post;
-        $this->comments = $post->comentarios->count();
+        $this->updateCommentsCount();
         $this->color = $color;
+    }
+
+    public function updateCommentsCount()
+    {
+        $this->comments = $this->post->comentarios()->count();
+    }
+
+    protected $listeners = ['comment-added' => 'refreshCommentsCount'];
+
+    public function refreshCommentsCount($postId = null)
+    {
+        // Si no se pasa postId, simplemente actualizar
+        // Si se pasa postId, solo actualizar si coincide
+        if ($postId === null || $this->post->id == $postId) {
+            $this->updateCommentsCount();
+        }
     }
 
     public function render()
