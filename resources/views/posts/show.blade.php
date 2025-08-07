@@ -204,19 +204,19 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                                                                                                                        h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                                                                                                                                    h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
                                                     <div id="progress-bar"
                                                         class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                                                                                                                            transition-all duration-100 ease-out"
+                                                                                                                                                                                        transition-all duration-100 ease-out"
                                                         style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
                                                     <div id="progress-thumb"
                                                         class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                                                                                                                            shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                                                                                                                            opacity-0 transition-all duration-200 ease-out
-                                                                                                                                                                            hover:scale-110 active:scale-95"
+                                                                                                                                                                                        shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                                                                                                                                        opacity-0 transition-all duration-200 ease-out
+                                                                                                                                                                                        hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 
@@ -312,7 +312,7 @@
                 @else
                     <!-- Post de imagen -->
                     <div id="post-container"
-                        class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col items-center">
+                        class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col items-center min-h-[500px]">
                         <!-- Header: perfil y username -->
                         <div class="flex items-center w-full px-4 py-3 border-b border-gray-200">
                             <a href="{{ route('posts.index', $post->user->username) }}" class="flex items-center group">
@@ -421,11 +421,6 @@
                 <!-- Comentarios -->
                 <div id="comments-container"
                     class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col min-h-[500px] mt-4 lg:mt-0">
-                    <!-- Header de comentarios -->
-                    <div class="px-4 py-3 border-b border-gray-200 flex-shrink-0">
-                        <h2 class="text-lg font-bold text-center text-black">Comentarios</h2>
-                    </div>
-
                     <!-- Componente Livewire para comentarios -->
                     <livewire:comments-section :post="$post" />
                 </div>
