@@ -6,86 +6,108 @@
     </div>
 
     <!-- Lista de comentarios -->
-    <div class="flex-1 overflow-y-auto px-4 py-2" id="comments-list">
+    <div class="flex-1 overflow-y-auto px-4 py-4 space-y-1" id="comments-list">
         @if ($this->comentarios->count())
             @foreach ($this->comentarios as $index => $comentario)
                 <div wire:key="comment-{{ $comentario->id }}" class="group relative" x-data="{ showOptions: false }"
                     @click.away="showOptions = false">
 
                     <!-- Comentario card -->
-                    <div class="flex gap-3 py-3 {{ !$loop->last ? 'border-b border-gray-100' : '' }}">
+                    <div class="bg-white border border-gray-200 rounded-[20px] p-4 mb-3 shadow-sm">
 
-                        <!-- Avatar -->
-                        <div class="flex-shrink-0">
-                            <img src="{{ $comentario->user && $comentario->user->imagen ? asset('perfiles/' . $comentario->user->imagen) : asset('img/img.jpg') }}"
-                                alt="Avatar de {{ $comentario->user->username }}" class="w-10 h-10 rounded-full object-cover"
-                                onerror="this.src='{{ asset('img/img.jpg') }}'">
+                        <!-- Header del comentario con avatar y usuario -->
+                        <div class="flex items-center gap-3 mb-3">
+                            <!-- Avatar -->
+                            <div class="flex-shrink-0">
+                                <img src="{{ $comentario->user && $comentario->user->imagen ? asset('perfiles/' . $comentario->user->imagen) : asset('img/img.jpg') }}"
+                                    alt="Avatar de {{ $comentario->user->username }}"
+                                    class="w-10 h-10 rounded-full object-cover border-2 border-gray-100"
+                                    onerror="this.src='{{ asset('img/img.jpg') }}'">
+                            </div>
+
+                            <!-- Usuario, badge, timestamp y opciones -->
+                            <div class="flex-1 min-w-0 flex items-center justify-between">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <a href="{{ route('posts.index', $comentario->user->username) }}"
+                                        class="font-semibold text-sm text-gray-900 hover:text-blue-600 transition-colors truncate">
+                                        {{ $comentario->user->username }}
+                                    </a>
+                                    @if($comentario->user_id === $post->user_id)
+                                        <span
+                                            class="px-2 py-1 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-700 flex-shrink-0">Autor</span>
+                                    @endif
+                                </div>
+
+                                <!-- Timestamp y opciones -->
+                                <div class="flex items-center gap-2 flex-shrink-0">
+                                    <!-- Timestamp -->
+                                    <span class="text-xs text-gray-500">
+                                        {{ $comentario->created_at->diffForHumans() }}
+                                    </span>
+
+                                    <!-- Botón de opciones -->
+                                    @auth
+                                        {{-- El botón de opciones se muestra si:
+                                        - El usuario autenticado es el autor del comentario, O
+                                        - El usuario autenticado es el autor del post --}}
+                                        @if($comentario->user_id === auth()->id() || $post->user_id === auth()->id())
+                                            <div class="relative">
+                                                <button @click="showOptions = !showOptions"
+                                                    class="p-1.5 rounded-full hover:bg-gray-100 transition-all duration-200 opacity-70 hover:opacity-100">
+                                                    <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path
+                                                            d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                                    </svg>
+                                                </button>
+
+                                                <!-- Menú de opciones -->
+                                                <div x-show="showOptions" x-transition:enter="transition ease-out duration-100"
+                                                    x-transition:enter-start="opacity-0 scale-95"
+                                                    x-transition:enter-end="opacity-100 scale-100"
+                                                    x-transition:leave="transition ease-in duration-75"
+                                                    x-transition:leave-start="opacity-100 scale-100"
+                                                    x-transition:leave-end="opacity-0 scale-95"
+                                                    class="absolute top-8 right-0 bg-white rounded-2xl shadow-lg border border-gray-200 py-1 z-50 min-w-[140px]"
+                                                    x-cloak>
+
+                                                    <button wire:click.prevent="deleteComment({{ $comentario->id }})"
+                                                        wire:confirm="¿Estás seguro de eliminar este comentario?"
+                                                        wire:loading.attr="disabled" wire:target="deleteComment"
+                                                        @click="showOptions = false"
+                                                        class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 rounded-xl mx-1 disabled:opacity-50">
+
+                                                        <!-- Spinner de carga -->
+                                                        <div wire:loading wire:target="deleteComment({{ $comentario->id }})"
+                                                            class="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin">
+                                                        </div>
+
+                                                        <!-- Icono de eliminar -->
+                                                        <svg wire:loading.remove wire:target="deleteComment" class="w-4 h-4" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+
+                                                        <span wire:loading.remove wire:target="deleteComment">
+                                                            Eliminar comentario
+                                                        </span>
+                                                        <span wire:loading wire:target="deleteComment({{ $comentario->id }})">
+                                                            Eliminando...
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endauth
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Contenido del comentario -->
-                        <div class="flex-1 min-w-0">
-
-                            <!-- Header del comentario -->
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <a href="{{ route('posts.index', $comentario->user->username) }}"
-                                            class="font-semibold text-sm text-gray-900 hover:text-blue-600 transition-colors">
-                                            {{ $comentario->user->username }}
-                                        </a>
-                                        @if($comentario->user_id === $post->user_id)
-                                            <span
-                                                class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-700 ml-1">Autor</span>
-                                        @endif
-                                        <span class="text-xs text-gray-500 ml-2">
-                                            {{ $comentario->created_at->diffForHumans() }}
-                                        </span>
-                                    </div>
-
-                                    <!-- Texto del comentario -->
-                                    <p class="text-sm text-gray-700 leading-relaxed break-words mb-2">
-                                        {{ $comentario->comentario }}
-                                    </p>
-
-                                </div>
-
-                                <!-- Botón de opciones -->
-                                @auth
-                                    @if($comentario->user_id === auth()->id() || $post->user_id === auth()->id())
-                                        <div class="relative">
-                                            <button @click="showOptions = !showOptions"
-                                                class="opacity-0 group-hover:opacity-100 p-1 rounded-full hover:bg-gray-200 transition-all duration-200">
-                                                <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path
-                                                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    @endif
-                                @endauth
-                            </div>
-
-                            <!-- Menú de opciones -->
-                            @auth
-                                @if($comentario->user_id === auth()->id() || $post->user_id === auth()->id())
-                                    <div x-show="showOptions" x-transition:enter="transition ease-out duration-100"
-                                        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-                                        x-transition:leave="transition ease-in duration-75"
-                                        x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                                        class="absolute top-8 right-2 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20 min-w-[140px]">
-
-                                        <button wire:click="deleteComment({{ $comentario->id }})"
-                                            wire:confirm="¿Estás seguro de eliminar este comentario?"
-                                            class="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                            Eliminar comentario
-                                        </button>
-                                    </div>
-                                @endif
-                            @endauth
+                        <div>
+                            <p class="text-sm text-gray-700 leading-relaxed break-words">
+                                {{ $comentario->comentario }}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -136,6 +158,18 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
                         <span class="text-sm font-medium">{{ $successMessage }}</span>
+                    </div>
+                </div>
+            @endif
+
+            @if ($errors->has('comentario'))
+                <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <div class="flex items-center gap-2 text-red-700">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-sm font-medium">{{ $errors->first('comentario') }}</span>
                     </div>
                 </div>
             @endif
@@ -216,6 +250,11 @@
                         behavior: 'smooth'
                     });
                 }
+
+                // Disparar evento global para que otros componentes se actualicen
+                document.dispatchEvent(new CustomEvent('comment-count-updated', {
+                    detail: { postId: @js($post->id) }
+                }));
             }, 150);
         });
 
@@ -271,7 +310,7 @@
             }
         });
 
-        // Cerrar menús de opciones al hacer clic fuera
+        // Cerrar menús de opciones al hacer clic fuera o al eliminar
         document.addEventListener('click', function (e) {
             // Cerrar todos los menús de opciones abiertos
             document.querySelectorAll('[x-data*="showOptions"]').forEach(element => {
@@ -281,9 +320,36 @@
             });
         });
 
+        // Cerrar menús con tecla ESC
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('[x-data*="showOptions"]').forEach(element => {
+                    if (element.__x && element.__x.$data) {
+                        element.__x.$data.showOptions = false;
+                    }
+                });
+            }
+        });
+
         // Escuchar evento de comentario eliminado para actualizar UI
         Livewire.on('comment-deleted', (postId) => {
-            // Aquí podrías agregar lógica adicional si necesitas actualizar algo específico
+            // Cerrar todos los menús después de eliminar
+            document.querySelectorAll('[x-data*="showOptions"]').forEach(element => {
+                if (element.__x && element.__x.$data) {
+                    element.__x.$data.showOptions = false;
+                }
+            });
+
+            // Forzar una actualización del componente padre si existe
+            if (window.Livewire) {
+                setTimeout(() => {
+                    // Disparar evento global para que otros componentes se actualicen
+                    document.dispatchEvent(new CustomEvent('comment-count-updated', {
+                        detail: { postId: postId }
+                    }));
+                }, 100);
+            }
+
             console.log('Comentario eliminado del post:', postId);
         });
 

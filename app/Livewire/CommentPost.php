@@ -22,13 +22,18 @@ class CommentPost extends Component
         $this->comments = $this->post->comentarios()->count();
     }
 
-    protected $listeners = ['comment-added' => 'refreshCommentsCount'];
+    protected $listeners = [
+        'comment-added' => 'refreshCommentsCount',
+        'comment-deleted' => 'refreshCommentsCount'
+    ];
 
     public function refreshCommentsCount($postId = null)
     {
         // Si no se pasa postId, simplemente actualizar
         // Si se pasa postId, solo actualizar si coincide
         if ($postId === null || $this->post->id == $postId) {
+            // Refrescar el post desde la base de datos para asegurar datos actualizados
+            $this->post->refresh();
             $this->updateCommentsCount();
         }
     }
