@@ -17,7 +17,7 @@ class CommentsSection extends Component
     public $comentario = '';
     public $successMessage = '';
     public $showLoadMore = false;
-    public $commentsPerPage = 5;
+    public $commentsPerPage = 10;
     public $loadedComments = 0;
     public $totalComments = 0;
 
