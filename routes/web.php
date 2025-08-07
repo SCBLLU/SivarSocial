@@ -16,6 +16,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SpotifyApiController;
 use App\Http\Controllers\iTunesApiController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\RecoverController;
 
 Route::get('/', function () {
     return view('home');
@@ -28,7 +29,37 @@ Route::post('/register', [RegisterController::class, 'store']);
 
 
 Route::get('/login', [LoginController::class, 'index'])->name('login');
-Route::post('/login', [LoginController::class, 'store']); 
+Route::post('/login', [LoginController::class, 'store']);
+
+/**
+ * Zona de recuperación de contraseña
+ * */
+
+      /**
+       *  RUTA DE PRUEBA
+       * */
+      // Route::get('/clear-session', function () {
+      //       Session::forget('codigo_verificacion'); 
+      //       Session::forget('email_verificacion');
+      //       Session::forget('codigo_verificado');
+      //       return "Sesión borrada para pruebas.";
+      //   });
+
+Route::get('/recuperar', [RecoverController::class, 'index'])->name('recuperar');
+
+Route::post('/recuperar', [RecoverController::class, 'enviarCodigo'])->name('recuperar.enviar');
+
+Route::get('/code-verific', [RecoverController::class, 'index2'])->name('code.verific');
+
+Route::post('/code-verific', [RecoverController::class, 'validarCodigo'])->name('code.verification');
+
+Route::get('/restablecer', [RecoverController::class, 'index3'])->name('restablecer');
+
+Route::post('/restablecer', [RecoverController::class, 'restablecer'])->name('restablecer.verification');
+
+/**
+ * Fin de la Zona de recuperación de contraseña
+ * */ 
 
 
 Route::post('/logout', [LogoutController::class, 'store'])->name('logout');
