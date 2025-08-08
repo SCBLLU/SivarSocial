@@ -8,6 +8,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css', 
                 'resources/css/menu-mobile.css',
+                'resources/css/post-creation.css',
                 'resources/js/app.js'
             ],
             refresh: true,

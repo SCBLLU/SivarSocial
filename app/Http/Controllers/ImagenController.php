@@ -33,36 +33,56 @@ class ImagenController extends Controller
             $width = $imagenServidor->width();
             $height = $imagenServidor->height();
 
-            // Calcular la escala para que quepa completamente en el cuadrado
-            $scale = min($targetSize / $width, $targetSize / $height);
-            $newWidth = (int)($width * $scale);
-            $newHeight = (int)($height * $scale);
+            // Si la imagen ya es cuadrada o muy cerca, solo redimensionar
+            $aspectRatio = $width / $height;
+            
+            if (abs($aspectRatio - 1.0) < 0.05) {
+                // La imagen ya es prácticamente cuadrada, solo redimensionar
+                $imagenServidor->resize($targetSize, $targetSize);
+            } else {
+                // Calcular la escala para que quepa completamente en el cuadrado
+                $scale = min($targetSize / $width, $targetSize / $height);
+                $newWidth = (int)($width * $scale);
+                $newHeight = (int)($height * $scale);
 
-            // Redimensionar manteniendo proporciones (SIN recortar)
-            $imagenServidor->scale($newWidth, $newHeight);
+                // Redimensionar manteniendo proporciones (SIN recortar)
+                $imagenServidor->scale($newWidth, $newHeight);
 
-            // Crear un canvas cuadrado negro y centrar la imagen redimensionada
-            $canvas = $manager->create($targetSize, $targetSize)->fill('010409');
+                // Crear un canvas cuadrado con fondo negro (estilo Instagram/TikTok)
+                $canvas = $manager->create($targetSize, $targetSize)->fill('000000');
 
-            // Calcular posición para centrar
-            $x = (int)(($targetSize - $newWidth) / 2);
-            $y = (int)(($targetSize - $newHeight) / 2);
+                // Calcular posición para centrar
+                $x = (int)(($targetSize - $newWidth) / 2);
+                $y = (int)(($targetSize - $newHeight) / 2);
 
-            // Colocar la imagen centrada en el canvas
-            $canvas->place($imagenServidor, 'top-left', $x, $y);
+                // Colocar la imagen centrada en el canvas
+                $canvas->place($imagenServidor, 'top-left', $x, $y);
+                
+                // Usar el canvas como imagen final
+                $imagenServidor = $canvas;
+            }
 
             // Guardar con calidad optimizada
-            $canvas->save(public_path('uploads') . '/' . $nombreImagen, 85);
+            $imagenServidor->save(public_path('uploads') . '/' . $nombreImagen, 85);
+            
+            return response()->json([
+                'imagen' => $nombreImagen,
+                'message' => 'Imagen procesada correctamente a formato 1:1',
+                'size' => '1080x1080',
+                'original_dimensions' => $width . 'x' . $height
+            ]);
+            
         } catch (\Exception $e) {
             // Si falla Intervention Image, usar método tradicional como fallback
             $imagen->move(public_path('uploads'), $nombreImagen);
+            
+            return response()->json([
+                'imagen' => $nombreImagen,
+                'message' => 'Imagen subida (procesamiento básico)',
+                'size' => 'original',
+                'note' => 'Se usó método de respaldo'
+            ]);
         }
-
-        return response()->json([
-            'imagen' => $nombreImagen,
-            'message' => 'Imagen procesada automáticamente',
-            'size' => '1080x1080'
-        ]);
     }
 
     // Subida de imagen de perfil (a /perfiles) 

@@ -65,16 +65,11 @@ function updateSubmitButton() {
     // Validación según el tipo de post
     if (currentPostType === 'imagen') {
         const imagenInput = document.querySelector('[name="imagen"]');
-        const tituloInput = document.getElementById('titulo');
-        const descripcionInput = document.getElementById('descripcion');
 
         console.log('imagen value:', imagenInput?.value || 'not found');
-        console.log('titulo value:', tituloInput?.value || 'not found');
-        console.log('descripcion value:', descripcionInput?.value || 'not found');
 
-        canSubmit = imagenInput && imagenInput.value.trim() !== '' &&
-            tituloInput && tituloInput.value.trim() !== '' &&
-            descripcionInput && descripcionInput.value.trim() !== '';
+        // Solo requiere imagen para posts de imagen
+        canSubmit = imagenInput && imagenInput.value.trim() !== '';
     } else if (currentPostType === 'musica') {
         const trackIdInput = document.querySelector('[name="itunes_track_id"]');
         canSubmit = trackIdInput && trackIdInput.value.trim() !== '';
@@ -549,51 +544,98 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 1500); // Reducido de 2000ms a 1500ms para mejor sincronización
 });
 
-// DROPZONE PARA CREAR POSTS - SIMPLICADO AUTOMÁTICO
+// DROPZONE PARA CREAR POSTS - NUEVA INTERFAZ SIMPLIFICADA
 if (document.getElementById('dropzone')) {
     let dropzone = new Dropzone('#dropzone', {
         url: '/imagenes',
         dictDefaultMessage: 'Sube tu imagen aquí',
         acceptedFiles: '.jpg,.jpeg,.png',
-        addRemoveLinks: true,
-        dictRemoveFile: 'Eliminar archivo',
+        addRemoveLinks: false, // Los controles están en la nueva UI
         maxFiles: 1,
         maxFilesize: 20,
         uploadMultiple: false,
         paramName: 'imagen',
+        autoProcessQueue: true,
+        createImageThumbnails: false, // No necesitamos thumbnails de Dropzone
+        previewTemplate: '<div style="display:none;"></div>', // Ocultar preview de Dropzone
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         init: function () {
-            // Si ya hay una imagen cargada, mostrarla como mockFile
+            // Exponer instancia globalmente para uso desde otros scripts
+            window.dropzoneInstance = this;
+
+            // Si ya hay una imagen cargada, configurar estado
             const imagenInput = document.querySelector('[name="imagen"]');
             if (imagenInput && imagenInput.value.trim()) {
                 const mockFile = {
                     name: imagenInput.value,
-                    size: 1234
+                    size: 1234,
+                    status: Dropzone.SUCCESS
                 };
-                this.emit('addedfile', mockFile);
-                this.emit('thumbnail', mockFile, `/uploads/${mockFile.name}`);
+                this.files.push(mockFile);
                 this.emit('complete', mockFile);
-                mockFile.previewElement.classList.add('dz-success', 'dz-complete');
+                updateSubmitButton();
+            }
+        },
+
+        // Interceptar cuando se añade un archivo
+        addedfile: function (file) {
+            // No hacer nada aquí, la UI personalizada maneja el preview
+        },
+
+        // Cuando se procesa un archivo
+        processing: function (file) {
+            if (typeof showNotification === 'function') {
+                showNotification('Procesando imagen...', 'info');
+            }
+        },
+
+        // Éxito en la subida
+        success: function (file, response) {
+            // Actualizar campo hidden
+            const imagenInput = document.querySelector('[name="imagen"]');
+            if (imagenInput) {
+                imagenInput.value = response.imagen;
+            }
+
+            // Actualizar botón submit
+            if (typeof updateSubmitButton === 'function') {
+                updateSubmitButton();
+            }
+
+            // Mostrar notificación
+            if (typeof showNotification === 'function') {
+                showNotification(response.message || 'Imagen subida correctamente', 'success');
+            }
+        },
+
+        // Error en la subida
+        error: function (file, errorMessage) {
+            console.error('Error uploading file:', errorMessage);
+
+            if (typeof showNotification === 'function') {
+                const message = typeof errorMessage === 'string' ? errorMessage : 'Error al subir imagen';
+                showNotification(message, 'error');
+            }
+
+            // Limpiar archivo fallido
+            this.removeFile(file);
+        },
+
+        // Archivo removido
+        removedfile: function (file) {
+            // Limpiar campo hidden
+            const imagenInput = document.querySelector('[name="imagen"]');
+            if (imagenInput) {
+                imagenInput.value = '';
+            }
+
+            // Actualizar botón submit
+            if (typeof updateSubmitButton === 'function') {
                 updateSubmitButton();
             }
         }
-    });
-
-    // Al subir imagen exitosamente, actualizar input
-    dropzone.on("success", function (file, response) {
-        document.querySelector('[name="imagen"]').value = response.imagen;
-        updateSubmitButton();
-
-        // Mostrar notificación de procesamiento automático
-        showNotification('Imagen procesada automáticamente', 'success');
-    });
-
-    // Al eliminar imagen, limpiar input
-    dropzone.on("removedfile", function (file) {
-        document.querySelector('[name="imagen"]').value = "";
-        updateSubmitButton();
     });
 }
 
