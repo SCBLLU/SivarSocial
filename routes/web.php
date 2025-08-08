@@ -26,6 +26,7 @@ Route::get('/', HomeController::class)->name('home');
 
 Route::get('/register', [RegisterController::class, 'show'])->name('register');
 Route::post('/register', [RegisterController::class, 'store']);
+Route::post('/register/validate-step1', [RegisterController::class, 'validateStep1']);
 
 
 Route::get('/login', [LoginController::class, 'index'])->name('login');

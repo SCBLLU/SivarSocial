@@ -145,19 +145,19 @@
     {{-- Contenedor principal --}}
     <div class="content-wrapper">
         <header class="bg-white shadow-violet-700/100 rounded-b-xl">
-            <div class="container mx-auto flex justify-between items-center p-5">
-                <a href="{{ route('home') }}" class="cursor-pointer z-20">
+            <div class="container flex items-center justify-between p-5 mx-auto">
+                <a href="{{ route('home') }}" class="z-20 cursor-pointer">
                     <img srcset="https://res.cloudinary.com/dj848z4er/image/upload/v1748745136/tokhsr71m0thpsjaduyc.png 4x"
                         alt="LOGO" class="navbar-logo-responsive">
                 </a>
                 <!-- Menú hamburguesa SIEMPRE a la derecha dentro del navbar -->
-                <div class="ml-auto relative">
+                <div class="relative ml-auto">
 
                     <!-- Menú animado y responsivo -->
                     <nav
-                        class="navmax absolute md:static right-0 top-12 md:top-0 bg-white md:bg-transparent rounded-lg md:rounded-none w-56 md:w-auto z-50 hidden md:flex flex-col md:flex-row gap-8 items-center transition-all duration-300 ease-in-out">
+                        class="absolute right-0 z-50 flex-col items-center hidden w-56 gap-8 transition-all duration-300 ease-in-out bg-white rounded-lg navmax md:static top-12 md:top-0 md:bg-transparent md:rounded-none md:w-auto md:flex md:flex-row">
                         <div
-                            class="profile-account flex flex-col md:flex-row md:gap-8 md:items-center p-4 md:p-0 bg-white md:bg-transparent rounded-lg md:rounded-none w-full md:w-auto">
+                            class="flex flex-col w-full p-4 bg-white rounded-lg profile-account md:flex-row md:gap-8 md:items-center md:p-0 md:bg-transparent md:rounded-none md:w-auto">
                             @auth
                                 @php
                                     // Detectar si estás en tu propio perfil
@@ -175,7 +175,7 @@
                                 @if ($isProfile)
                                     {{-- Solo mostrar PUBLICACIONES cuando estás en tu propio perfil --}}
                                     <a href="{{ route('home') }}"
-                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 text-center md:text-left hover:underline flex items-center gap-2 justify-center">
+                                        class="flex items-center justify-center gap-2 my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
                                         PUBLICACIONES
                                     </a>
                                 @else
@@ -186,29 +186,25 @@
                             @guest
                                 @if (request()->routeIs('login'))
                                     <a href="{{ route('home') }}"
-                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline">
+                                        class="block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
                                         PUBLICACIONES
-                                    </a>
-                                    <a href="{{ url('/register') }}"
-                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline">
-                                        CREAR CUENTA
                                     </a>
                                 @elseif (request()->routeIs('register'))
                                     <a href="{{ route('home') }}"
-                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline">
+                                        class="block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
                                         PUBLICACIONES
                                     </a>
                                     <a href="{{ route('login') }}"
-                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline">
+                                        class="block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
                                         INICIAR SESIÓN
                                     </a>
                                 @else
                                     <a href="{{ route('login') }}"
-                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline">
+                                        class="block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
                                         INICIAR SESIÓN
                                     </a>
                                     <a href="{{ url('/register') }}"
-                                        class="font-bold uppercase text-blue-700 text-base my-2 md:my-0 block text-center md:text-left hover:underline">
+                                        class="block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
                                         CREAR CUENTA
                                     </a>
                                 @endif
@@ -225,13 +221,13 @@
         <!-- fin menu para mobile -->
 
         <div class="contenido">
-            @if(Route::is('recuperar', 'code.verific', 'restablecer'))
-                @yield('contenido-recover')
-            @else
-                <main class="container mx-auto mt-10 p-5 mb-5">
-                    <h2 class="font-bold text-center text-3xl mb-10">
-                        @yield('titulo')
-                    </h2>
+        @if(Route::is('recuperar', 'code.verific', 'restablecer'))
+            @yield('contenido-recover')
+        @else
+            <main class="container p-5 mx-auto mt-10 mb-5">
+                <h2 class="mb-10 text-3xl font-bold text-center">
+                    @yield('titulo')
+                </h2>
 
                     <div>
                         @yield('contenido')
@@ -239,9 +235,9 @@
                 </main>
             @endif
 
-            <footer class="text-center p-5 text-gray-300 font-bold uppercase">
-                <small>SivarSocial &copy; {{ now()->year }}</small>
-            </footer>
+        <footer class="p-5 font-bold text-center text-gray-300 uppercase">
+            <small>SivarSocial &copy; {{ now()->year }}</small>
+        </footer>
         </div>
         <!-- menu de perfil para mobile -->
         @yield('lista-perfiles-mobile')
@@ -265,16 +261,21 @@
             document.getElementById("buscar2").focus();
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const camposBusqueda = [
-                { inputId: 'buscar', resultIds: ['resultados-busqueda'] },
-                { inputId: 'buscar2', resultIds: ['resultados-busqueda2'] }
+        document.addEventListener('DOMContentLoaded', function() {
+            const camposBusqueda = [{
+                    inputId: 'buscar',
+                    resultIds: ['resultados-busqueda']
+                },
+                {
+                    inputId: 'buscar2',
+                    resultIds: ['resultados-busqueda2']
+                }
             ];
 
             camposBusqueda.forEach(campo => {
                 const input = document.getElementById(campo.inputId);
                 if (input) {
-                    input.addEventListener('keyup', function () {
+                    input.addEventListener('keyup', function() {
                         const query = this.value;
 
                         fetch(`/buscar-usuarios?buscar=${encodeURIComponent(query)}`)
@@ -324,28 +325,32 @@
             document.querySelector('meta[name="theme-color"]').setAttribute('content', '');
         }
 
-        window.addEventListener("resize", function () {
+        window.addEventListener("resize", function() {
             if (window.innerWidth > 768) {
                 closeComments();
             }
         });
 
-        dragHandle.addEventListener('touchstart', function (e) {
+        dragHandle.addEventListener('touchstart', function(e) {
             dragging = true;
             startY = e.touches[0].clientY;
             panel.style.transition = "none";
-        }, { passive: true });
+        }, {
+            passive: true
+        });
 
-        dragHandle.addEventListener('touchmove', function (e) {
+        dragHandle.addEventListener('touchmove', function(e) {
             if (!dragging) return;
             currentY = e.touches[0].clientY;
             const diff = currentY - startY;
             if (diff > 0) {
                 panel.style.transform = `translateY(${diff}px)`;
             }
-        }, { passive: true });
+        }, {
+            passive: true
+        });
 
-        dragHandle.addEventListener('touchend', function () {
+        dragHandle.addEventListener('touchend', function() {
             dragging = false;
             const diff = currentY - startY;
             panel.style.transition = "transform 0.2s";
