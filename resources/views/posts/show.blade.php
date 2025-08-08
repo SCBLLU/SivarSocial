@@ -1,48 +1,5 @@
 @extends('layouts.app')
 
-@push('styles')
-    <style>
-        [x-cloak] {
-            display: none !important;
-        }
-
-        /* Asegurar que el modal esté completamente oculto inicialmente */
-        .modal-backdrop[style*="display: none"] {
-            display: none !important;
-            opacity: 0 !important;
-            visibility: hidden !important;
-        }
-
-        /* Prevenir flash de contenido Alpine.js */
-        [x-cloak] {
-            display: none !important;
-        }
-
-        /* Asegurar visibilidad correcta de elementos con x-show */
-        [x-show]:not([style*="display: none"]) {
-            visibility: visible !important;
-        }
-
-        /* Ocultar elementos con x-show false por defecto */
-        [x-show][style*="display: none"] {
-            display: none !important;
-            visibility: hidden !important;
-        }
-
-        /* Estilos específicos del modal de likes */
-        .likes-modal {
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-        }
-
-        /* Prevenir scroll del body cuando el modal está abierto */
-        body.modal-open {
-            overflow: hidden !important;
-            padding-right: 0px;
-        }
-    </style>
-@endpush
-
 @section('titulo')
     <div class="flex items-center justify-center relative w-full">
         <a href="{{ url()->previous() }}"
@@ -216,19 +173,19 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                                                                                                                                                            h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                                                                                                                                                                        h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
                                                     <div id="progress-bar"
                                                         class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                                                                                                                                                                transition-all duration-100 ease-out"
+                                                                                                                                                                                                                            transition-all duration-100 ease-out"
                                                         style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
                                                     <div id="progress-thumb"
                                                         class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                                                                                                                                                                shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                                                                                                                                                                opacity-0 transition-all duration-200 ease-out
-                                                                                                                                                                                                                hover:scale-110 active:scale-95"
+                                                                                                                                                                                                                            shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                                                                                                                                                                            opacity-0 transition-all duration-200 ease-out
+                                                                                                                                                                                                                            hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 
@@ -486,10 +443,9 @@
         </div>
     </div>
 
-    <!-- Modal de Likes integrado directamente -->
-    <div id="likesModal" class="fixed inset-0 bg-black bg-opacity-60 justify-center items-center z-50 p-4 hidden">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm mx-4 max-h-[90vh] flex flex-col transform transition-all scale-95 opacity-0"
-            id="likesModalContent">
+    <!-- Modal de Likes -->
+    <div id="likesModal" class="fixed inset-0 flex justify-center items-center z-50 p-4 likes-modal" style="display: none;">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm max-h-[90vh] flex flex-col" id="likesModalContent">
 
             <!-- Header -->
             <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50 rounded-t-xl">
@@ -1124,11 +1080,9 @@
             // Usar el postId pasado o el actual
             const targetPostId = postId || currentPostId;
 
-            // Mostrar modal con animación
+            // Mostrar modal con animación y centrado
             modal.style.display = 'flex';
             setTimeout(() => {
-                modal.classList.remove('hidden');
-                content.style.transform = 'scale(1)';
                 content.style.opacity = '1';
                 document.body.style.overflow = 'hidden'; // Prevenir scroll
             }, 10);
@@ -1150,7 +1104,6 @@
             setTimeout(() => {
                 if (modal) {
                     modal.style.display = 'none';
-                    modal.classList.add('hidden');
                 }
                 document.body.style.overflow = ''; // Restaurar scroll
 
@@ -1227,13 +1180,13 @@
             const content = document.getElementById('likesListContent');
             if (content) {
                 content.innerHTML = `
-                            <div class="text-center py-8">
-                                <svg class="w-12 h-12 text-red-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                                </svg>
-                                <p class="text-sm text-red-500">Error al cargar los likes</p>
-                            </div>
-                        `;
+                                <div class="text-center py-8">
+                                    <svg class="w-12 h-12 text-red-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                    </svg>
+                                    <p class="text-sm text-red-500">Error al cargar los likes</p>
+                                </div>
+                            `;
             }
         }
 
@@ -1269,38 +1222,38 @@
                 const isFollowing = like.isFollowing || false;
 
                 html += `
-                            <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
-                                <div class="flex items-center gap-3">
-                                    <a href="/${user.username}" class="flex-shrink-0">
-                                        <img src="${avatarUrl}" 
-                                             alt="Avatar de ${user.username}"
-                                             class="w-12 h-12 rounded-full object-cover border-2 border-gray-200 hover:border-blue-400 transition-colors"
-                                             onerror="this.src='/img/img.jpg'">
-                                    </a>
-                                    <div class="min-w-0 flex-1">
-                                        <a href="/${user.username}" class="group">
-                                            <p class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
-                                                ${user.name || user.username}
-                                            </p>
-                                            <p class="text-sm text-gray-500 truncate">@${user.username}</p>
+                                <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+                                    <div class="flex items-center gap-3">
+                                        <a href="/${user.username}" class="flex-shrink-0">
+                                            <img src="${avatarUrl}" 
+                                                 alt="Avatar de ${user.username}"
+                                                 class="w-12 h-12 rounded-full object-cover border-2 border-gray-200 hover:border-blue-400 transition-colors"
+                                                 onerror="this.src='/img/img.jpg'">
                                         </a>
+                                        <div class="min-w-0 flex-1">
+                                            <a href="/${user.username}" class="group">
+                                                <p class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                                                    ${user.name || user.username}
+                                                </p>
+                                                <p class="text-sm text-gray-500 truncate">@${user.username}</p>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex-shrink-0">
+                                        ${currentUserId && currentUserId !== user.id ? `
+                                            <button onclick="toggleFollow(${user.id}, this)" 
+                                                    class="follow-btn px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${isFollowing ? 'bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-500' : 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500'}">
+                                                ${isFollowing ? 'Siguiendo' : 'Seguir'}
+                                            </button>
+                                        ` : currentUserId === user.id ? `
+                                            <span class="text-xs text-gray-400 font-medium">Tú</span>
+                                        ` : `
+                                            <span class="text-xs text-gray-400 font-medium">—</span>
+                                        `}
                                     </div>
                                 </div>
-
-                                <div class="flex-shrink-0">
-                                    ${currentUserId && currentUserId !== user.id ? `
-                                        <button onclick="toggleFollow(${user.id}, this)" 
-                                                class="follow-btn px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${isFollowing ? 'bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-500' : 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500'}">
-                                            ${isFollowing ? 'Siguiendo' : 'Seguir'}
-                                        </button>
-                                    ` : currentUserId === user.id ? `
-                                        <span class="text-xs text-gray-400 font-medium">Tú</span>
-                                    ` : `
-                                        <span class="text-xs text-gray-400 font-medium">—</span>
-                                    `}
-                                </div>
-                            </div>
-                        `;
+                            `;
             });
 
             content.innerHTML = html;
@@ -1380,6 +1333,4 @@
         // Exponer función globalmente
         window.openLikesModal = openLikesModal;
     </script>
-
-    <script>
 @endsection
