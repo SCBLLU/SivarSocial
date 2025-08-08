@@ -8,12 +8,10 @@
     @stack('styles')
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <title>SivarSocial</title>
-    @vite(['resources/css/app.css', 'resources/css/menu-mobile.css', 'resources/css/likes-modal.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/menu-mobile.css', 'resources/js/app.js'])
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @livewireStyles()
-    <!-- Alpine.js - Cargar ANTES del contenido -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://kit.fontawesome.com/6305bb531f.js" crossorigin="anonymous"></script>
 
     <!-- Estilos para prevenir flash de contenido Alpine.js -->
@@ -250,9 +248,6 @@
         <!-- fin menu de perfil para mobile -->
 
     </div>
-
-    <!-- Modal Global de Likes -->
-    <livewire:likes-modal />
 
     @livewireScripts()
 
