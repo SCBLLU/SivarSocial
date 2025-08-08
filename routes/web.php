@@ -77,6 +77,9 @@ Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
 Route::get('/{user:username}/posts/{post}', [PostController::class, 'show'])->name('posts.show');
 Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
 
+// Ruta para obtener likes de un post via AJAX
+Route::get('/posts/{post}/likes', [PostController::class, 'getLikes'])->name('posts.likes.get');
+
 
 Route::post('/{user:username}/posts/{post}', [ComentarioController::class, 'store'])->name('comentarios.store');
 
@@ -107,4 +110,9 @@ Route::get('/{user:username}', [PostController::class, 'index'])->name('posts.in
 
 Route::post('/{user:username}/follow', [FollowerController::class, 'store'])->name('users.follow');
 Route::delete('/{user:username}/unfollow', [FollowerController::class, 'destroy'])->name('users.unfollow');
+
+// Rutas para seguir/dejar de seguir por ID (para AJAX)
+Route::post('/users/{user}/follow', [FollowerController::class, 'storeById'])->name('users.follow.id');
+Route::post('/users/{user}/unfollow', [FollowerController::class, 'destroyById'])->name('users.unfollow.id');
+
 Route::delete('/user', [UserController::class, 'destroy'])->name('user.destroy');

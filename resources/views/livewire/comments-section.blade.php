@@ -1,12 +1,13 @@
 <!-- Contenedor principal de comentarios -->
-<div class="flex flex-col h-full">
+<div class="flex flex-col h-auto lg:h-full">
     <!-- Header de comentarios -->
     <div class="px-4 py-3 border-b border-gray-200 flex-shrink-0">
         <h2 class="text-lg font-bold text-center text-black">Comentarios</h2>
     </div>
 
     <!-- Lista de comentarios -->
-    <div class="flex-1 overflow-y-auto px-4 py-4 space-y-1" id="comments-list">
+    <div class="@if($this->comentarios->count()) flex-1 overflow-y-auto @else flex-shrink-0 lg:flex-1 @endif px-4 py-4 space-y-1"
+        id="comments-list">
         @if ($this->comentarios->count())
             @foreach ($this->comentarios as $index => $comentario)
                 <div wire:key="comment-{{ $comentario->id }}" class="group relative" x-data="{ showOptions: false }"
@@ -135,14 +136,14 @@
             @endif
         @else
             <!-- Estado vacío -->
-            <div class="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <div class="bg-gray-100 rounded-full p-4 mb-4">
-                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex flex-col items-center justify-center py-6 lg:py-12 px-4 text-center">
+                <div class="bg-gray-100 rounded-full p-3 lg:p-4 mb-3 lg:mb-4">
+                    <svg class="w-6 h-6 lg:w-8 lg:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">No hay comentarios</h3>
+                <h3 class="text-base lg:text-lg font-medium text-gray-900 mb-1 lg:mb-2">No hay comentarios</h3>
                 <p class="text-gray-500 text-sm">Sé el primero en comentar esta publicación</p>
             </div>
         @endif
