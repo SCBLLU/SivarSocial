@@ -173,19 +173,19 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                                                                                                                                                                                                                        h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                                                                                                                                                                                                                                    h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
                                                     <div id="progress-bar"
                                                         class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                                                                                                                                                                                                                            transition-all duration-100 ease-out"
+                                                                                                                                                                                                                                                                                        transition-all duration-100 ease-out"
                                                         style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
                                                     <div id="progress-thumb"
                                                         class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                                                                                                                                                                                                                            shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                                                                                                                                                                                                                            opacity-0 transition-all duration-200 ease-out
-                                                                                                                                                                                                                                                                            hover:scale-110 active:scale-95"
+                                                                                                                                                                                                                                                                                        shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                                                                                                                                                                                                                                        opacity-0 transition-all duration-200 ease-out
+                                                                                                                                                                                                                                                                                        hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 
@@ -443,20 +443,21 @@
         </div>
     </div>
 
-    <!-- Modal de Likes - Estilo Instagram sin efectos -->
-    <div id="likesModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center" style="display: none;">
+    <!-- Modal de Likes - Estilo Instagram optimizado -->
+    <div id="likesModal" class="fixed inset-0 z-50 hidden items-center justify-center"
+        style="background-color: rgba(0, 0, 0, 0.6);">
         <!-- Backdrop para cerrar modal -->
-        <div class="absolute inset-0" onclick="closeLikesModal()"></div>
+        <div class="absolute inset-0 cursor-pointer" onclick="closeLikesModal()"></div>
 
         <!-- Contenedor del modal - Exacto como Instagram -->
-        <div class="relative bg-white w-full h-full sm:w-96 sm:h-96 sm:rounded-xl flex flex-col overflow-hidden"
+        <div class="relative bg-white w-full h-full sm:w-96 sm:h-96 sm:rounded-xl flex flex-col overflow-hidden shadow-2xl"
             id="likesModalContent">
 
             <!-- Header simple como Instagram -->
             <div class="flex-none border-b border-gray-200 bg-white sm:rounded-t-xl">
                 <div class="flex items-center justify-between px-4 py-3">
                     <h3 class="text-base font-semibold text-gray-900">Me gusta</h3>
-                    <button onclick="closeLikesModal()" class="p-1">
+                    <button onclick="closeLikesModal()" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
                         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M6 18L18 6M6 6l12 12" />
@@ -466,7 +467,7 @@
             </div>
 
             <!-- Lista scrolleable simple -->
-            <div class="flex-1 overflow-y-auto" id="likesScrollContainer">
+            <div class="flex-1 overflow-y-auto bg-white" id="likesScrollContainer">
                 <div id="likesUsersList"></div>
 
                 <!-- Estados básicos -->
@@ -1083,8 +1084,14 @@
             const targetPostId = postId || currentPostId;
 
             try {
-                // Mostrar modal con animación
-                modal.style.display = 'flex';
+                // Reset completo del contenido del modal antes de mostrar
+                content.style.transform = '';
+                content.style.opacity = '';
+                content.style.scale = '';
+
+                // Mostrar modal usando clases de Tailwind
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
                 document.body.style.overflow = 'hidden';
 
                 // Configurar el modal para listas largas
@@ -1116,16 +1123,22 @@
             const content = document.getElementById('likesModalContent');
             const searchInput = document.getElementById('likesSearchInput');
 
-            if (content) {
-                content.style.transform = 'scale(0.95)';
-                content.style.opacity = '0.8';
-            }
-
-            setTimeout(() => {
+            try {
+                // Ocultar modal usando clases de Tailwind
                 if (modal) {
-                    modal.style.display = 'none';
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
                 }
+
+                // Restaurar scroll del body
                 document.body.style.overflow = '';
+
+                // Reset completo del contenido modal
+                if (content) {
+                    content.style.transform = '';
+                    content.style.opacity = '';
+                    content.style.scale = '';
+                }
 
                 // Limpiar datos y reset
                 likesData = [];
@@ -1136,8 +1149,15 @@
                     searchInput.value = '';
                 }
 
-                // Instagram no necesita ocultar búsqueda - no la tiene
-            }, 200);
+            } catch (error) {
+                console.error('❌ Error al cerrar modal:', error);
+                // Forzar cierre en caso de error
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+                document.body.style.overflow = '';
+            }
         }
 
         // Instagram no usa búsqueda - función simplificada para compatibilidad
@@ -1357,32 +1377,32 @@
                 const isFollowing = like.isFollowing || false;
 
                 html += `
-                        <div class="px-4 py-3 flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <a href="/${user.username}">
-                                    <img src="${avatarUrl}" 
-                                         alt="${user.username}"
-                                         class="w-12 h-12 rounded-full object-cover"
-                                         onerror="this.src='/img/img.jpg'">
-                                </a>
-                                <div>
-                                    <a href="/${user.username}" class="block">
-                                        <p class="font-semibold text-sm text-gray-900">${user.name || user.username}</p>
-                                        <p class="text-sm text-gray-500">@${user.username}</p>
+                            <div class="px-4 py-3 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <a href="/${user.username}">
+                                        <img src="${avatarUrl}" 
+                                             alt="${user.username}"
+                                             class="w-12 h-12 rounded-full object-cover"
+                                             onerror="this.src='/img/img.jpg'">
                                     </a>
+                                    <div>
+                                        <a href="/${user.username}" class="block">
+                                            <p class="font-semibold text-sm text-gray-900">${user.name || user.username}</p>
+                                            <p class="text-sm text-gray-500">@${user.username}</p>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                            ${currentUserId && currentUserId !== user.id ? `
-                                <button onclick="toggleFollow(${user.id}, this)" 
-                                        data-user-id="${user.id}"
-                                        class="px-4 py-1.5 text-sm font-medium rounded-lg ${isFollowing
+                                ${currentUserId && currentUserId !== user.id ? `
+                                    <button onclick="toggleFollow(${user.id}, this)" 
+                                            data-user-id="${user.id}"
+                                            class="px-4 py-1.5 text-sm font-medium rounded-lg ${isFollowing
                             ? 'bg-gray-200 text-gray-700'
                             : 'bg-blue-500 text-white'
                         }">
-                                    <span class="follow-text">${isFollowing ? 'Siguiendo' : 'Seguir'}</span>
-                                </button>
-                            ` : ''}
-                        </div>`;
+                                        <span class="follow-text">${isFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                    </button>
+                                ` : ''}
+                            </div>`;
             });
 
             container.innerHTML = html;
@@ -1415,11 +1435,11 @@
 
             // Animación de carga
             button.innerHTML = `
-                                <div class="flex items-center gap-2">
-                                    <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                                    <span class="text-sm">Procesando...</span>
-                                </div>
-                            `;
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                        <span class="text-sm">Procesando...</span>
+                                    </div>
+                                `;
 
             performFollowAction(userId, action, button, textElement, iconElement, originalText);
         }
@@ -1449,11 +1469,11 @@
                         if (textElement) {
                             // Estructura nueva del botón
                             button.innerHTML = `
-                                                <span class="follow-text">${isNowFollowing ? 'Siguiendo' : 'Seguir'}</span>
-                                                <svg class="follow-icon w-4 h-4 ml-1 ${isNowFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                </svg>
-                                            `;
+                                                    <span class="follow-text">${isNowFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                                    <svg class="follow-icon w-4 h-4 ml-1 ${isNowFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                `;
 
                             // Actualizar clases del botón
                             button.className = `follow-btn flex items-center justify-center px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 ${isNowFollowing
@@ -1493,11 +1513,11 @@
                         // Restaurar botón con estructura nueva
                         const isFollowing = originalText === 'Siguiendo';
                         button.innerHTML = `
-                                            <span class="follow-text">${originalText}</span>
-                                            <svg class="follow-icon w-4 h-4 ml-1 ${isFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                        `;
+                                                <span class="follow-text">${originalText}</span>
+                                                <svg class="follow-icon w-4 h-4 ml-1 ${isFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            `;
 
                         // Mostrar error temporal
                         const errorTextElement = button.querySelector('.follow-text');
@@ -1553,7 +1573,7 @@
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape') {
                     const modal = document.getElementById('likesModal');
-                    if (modal && modal.style.display === 'flex') {
+                    if (modal && !modal.classList.contains('hidden')) {
                         closeLikesModal();
                     }
                 }
