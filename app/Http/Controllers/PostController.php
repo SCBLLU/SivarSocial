@@ -182,12 +182,23 @@ class PostController extends Controller
             ->with('success', 'Post eliminado correctamente');
     }
 
-    public function getLikes(Post $post)
+    public function getLikes(Request $request, Post $post)
     {
         try {
-            // Obtener likes con información del usuario
+            // Parámetros de paginación
+            $page = max(1, (int) $request->get('page', 1));
+            $perPage = min(50, max(10, (int) $request->get('per_page', 20))); // Limitar entre 10 y 50
+            $offset = ($page - 1) * $perPage;
+
+            // Obtener total de likes para paginación
+            $totalLikes = $post->likes()->count();
+
+            // Obtener likes paginados con información del usuario ordenados por más recientes
             $likes = $post->likes()
-                ->with(['user:id,name,username,imagen'])
+                ->with(['user:id,name,username,imagen,profession'])
+                ->latest() // Ordenar por más recientes
+                ->offset($offset)
+                ->limit($perPage)
                 ->get()
                 ->map(function ($like) {
                     $isFollowing = false;
@@ -213,26 +224,53 @@ class PostController extends Controller
                             'name' => $like->user->name,
                             'username' => $like->user->username,
                             'imagen' => $like->user->imagen,
+                            'profession' => $like->user->profession ?? null,
+                            'verified' => $like->user->verified ?? false, // Campo para futuro uso
                         ],
                         'isFollowing' => $isFollowing,
                         'created_at' => $like->created_at->toDateTimeString(),
                     ];
                 });
 
+            // Calcular metadatos de paginación
+            $hasMore = ($offset + $perPage) < $totalLikes;
+            $totalPages = ceil($totalLikes / $perPage);
+
             return response()->json([
                 'success' => true,
                 'likes' => $likes,
-                'total' => $likes->count(),
+                'total' => $totalLikes,
+                'pagination' => [
+                    'current_page' => $page,
+                    'per_page' => $perPage,
+                    'total_pages' => $totalPages,
+                    'has_more' => $hasMore,
+                    'from' => $offset + 1,
+                    'to' => min($offset + $perPage, $totalLikes),
+                ]
             ]);
         } catch (\Exception $e) {
             // Log del error para debugging
-            Log::error('Error in getLikes: ' . $e->getMessage());
+            Log::error('Error in getLikes: ' . $e->getMessage(), [
+                'post_id' => $post->id,
+                'page' => $request->get('page'),
+                'per_page' => $request->get('per_page'),
+                'trace' => $e->getTraceAsString()
+            ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Error al cargar los likes: ' . $e->getMessage(),
                 'likes' => [],
                 'total' => 0,
+                'pagination' => [
+                    'current_page' => 1,
+                    'per_page' => $perPage ?? 20,
+                    'total_pages' => 0,
+                    'has_more' => false,
+                    'from' => 0,
+                    'to' => 0,
+                ]
             ], 500);
         }
     }

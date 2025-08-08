@@ -173,19 +173,19 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                                                                                                                                                                        h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                                                                                                                                                                                                                        h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
                                                     <div id="progress-bar"
                                                         class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                                                                                                                                                                            transition-all duration-100 ease-out"
+                                                                                                                                                                                                                                                                            transition-all duration-100 ease-out"
                                                         style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
                                                     <div id="progress-thumb"
                                                         class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                                                                                                                                                                            shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                                                                                                                                                                            opacity-0 transition-all duration-200 ease-out
-                                                                                                                                                                                                                            hover:scale-110 active:scale-95"
+                                                                                                                                                                                                                                                                            shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                                                                                                                                                                                                                            opacity-0 transition-all duration-200 ease-out
+                                                                                                                                                                                                                                                                            hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 
@@ -443,48 +443,41 @@
         </div>
     </div>
 
-    <!-- Modal de Likes -->
-    <div id="likesModal" class="fixed inset-0 flex justify-center items-center z-50 p-4 likes-modal" style="display: none;">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm max-h-[90vh] flex flex-col" id="likesModalContent">
+    <!-- Modal de Likes - Estilo Instagram sin efectos -->
+    <div id="likesModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center" style="display: none;">
+        <!-- Backdrop para cerrar modal -->
+        <div class="absolute inset-0" onclick="closeLikesModal()"></div>
 
-            <!-- Header -->
-            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50 rounded-t-xl">
-                <h3 class="text-lg font-bold text-gray-900">Me gusta</h3>
-                <button onclick="closeLikesModal()"
-                    class="p-2 hover:bg-gray-200 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400">
-                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                        </path>
-                    </svg>
-                </button>
-            </div>
+        <!-- Contenedor del modal - Exacto como Instagram -->
+        <div class="relative bg-white w-full h-full sm:w-96 sm:h-96 sm:rounded-xl flex flex-col overflow-hidden"
+            id="likesModalContent">
 
-            <!-- Lista de usuarios que dieron like -->
-            <div class="flex-1 overflow-y-auto" id="likesListContainer">
-                <div id="likesListContent" class="p-4">
-                    <!-- El contenido se cargará dinámicamente aquí -->
-                    <div id="likesLoader" class="text-center py-8 hidden">
-                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                        <p class="text-sm text-gray-500 mt-2">Cargando...</p>
-                    </div>
-
-                    <div id="likesEmptyState" class="text-center py-8 hidden">
-                        <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                                clip-rule="evenodd" />
+            <!-- Header simple como Instagram -->
+            <div class="flex-none border-b border-gray-200 bg-white sm:rounded-t-xl">
+                <div class="flex items-center justify-between px-4 py-3">
+                    <h3 class="text-base font-semibold text-gray-900">Me gusta</h3>
+                    <button onclick="closeLikesModal()" class="p-1">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
                         </svg>
-                        <p class="text-sm text-gray-500">Esta publicación aún no tiene likes.</p>
-                    </div>
+                    </button>
                 </div>
             </div>
 
-            <!-- Footer -->
-            <div class="px-4 py-3 border-t border-gray-200 bg-gray-50 rounded-b-xl">
-                <button onclick="closeLikesModal()"
-                    class="w-full py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                    Cerrar
-                </button>
+            <!-- Lista scrolleable simple -->
+            <div class="flex-1 overflow-y-auto" id="likesScrollContainer">
+                <div id="likesUsersList"></div>
+
+                <!-- Estados básicos -->
+                <div id="likesLoader" class="hidden p-4 text-center">
+                    <div class="inline-block w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin">
+                    </div>
+                </div>
+
+                <div id="likesEmptyState" class="hidden p-8 text-center">
+                    <p class="text-gray-500">Sin likes aún</p>
+                </div>
             </div>
         </div>
     </div>
@@ -531,7 +524,7 @@
                     // Si es la misma canción y el mismo post, usar el tiempo guardado
                     if (audioState.previewUrl === previewUrl && audioState.postId === currentPostId) {
                         savedTime = audioState.currentTime || 0;
-                        console.log('Restaurando desde el tiempo:', savedTime);
+                        // Guardado de tiempo silencioso
                     }
                 } catch (error) {
                     console.error('Error al leer estado guardado:', error);
@@ -1064,10 +1057,19 @@
         });
 
         // ===== FUNCIONES PARA EL MODAL DE LIKES =====
-        let likesData = []; // Almacenar datos de likes
+        // Variables globales para el modal de likes mejorado
         let currentPostId = {{ $post->id }}; // ID del post actual
+        let likesData = [];
+        let filteredLikesData = [];
+        let currentLikesPage = 1;
+        let likesPerPage = 20;
+        let isLoadingLikes = false;
+        let hasMoreLikes = true;
+        let searchTimeout = null;
+        let touchStartY = 0;
+        let isPullingToRefresh = false;
 
-        // Función para abrir el modal de likes
+        // Función mejorada para abrir el modal de likes
         function openLikesModal(postId = null) {
             const modal = document.getElementById('likesModal');
             const content = document.getElementById('likesModalContent');
@@ -1080,45 +1082,108 @@
             // Usar el postId pasado o el actual
             const targetPostId = postId || currentPostId;
 
-            // Mostrar modal con animación y centrado
-            modal.style.display = 'flex';
-            setTimeout(() => {
-                content.style.opacity = '1';
-                document.body.style.overflow = 'hidden'; // Prevenir scroll
-            }, 10);
+            try {
+                // Mostrar modal con animación
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
 
-            // Cargar likes del post
-            loadLikesData(targetPostId);
+                // Configurar el modal para listas largas
+                setupLikesModal();
+
+                // Cargar likes del post
+                loadLikesData(targetPostId, true);
+            } catch (error) {
+                console.error('❌ Error al abrir modal:', error);
+            }
+        }        // Configurar funcionalidades del modal
+        function setupLikesModal() {
+            const scrollContainer = document.getElementById('likesScrollContainer');
+
+            // Solo scroll básico para paginación - estilo Instagram
+            if (scrollContainer) {
+                scrollContainer.addEventListener('scroll', handleLikesScroll);
+            }
+
+            // Reset variables
+            currentLikesPage = 1;
+            hasMoreLikes = true;
+            filteredLikesData = [];
         }
 
-        // Función para cerrar el modal de likes
+        // Función mejorada para cerrar el modal de likes
         function closeLikesModal() {
             const modal = document.getElementById('likesModal');
             const content = document.getElementById('likesModalContent');
+            const searchInput = document.getElementById('likesSearchInput');
 
             if (content) {
                 content.style.transform = 'scale(0.95)';
-                content.style.opacity = '0';
+                content.style.opacity = '0.8';
             }
 
             setTimeout(() => {
                 if (modal) {
                     modal.style.display = 'none';
                 }
-                document.body.style.overflow = ''; // Restaurar scroll
+                document.body.style.overflow = '';
 
-                // Limpiar datos
+                // Limpiar datos y reset
                 likesData = [];
+                filteredLikesData = [];
+                currentLikesPage = 1;
+
+                if (searchInput) {
+                    searchInput.value = '';
+                }
+
+                // Instagram no necesita ocultar búsqueda - no la tiene
             }, 200);
         }
 
-        // Función para cargar los datos de likes via AJAX
-        function loadLikesData(postId) {
-            showLikesLoader();
+        // Instagram no usa búsqueda - función simplificada para compatibilidad
+        function filterLikes(query = '') {
+            // Instagram no filtra, solo muestra todos los usuarios
+            filteredLikesData = [...likesData];
+            renderLikesList();
+        }
 
-            const url = `/posts/${postId}/likes`;
+        // Manejar scroll infinito básico - estilo Instagram
+        function handleLikesScroll(event) {
+            const container = event.target;
+            const scrollTop = container.scrollTop;
+            const scrollHeight = container.scrollHeight;
+            const clientHeight = container.clientHeight;
 
-            // Hacer petición AJAX para obtener los likes
+            // Cargar más cuando llegue cerca del final
+            if (scrollTop + clientHeight >= scrollHeight - 100 && hasMoreLikes && !isLoadingLikes) {
+                loadMoreLikes();
+            }
+        }
+
+        // Cargar más likes - estilo Instagram
+        function loadMoreLikes() {
+            if (!hasMoreLikes || isLoadingLikes) return;
+            currentLikesPage++;
+            loadLikesData(currentPostId, false);
+        }
+
+        // Función mejorada para cargar los datos de likes - estilo Instagram simple
+        function loadLikesData(postId, reset = false) {
+            if (isLoadingLikes) return;
+
+            isLoadingLikes = true;
+
+            if (reset) {
+                showLikesLoader();
+                currentLikesPage = 1;
+                likesData = [];
+                filteredLikesData = [];
+            } else {
+                showLoadMoreIndicator();
+            }
+
+            const url = `/posts/${postId}/likes?page=${currentLikesPage}&per_page=${likesPerPage}`;
+
             fetch(url, {
                 method: 'GET',
                 headers: {
@@ -1129,148 +1194,238 @@
             })
                 .then(response => {
                     if (!response.ok) {
-                        return response.text().then(text => {
-                            console.error('❌ Error response body:', text);
-                            throw new Error(`Error ${response.status}: ${response.statusText}`);
-                        });
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    likesData = data.likes || [];
+                    const newLikes = data.likes || [];
+                    const pagination = data.pagination || {};
+
+                    if (reset) {
+                        likesData = newLikes;
+                    } else {
+                        likesData = [...likesData, ...newLikes];
+                    }
+
+                    filteredLikesData = [...likesData];
+                    hasMoreLikes = pagination.has_more || false;
+
+                    updateLikesCount(data.total || likesData.length);
                     renderLikesList();
+
                     hideLikesLoader();
+                    hideLoadMoreIndicator();
                 })
                 .catch(error => {
                     console.error('❌ Error al cargar likes:', error);
                     showLikesError();
                     hideLikesLoader();
+                    hideLoadMoreIndicator();
+                })
+                .finally(() => {
+                    isLoadingLikes = false;
                 });
         }
 
-        // Función para mostrar el loader
+        // Cargar más likes
+        function loadMoreLikes() {
+            currentLikesPage++;
+            loadLikesData(currentPostId, false);
+        }
+
+        // Reintentar carga
+        function retryLoadLikes() {
+            const targetPostId = currentPostId;
+            loadLikesData(targetPostId, true);
+        }
+
+        // Actualizar contador de likes
+        function updateLikesCount(total) {
+            const countElement = document.getElementById('likesCount');
+            if (countElement && total > 0) {
+                countElement.textContent = `(${total})`;
+                countElement.classList.remove('hidden');
+            }
+        }
+
+        // Mostrar/ocultar estados
         function showLikesLoader() {
             hideAllLikesStates();
             const loader = document.getElementById('likesLoader');
             if (loader) {
                 loader.classList.remove('hidden');
+                loader.style.display = 'flex';
             }
         }
 
-        // Función para ocultar el loader
         function hideLikesLoader() {
             const loader = document.getElementById('likesLoader');
             if (loader) {
                 loader.classList.add('hidden');
+                loader.style.display = 'none';
             }
         }
 
-        // Función para mostrar estado vacío
         function showLikesEmpty() {
             hideAllLikesStates();
             const emptyState = document.getElementById('likesEmptyState');
             if (emptyState) {
                 emptyState.classList.remove('hidden');
+                emptyState.style.display = 'flex';
             }
         }
 
-        // Función para mostrar error
         function showLikesError() {
             hideAllLikesStates();
-            const content = document.getElementById('likesListContent');
-            if (content) {
-                content.innerHTML = `
-                                <div class="text-center py-8">
-                                    <svg class="w-12 h-12 text-red-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                                    </svg>
-                                    <p class="text-sm text-red-500">Error al cargar los likes</p>
-                                </div>
-                            `;
+            const errorState = document.getElementById('likesErrorState');
+            if (errorState) {
+                errorState.classList.remove('hidden');
+                errorState.style.display = 'flex';
             }
         }
 
-        // Función para ocultar todos los estados
+        function showLikesNoResults() {
+            hideAllLikesStates();
+            const noResultsState = document.getElementById('likesNoResultsState');
+            if (noResultsState) {
+                noResultsState.classList.remove('hidden');
+                noResultsState.style.display = 'flex';
+            }
+        }
+
+        function showLoadMoreIndicator() {
+            const indicator = document.getElementById('loadMoreIndicator');
+            if (indicator) {
+                indicator.classList.remove('hidden');
+                indicator.style.display = 'flex';
+            }
+        }
+
+        function hideLoadMoreIndicator() {
+            const indicator = document.getElementById('loadMoreIndicator');
+            if (indicator) {
+                indicator.classList.add('hidden');
+                indicator.style.display = 'none';
+            }
+        }
+
         function hideAllLikesStates() {
-            const states = ['likesLoader', 'likesEmptyState'];
+            const states = ['likesLoader', 'likesEmptyState', 'likesErrorState', 'likesNoResultsState', 'loadMoreIndicator'];
             states.forEach(stateId => {
                 const element = document.getElementById(stateId);
                 if (element) {
                     element.classList.add('hidden');
+                    element.style.display = 'none';
                 }
             });
         }
 
-        // Función para renderizar la lista de likes
+        // Función mejorada para renderizar la lista de likes
         function renderLikesList() {
-            const content = document.getElementById('likesListContent');
-            if (!content) return;
+            const usersList = document.getElementById('likesUsersList');
+            if (!usersList) return;
 
             hideAllLikesStates();
 
+            // Usar datos filtrados
+            const dataToRender = filteredLikesData;
+
+            // Manejar diferentes estados
             if (likesData.length === 0) {
                 showLikesEmpty();
                 return;
             }
 
+            if (dataToRender.length === 0 && filteredLikesData !== likesData) {
+                showLikesNoResults();
+                return;
+            }
+
+            // Render users with animations
+            renderUsersWithAnimation(dataToRender, usersList);
+        }
+
+        // Renderizar usuarios estilo Instagram - SIN efectos ni animaciones
+        function renderUsersWithAnimation(data, container) {
             let html = '';
             const currentUserId = {{ Auth::check() ? Auth::id() : 'null' }};
 
-            likesData.forEach(like => {
+            data.forEach(like => {
                 const user = like.user;
                 const avatarUrl = user.imagen ? `/perfiles/${user.imagen}` : '/img/img.jpg';
                 const isFollowing = like.isFollowing || false;
 
                 html += `
-                                <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
-                                    <div class="flex items-center gap-3">
-                                        <a href="/${user.username}" class="flex-shrink-0">
-                                            <img src="${avatarUrl}" 
-                                                 alt="Avatar de ${user.username}"
-                                                 class="w-12 h-12 rounded-full object-cover border-2 border-gray-200 hover:border-blue-400 transition-colors"
-                                                 onerror="this.src='/img/img.jpg'">
-                                        </a>
-                                        <div class="min-w-0 flex-1">
-                                            <a href="/${user.username}" class="group">
-                                                <p class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
-                                                    ${user.name || user.username}
-                                                </p>
-                                                <p class="text-sm text-gray-500 truncate">@${user.username}</p>
-                                            </a>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex-shrink-0">
-                                        ${currentUserId && currentUserId !== user.id ? `
-                                            <button onclick="toggleFollow(${user.id}, this)" 
-                                                    class="follow-btn px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${isFollowing ? 'bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-500' : 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500'}">
-                                                ${isFollowing ? 'Siguiendo' : 'Seguir'}
-                                            </button>
-                                        ` : currentUserId === user.id ? `
-                                            <span class="text-xs text-gray-400 font-medium">Tú</span>
-                                        ` : `
-                                            <span class="text-xs text-gray-400 font-medium">—</span>
-                                        `}
-                                    </div>
+                        <div class="px-4 py-3 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <a href="/${user.username}">
+                                    <img src="${avatarUrl}" 
+                                         alt="${user.username}"
+                                         class="w-12 h-12 rounded-full object-cover"
+                                         onerror="this.src='/img/img.jpg'">
+                                </a>
+                                <div>
+                                    <a href="/${user.username}" class="block">
+                                        <p class="font-semibold text-sm text-gray-900">${user.name || user.username}</p>
+                                        <p class="text-sm text-gray-500">@${user.username}</p>
+                                    </a>
                                 </div>
-                            `;
+                            </div>
+                            ${currentUserId && currentUserId !== user.id ? `
+                                <button onclick="toggleFollow(${user.id}, this)" 
+                                        data-user-id="${user.id}"
+                                        class="px-4 py-1.5 text-sm font-medium rounded-lg ${isFollowing
+                            ? 'bg-gray-200 text-gray-700'
+                            : 'bg-blue-500 text-white'
+                        }">
+                                    <span class="follow-text">${isFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                </button>
+                            ` : ''}
+                        </div>`;
             });
 
-            content.innerHTML = html;
+            container.innerHTML = html;
+        }        // Función para toggle seguir/no seguir usuario
+        // Función mejorada para toggle seguir/no seguir usuario
+        function toggleFollow(userId, button) {
+            if (!button || button.disabled) return;
+
+            const textElement = button.querySelector('.follow-text');
+            const iconElement = button.querySelector('.follow-icon');
+
+            if (!textElement) {
+                // Fallback para botones sin estructura nueva
+                const isCurrentlyFollowing = button.textContent.trim() === 'Siguiendo';
+                const action = isCurrentlyFollowing ? 'unfollow' : 'follow';
+
+                button.disabled = true;
+                button.textContent = 'Procesando...';
+
+                performFollowAction(userId, action, button, null, null, button.textContent);
+                return;
+            }
+
+            const isCurrentlyFollowing = textElement.textContent.trim() === 'Siguiendo';
+            const action = isCurrentlyFollowing ? 'unfollow' : 'follow';
+            const originalText = textElement.textContent;
+
+            // Deshabilitar botón y mostrar estado de carga
+            button.disabled = true;
+
+            // Animación de carga
+            button.innerHTML = `
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                    <span class="text-sm">Procesando...</span>
+                                </div>
+                            `;
+
+            performFollowAction(userId, action, button, textElement, iconElement, originalText);
         }
 
-        // Función para toggle seguir/no seguir usuario
-        function toggleFollow(userId, button) {
-            if (!button) return;
-
-            const isCurrentlyFollowing = button.textContent.trim() === 'Siguiendo';
-            const action = isCurrentlyFollowing ? 'unfollow' : 'follow';
-
-            // Deshabilitar botón mientras se procesa
-            const originalText = button.textContent;
-            button.disabled = true;
-            button.textContent = 'Procesando...';
-
+        // Función auxiliar para realizar la acción de seguir
+        function performFollowAction(userId, action, button, textElement, iconElement, originalText) {
             fetch(`/users/${userId}/${action}`, {
                 method: 'POST',
                 headers: {
@@ -1289,28 +1444,87 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        // Actualizar botón
                         const isNowFollowing = action === 'follow';
-                        button.textContent = isNowFollowing ? 'Siguiendo' : 'Seguir';
 
-                        // Actualizar estilos
-                        button.className = `follow-btn px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${isNowFollowing ? 'bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-500' : 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500'}`;
+                        if (textElement) {
+                            // Estructura nueva del botón
+                            button.innerHTML = `
+                                                <span class="follow-text">${isNowFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                                <svg class="follow-icon w-4 h-4 ml-1 ${isNowFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            `;
 
-                        // Actualizar datos locales
-                        const likeIndex = likesData.findIndex(like => like.user.id === userId);
-                        if (likeIndex !== -1) {
-                            likesData[likeIndex].isFollowing = isNowFollowing;
+                            // Actualizar clases del botón
+                            button.className = `follow-btn flex items-center justify-center px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 ${isNowFollowing
+                                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-400 border border-gray-300'
+                                : 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500 shadow-sm hover:shadow-md'
+                                }`;
+                        } else {
+                            // Estructura antigua del botón
+                            button.textContent = isNowFollowing ? 'Siguiendo' : 'Seguir';
+                            button.className = `follow-btn px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${isNowFollowing ? 'bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-500' : 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500'}`;
                         }
 
+                        // Actualizar datos en los arrays locales
+                        const likeIndex = filteredLikesData.findIndex(like => like.user.id === userId);
+                        if (likeIndex !== -1) {
+                            filteredLikesData[likeIndex].isFollowing = isNowFollowing;
+                        }
+
+                        const originalLikeIndex = likesData.findIndex(like => like.user.id === userId);
+                        if (originalLikeIndex !== -1) {
+                            likesData[originalLikeIndex].isFollowing = isNowFollowing;
+                        }
+
+                        // Animación de éxito
+                        button.style.transform = 'scale(1.1)';
+                        setTimeout(() => {
+                            button.style.transform = 'scale(1)';
+                        }, 150);
                     } else {
-                        throw new Error(data.message || 'Error al procesar acción');
+                        throw new Error(data.message || 'Error desconocido');
                     }
                 })
                 .catch(error => {
-                    console.error('❌ Error al seguir/dejar de seguir:', error);
-                    // Restaurar estado original
-                    button.textContent = originalText;
-                    alert('Error: ' + error.message);
+                    console.error('❌ Error al cambiar estado de seguimiento:', error);
+
+                    if (textElement) {
+                        // Restaurar botón con estructura nueva
+                        const isFollowing = originalText === 'Siguiendo';
+                        button.innerHTML = `
+                                            <span class="follow-text">${originalText}</span>
+                                            <svg class="follow-icon w-4 h-4 ml-1 ${isFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        `;
+
+                        // Mostrar error temporal
+                        const errorTextElement = button.querySelector('.follow-text');
+                        if (errorTextElement) {
+                            const originalButtonText = errorTextElement.textContent;
+                            errorTextElement.textContent = 'Error';
+                            button.style.backgroundColor = '#ef4444';
+
+                            setTimeout(() => {
+                                errorTextElement.textContent = originalButtonText;
+                                button.style.backgroundColor = '';
+                            }, 2000);
+                        }
+                    } else {
+                        // Restaurar botón con estructura antigua
+                        button.textContent = originalText;
+
+                        // Mostrar error temporal
+                        const originalBg = button.style.backgroundColor;
+                        button.style.backgroundColor = '#ef4444';
+                        button.textContent = 'Error';
+
+                        setTimeout(() => {
+                            button.style.backgroundColor = originalBg;
+                            button.textContent = originalText;
+                        }, 2000);
+                    }
                 })
                 .finally(() => {
                     button.disabled = false;
@@ -1332,5 +1546,93 @@
 
         // Exponer función globalmente
         window.openLikesModal = openLikesModal;
+
+        // Ajustes adicionales para mejorar la experiencia
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mejorar experiencia de navegación por teclado
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    const modal = document.getElementById('likesModal');
+                    if (modal && modal.style.display === 'flex') {
+                        closeLikesModal();
+                    }
+                }
+            });
+
+            // Optimización para dispositivos táctiles
+            if ('ontouchstart' in window) {
+                document.body.classList.add('touch-device');
+            }
+
+            // Observer para lazy loading de avatares si hay muchas imágenes
+            if ('IntersectionObserver' in window) {
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            if (img.dataset.src) {
+                                img.src = img.dataset.src;
+                                img.removeAttribute('data-src');
+                                observer.unobserve(img);
+                            }
+                        }
+                    });
+                }, { rootMargin: '50px' });
+
+                // La función se activará cuando se rendericen nuevas imágenes
+                window.observeNewImages = function () {
+                    const lazyImages = document.querySelectorAll('img[data-src]');
+                    lazyImages.forEach(img => imageObserver.observe(img));
+                };
+            }
+        });
     </script>
+
+    <!-- CSS adicional para mejoras específicas del modal -->
+    <style>
+        /* Asegurar que no haya conflictos con Livewire */
+        [wire\:loading],
+        [wire\:loading\.delay],
+        [wire\:loading\.inline-block],
+        [wire\:loading\.inline],
+        [wire\:loading\.block],
+        [wire\:loading\.flex],
+        [wire\:loading\.table],
+        [wire\:loading\.grid] {
+            display: none;
+        }
+
+        [wire\:loading\.delay\.shortest],
+        [wire\:loading\.delay\.shorter],
+        [wire\:loading\.delay\.short],
+        [wire\:loading\.delay\.long],
+        [wire\:loading\.delay\.longer],
+        [wire\:loading\.delay\.longest] {
+            display: none;
+        }
+
+        /* ESTILOS MÍNIMOS - TODO LO DEMÁS CON TAILWIND CSS */
+
+        /* Solo las animaciones esenciales */
+        .animate-modal-enter {
+            animation: modal-enter 0.3s ease-out;
+        }
+
+        @keyframes modal-enter {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Solo scroll suave para iOS - estilo Instagram */
+        #likesScrollContainer {
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
 @endsection
