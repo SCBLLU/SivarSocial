@@ -26,10 +26,10 @@ class UserController extends Controller
     public function buscar(Request $request)
     {
         $query = $request->input('buscar');
-        
+
         $users = User::where('name', 'like', "%$query%")
-                    ->orWhere('username', 'like', "%$query%")
-                    ->get();
+            ->orWhere('username', 'like', "%$query%")
+            ->get();
 
         return view('components.listar-perfiles', compact('users'));
     }
@@ -125,9 +125,11 @@ class UserController extends Controller
         $user = User::find($user->id);
         // elimino todos los posts del usuario y sus imágenes
         foreach ($user->posts as $post) {
-            $imagePath = public_path('uploads/' . $post->imagen);
-            if (file_exists($imagePath)) {
-                unlink($imagePath);
+            if ($post->imagen && !empty($post->imagen)) {
+                $imagePath = public_path('uploads/' . $post->imagen);
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
             }
             $post->delete();
         }

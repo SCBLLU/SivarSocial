@@ -12,8 +12,6 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @livewireStyles()
-    <!-- Alpine.js - Cargar ANTES del contenido -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://kit.fontawesome.com/6305bb531f.js" crossorigin="anonymous"></script>
 
     <!-- Estilos para prevenir flash de contenido Alpine.js -->
@@ -223,13 +221,13 @@
         <!-- fin menu para mobile -->
 
         <div class="contenido">
-            @if (Route::is('recuperar', 'code.verific', 'restablecer'))
-                @yield('contenido-recover')
-            @else
-                <main class="container p-5 mx-auto mt-10 mb-5">
-                    <h2 class="mb-10 text-3xl font-bold text-center">
-                        @yield('titulo')
-                    </h2>
+        @if(Route::is('recuperar', 'code.verific', 'restablecer'))
+            @yield('contenido-recover')
+        @else
+            <main class="container p-5 mx-auto mt-10 mb-5">
+                <h2 class="mb-10 text-3xl font-bold text-center">
+                    @yield('titulo')
+                </h2>
 
                     <div>
                         @yield('contenido')
@@ -237,15 +235,16 @@
                 </main>
             @endif
 
-            <footer class="p-5 font-bold text-center text-gray-300 uppercase">
-                <small>SivarSocial &copy; {{ now()->year }}</small>
-            </footer>
+        <footer class="p-5 font-bold text-center text-gray-300 uppercase">
+            <small>SivarSocial &copy; {{ now()->year }}</small>
+        </footer>
         </div>
         <!-- menu de perfil para mobile -->
         @yield('lista-perfiles-mobile')
         <!-- fin menu de perfil para mobile -->
 
     </div>
+
     @livewireScripts()
 
     <style>

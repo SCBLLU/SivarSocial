@@ -68,4 +68,80 @@ class FollowerController extends Controller
         $user->followers()->detach(Auth::id());
         return back();
     }
+
+    /**
+     * Store a newly created resource by ID (for AJAX requests)
+     */
+    public function storeById(User $user)
+    {
+        try {
+            // Verificar que el usuario no se siga a sí mismo
+            if ($user->id === Auth::id()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No puedes seguirte a ti mismo.'
+                ], 400);
+            }
+
+            // Verificar que no ya lo esté siguiendo
+            if ($user->followers()->where('follower_id', Auth::id())->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ya sigues a este usuario.'
+                ], 400);
+            }
+
+            // El usuario autenticado sigue al usuario recibido
+            $user->followers()->attach(Auth::id());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Ahora sigues a este usuario.',
+                'action' => 'followed'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al seguir al usuario.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Remove the specified resource by ID (for AJAX requests)
+     */
+    public function destroyById(User $user)
+    {
+        try {
+            // Verificar que el usuario no se dessiga a sí mismo
+            if ($user->id === Auth::id()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No puedes dejar de seguirte a ti mismo.'
+                ], 400);
+            }
+
+            // Verificar que lo esté siguiendo
+            if (!$user->followers()->where('follower_id', Auth::id())->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No sigues a este usuario.'
+                ], 400);
+            }
+
+            // El usuario autenticado deja de seguir al usuario recibido
+            $user->followers()->detach(Auth::id());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Dejaste de seguir a este usuario.',
+                'action' => 'unfollowed'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al dejar de seguir al usuario.'
+            ], 500);
+        }
+    }
 }
