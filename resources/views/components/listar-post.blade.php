@@ -18,13 +18,17 @@
 
                 <!-- Contenido de la publicación -->
                 @if ($post->tipo === 'imagen')
-                    <!-- Imagen del post -->
-                    <a href="{{ route('posts.show', ['user' => $post->user ? $post->user->username : 'usuario', 'post' => $post->id]) }}"
-                        class="w-full flex justify-center bg-black rounded-b-none rounded-t-none">
-                        <img src="{{ asset('uploads') . '/' . $post->imagen }}"
-                            alt="Imagen del post {{ $post->titulo ?? 'sin título' }}"
-                            class="object-cover w-full max-h-80 sm:max-h-96 aspect-square rounded-none">
-                    </a>
+                    <!-- Imagen del post - SIEMPRE CUADRADA -->
+                    <div class="w-full bg-white rounded-b-none rounded-t-none aspect-square">
+                        <a
+                            href="{{ route('posts.show', ['user' => $post->user ? $post->user->username : 'usuario', 'post' => $post->id]) }}">
+                            <img src="{{ asset('uploads') . '/' . $post->imagen }}"
+                                alt="Imagen del post {{ $post->titulo ?? 'sin título' }}"
+                                class="w-full h-full object-cover rounded-none" 
+                                width="1080" height="1080"
+                                loading="lazy">
+                        </a>
+                    </div>
                 @elseif ($post->tipo === 'musica')
                     <!-- Publicacion de musica -->
                     <div class="w-full relative">
