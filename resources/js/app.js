@@ -549,11 +549,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 1500); // Reducido de 2000ms a 1500ms para mejor sincronización
 });
 
-// DROPZONE PARA CREAR POSTS
+// DROPZONE PARA CREAR POSTS - SIMPLICADO AUTOMÁTICO
 if (document.getElementById('dropzone')) {
     let dropzone = new Dropzone('#dropzone', {
         url: '/imagenes',
-        dictDefaultMessage: 'Sube tu post aquí',
+        dictDefaultMessage: 'Sube tu imagen aquí',
         acceptedFiles: '.jpg,.jpeg,.png',
         addRemoveLinks: true,
         dictRemoveFile: 'Eliminar archivo',
@@ -585,6 +585,9 @@ if (document.getElementById('dropzone')) {
     dropzone.on("success", function (file, response) {
         document.querySelector('[name="imagen"]').value = response.imagen;
         updateSubmitButton();
+
+        // Mostrar notificación de procesamiento automático
+        showNotification('Imagen procesada automáticamente', 'success');
     });
 
     // Al eliminar imagen, limpiar input

@@ -180,15 +180,15 @@
                                     </div>
                                 </div>
                             @else
-                                {{-- Post de imagen normal con overlay mejorado --}}
-                                <div class="relative w-full rounded-xl sm:rounded-2xl overflow-hidden shadow-md hover:shadow-xl"
-                                    style="aspect-ratio:1/1;">
-                                    <img src="{{ asset('uploads/' . $post->imagen) }}" alt="Imagen del post {{ $post->titulo }}"
-                                        class="image-post object-cover w-full h-full transition-all duration-300">
+                                {{-- Post de imagen - SIEMPRE CUADRADA --}}
+                                <div class="relative w-full rounded-xl sm:rounded-2xl overflow-hidden shadow-md hover:shadow-xl aspect-square">
+                                    <img src="{{ asset('uploads/' . $post->imagen) }}" 
+                                         alt="Imagen del post {{ $post->titulo }}"
+                                         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                         loading="lazy">
 
                                     {{-- Overlay con información del post --}}
-                                    <div
-                                        class="image-overlay absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end justify-between p-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end justify-between p-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
                                         {{-- Información del post --}}
                                         <div class="text-white flex-1 min-w-0">
                                             @if($post->titulo)
@@ -201,9 +201,8 @@
                                         </div>                                       
                                     </div>
 
-                                    {{-- Badge de tipo de contenido - visible siempre en móvil --}}
-                                    <div
-                                        class="badge absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-1.5 py-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+                                    {{-- Badge de tipo de contenido --}}
+                                    <div class="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-1.5 py-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
                                         <div class="flex items-center space-x-0.5">
                                             <div class="w-1 h-1 bg-blue-400 rounded-full animate-pulse"></div>
                                             <span class="text-white text-[10px] font-medium">Imagen</span>
