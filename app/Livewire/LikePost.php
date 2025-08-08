@@ -4,7 +4,6 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class LikePost extends Component
 {
@@ -16,54 +15,46 @@ class LikePost extends Component
     public function mount($post, $color = 'purple')
     {
         $this->post = $post;
-        // Asegurar que las relaciones están cargadas
         $this->post->loadMissing('likes');
-        $this->isLiked = Auth::check() ? $post->checkLike(Auth::user()) : false;
-        $this->likes = $post->likes->count();
+
         $this->color = $color;
+
+        $user = Auth::user();
+        $this->isLiked = $user ? $this->post->checkLike($user) : false;
+
+        $this->likes = $this->post->likes->count();
     }
 
     public function clickLike()
     {
-        // Solo permitir interacción si el usuario está logueado
-        if (!Auth::check()) {
+        $user = Auth::user();
+
+        if (!$user) {
             return;
         }
 
-        // Debug log para verificar que se ejecuta
-        Log::info('LikePost clickLike ejecutado para usuario: ' . Auth::user()->id . ' en post: ' . $this->post->id);
-
         try {
-            // Permitir dar like a cualquier post, incluidos los propios
-            if ($this->post->checkLike(Auth::user())) {
+            if ($this->post->checkLike($user)) {
                 // Quitar like
-                $this->post->likes()->where('user_id', Auth::user()->id)->delete();
+                $this->post->likes()->where('user_id', $user->id)->delete();
                 $this->isLiked = false;
                 $this->likes--;
             } else {
                 // Dar like
-                $this->post->likes()->create([
-                    'user_id' => Auth::user()->id,
-                ]);
+                $this->post->likes()->create(['user_id' => $user->id]);
                 $this->isLiked = true;
                 $this->likes++;
             }
 
-            // Refrescar la relación likes para asegurar sincronización
+            // Refrescar conteo
             $this->post->load('likes');
             $this->likes = $this->post->likes->count();
 
-            // Agregar feedback visual
-            if ($this->isLiked) {
-                session()->flash('like_success', 'Like agregado correctamente');
-            } else {
-                session()->flash('like_success', 'Like removido correctamente');
-            }
+            // Notificar al modal de likes para que se actualice
+            $this->dispatch('like-updated');
         } catch (\Exception $e) {
-            // Log del error para debugging
-            Log::error('Error en LikePost: ' . $e->getMessage());
-            // También podemos agregar una sesión flash para mostrar el error
-            session()->flash('like_error', 'Error al procesar el like: ' . $e->getMessage());
+            // Manejar error silenciosamente
+            return;
         }
     }
 

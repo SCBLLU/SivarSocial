@@ -1,36 +1,5 @@
 @extends('layouts.app')
 
-@push('scripts')
-    <style src="//unpkg.com/alpinejs" defer>
-        </script><style>[x-cloak] {
-            display: none !important;
-        }
-
-        /* Asegurar que el modal esté completamente oculto inicialmente */
-        .modal-backdrop[style*="display: none"] {
-            display: none !important;
-            opacity: 0 !important;
-            visibility: hidden !important;
-        }
-
-        /* Prevenir flash de contenido Alpine.js */
-        [x-cloak] {
-            display: none !important;
-        }
-
-        /* Asegurar visibilidad correcta de elementos con x-show */
-        [x-show]:not([style*="display: none"]) {
-            visibility: visible !important;
-        }
-
-        /* Ocultar elementos con x-show false por defecto */
-        [x-show][style*="display: none"] {
-            display: none !important;
-            visibility: hidden !important;
-        }
-    </style>
-@endpush
-
 @section('titulo')
     <div class="flex items-center justify-center relative w-full">
         <a href="{{ url()->previous() }}"
@@ -204,19 +173,19 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                                                                                                                                    h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                                                                                                                                                                                                                                                                                                            h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
                                                     <div id="progress-bar"
                                                         class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                                                                                                                                        transition-all duration-100 ease-out"
+                                                                                                                                                                                                                                                                                                                                                                transition-all duration-100 ease-out"
                                                         style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
                                                     <div id="progress-thumb"
                                                         class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                                                                                                                                        shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                                                                                                                                        opacity-0 transition-all duration-200 ease-out
-                                                                                                                                                                                        hover:scale-110 active:scale-95"
+                                                                                                                                                                                                                                                                                                                                                                shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                                                                                                                                                                                                                                                                                                                opacity-0 transition-all duration-200 ease-out
+                                                                                                                                                                                                                                                                                                                                                                hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 
@@ -420,7 +389,7 @@
 
                 <!-- Comentarios -->
                 <div id="comments-container"
-                    class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col min-h-[500px] mt-4 lg:mt-0">
+                    class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col h-auto lg:min-h-[500px] mt-4 lg:mt-0">
                     <!-- Componente Livewire para comentarios -->
                     <livewire:comments-section :post="$post" />
                 </div>
@@ -429,7 +398,8 @@
     </div>
 
     <!-- Modal simple para eliminar post usando JavaScript puro -->
-    <div id="deletePostModal" class="fixed inset-0 bg-black bg-opacity-50 justify-center items-center z-50 p-4 hidden">
+    <div id="deletePostModal" class="fixed inset-0 bg-black bg-opacity-50 justify-center items-center p-4 hidden"
+        style="z-index: 1100;">
         <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full mx-4 transform transition-all scale-95 opacity-0"
             id="deleteModalContent">
             <div class="p-6">
@@ -469,6 +439,55 @@
                             Eliminar
                         </button>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Likes - Estilo Instagram hoja deslizante para móvil -->
+    <div id="likesModal" class="fixed inset-0 hidden items-end sm:items-center justify-center"
+        style="background-color: rgba(0, 0, 0, 0.6); z-index: 1100;">
+        <!-- Backdrop para cerrar modal -->
+        <div class="absolute inset-0 cursor-pointer" onclick="closeLikesModal()"></div>
+
+        <!-- Contenedor del modal - Igual al panel de perfiles -->
+        <div id="likesModalContent"
+            class="fixed bottom-0 left-0 right-0 bg-white text-black rounded-t-2xl shadow-lg z-50 flex flex-col max-h-[80vh] w-full mx-auto sm:relative sm:w-96 sm:h-96 sm:rounded-xl overflow-hidden">
+            <!-- Drag handle -->
+            <div class="p-4 border-b border-gray-200 text-center text-lg font-semibold cursor-grab touch-none sm:hidden">
+                <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-2"></div>
+                <div class="flex items-center justify-between px-2">
+                    <span class="text-base font-bold text-gray-900">Me gusta</span>
+                    <button onclick="closeLikesModal()" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <!-- Header solo en desktop -->
+            <div class="hidden sm:block flex-none border-b border-gray-200 bg-white sm:rounded-t-xl sticky top-0 z-10">
+                <div class="flex items-center justify-between px-4 py-3">
+                    <h3 class="text-base font-semibold text-gray-900">Me gusta</h3>
+                    <button onclick="closeLikesModal()" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <!-- Lista scrolleable -->
+            <div class="p-4 space-y-3 overflow-y-auto flex-1 pb-0 bg-white" id="likesScrollContainer">
+                <div id="likesUsersList"></div>
+                {{-- <!-- Estados básicos -->
+                <div id="likesLoader" class="hidden p-4 text-center">
+                    <div class="inline-block w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin">
+                    </div>
+                </div> --}}
+                <div id="likesEmptyState" class="hidden p-8 text-center">
+                    <p class="text-gray-500">Sin likes aún</p>
                 </div>
             </div>
         </div>
@@ -516,7 +535,7 @@
                     // Si es la misma canción y el mismo post, usar el tiempo guardado
                     if (audioState.previewUrl === previewUrl && audioState.postId === currentPostId) {
                         savedTime = audioState.currentTime || 0;
-                        console.log('Restaurando desde el tiempo:', savedTime);
+                        // Guardado de tiempo silencioso
                     }
                 } catch (error) {
                     console.error('Error al leer estado guardado:', error);
@@ -743,6 +762,32 @@
 
         // Inicialización cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function () {
+            // Función para igualar alturas sin saltos visuales (solo en desktop)
+            window.matchHeights = function () {
+                // Solo ejecutar en pantallas grandes (desktop)
+                if (window.innerWidth >= 1024) {
+                    const postContainer = document.getElementById('post-container');
+                    const commentsContainer = document.getElementById('comments-container');
+
+                    if (postContainer && commentsContainer) {
+                        // Obtener altura del post
+                        const postHeight = postContainer.offsetHeight;
+
+                        // Solo aplicar si hay una diferencia significativa (evitar micro-ajustes)
+                        const currentHeight = commentsContainer.offsetHeight;
+                        if (Math.abs(postHeight - currentHeight) > 10) {
+                            commentsContainer.style.height = postHeight + 'px';
+                        }
+                    }
+                } else {
+                    // En mobile, resetear altura para que sea automática
+                    const commentsContainer = document.getElementById('comments-container');
+                    if (commentsContainer) {
+                        commentsContainer.style.height = 'auto';
+                    }
+                }
+            };
+
             // Control de progreso
             const progressContainer = document.getElementById('progress-container');
             const progressBar = document.getElementById('progress-bar');
@@ -810,7 +855,17 @@
 
             // Controles de teclado
             document.addEventListener('keydown', function (e) {
-                if (currentPreviewAudio) {
+                // Verificar si el usuario está escribiendo en un input, textarea o elemento editable
+                const activeElement = document.activeElement;
+                const isTyping = activeElement && (
+                    activeElement.tagName === 'INPUT' ||
+                    activeElement.tagName === 'TEXTAREA' ||
+                    activeElement.contentEditable === 'true' ||
+                    activeElement.isContentEditable
+                );
+
+                // Solo procesar controles de teclado si NO está escribiendo
+                if (currentPreviewAudio && !isTyping) {
                     switch (e.code) {
                         case 'Space':
                             e.preventDefault();
@@ -832,33 +887,6 @@
                 }
             });
 
-            // Función para igualar alturas sin saltos visuales (solo en desktop)
-            function matchHeights() {
-                // Solo ejecutar en pantallas grandes (desktop)
-                if (window.innerWidth >= 1024) {
-                    const postContainer = document.getElementById('post-container');
-                    const commentsContainer = document.getElementById('comments-container');
-
-                    if (postContainer && commentsContainer) {
-                        // Obtener altura del post
-                        const postHeight = postContainer.offsetHeight;
-
-                        // Solo aplicar si hay una diferencia significativa (evitar micro-ajustes)
-                        const currentHeight = commentsContainer.offsetHeight;
-                        if (Math.abs(postHeight - currentHeight) > 10) {
-                            commentsContainer.style.height = postHeight + 'px';
-                        }
-                    }
-                } else {
-                    // En móviles, remover cualquier altura fija
-                    const commentsContainer = document.getElementById('comments-container');
-                    if (commentsContainer) {
-                        commentsContainer.style.height = 'auto';
-                        commentsContainer.style.minHeight = '300px';
-                    }
-                }
-            }
-
             // Ejecutar cuando la página carga completamente
             // Esperar a que todas las imágenes y contenido se carguen
             const images = document.querySelectorAll('img');
@@ -869,13 +897,13 @@
                 loadedImages++;
                 if (loadedImages === totalImages) {
                     // Todas las imágenes han cargado, ahora igualar alturas
-                    setTimeout(matchHeights, 50);
+                    setTimeout(window.matchHeights, 50);
                 }
             }
 
             if (totalImages === 0) {
                 // No hay imágenes, ejecutar inmediatamente
-                setTimeout(matchHeights, 50);
+                setTimeout(window.matchHeights, 50);
             } else {
                 // Esperar a que todas las imágenes carguen
                 images.forEach(img => {
@@ -892,7 +920,7 @@
             let resizeTimeout;
             window.addEventListener('resize', function () {
                 clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(matchHeights, 200);
+                resizeTimeout = setTimeout(window.matchHeights, 200);
             });
 
             // Auto-ocultar mensajes de éxito después de 4 segundos
@@ -922,11 +950,11 @@
 
         // Para componentes Livewire (cuando se actualice el contenido)
         document.addEventListener('livewire:navigated', function () {
-            setTimeout(matchHeights, 100);
+            setTimeout(window.matchHeights, 100);
         });
 
         document.addEventListener('livewire:load', function () {
-            setTimeout(matchHeights, 100);
+            setTimeout(window.matchHeights, 100);
         });
 
         // Función para mostrar notificaciones (si existe)
@@ -953,6 +981,18 @@
             if (confirm('¿Estás seguro de que quieres eliminar esta publicación? Esta acción no se puede deshacer.')) {
                 document.getElementById('deleteImageForm').submit();
             }
+        }
+
+        // Ocultar menú móvil al abrir modal de likes
+        if (window.innerWidth <= 640) {
+            const headerMenu = document.getElementById('header');
+            if (headerMenu) headerMenu.style.display = 'none';
+        }
+
+        // Mostrar menú móvil al cerrar modal de likes
+        if (window.innerWidth <= 640) {
+            const headerMenu = document.getElementById('header');
+            if (headerMenu) headerMenu.style.display = '';
         }
 
         // Pausar audio al salir de la página
@@ -1014,6 +1054,7 @@
             const content = document.getElementById('deleteModalContent');
 
             modal.style.display = 'flex';
+            document.body.classList.add('modal-open');
             setTimeout(() => {
                 modal.classList.remove('hidden');
                 content.style.transform = 'scale(1)';
@@ -1027,6 +1068,7 @@
 
             content.style.transform = 'scale(0.95)';
             content.style.opacity = '0';
+            document.body.classList.remove('modal-open');
 
             setTimeout(() => {
                 modal.style.display = 'none';
@@ -1045,7 +1087,739 @@
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 closeDeleteModal();
+                closeLikesModal(); // También cerrar modal de likes con ESC
+            }
+        });
+
+        // ===== FUNCIONES PARA EL MODAL DE LIKES =====
+        // Variables globales para el modal de likes mejorado
+        let currentPostId = {{ $post->id }}; // ID del post actual
+        let likesData = [];
+        let filteredLikesData = [];
+        let currentLikesPage = 1;
+        let likesPerPage = 20;
+        let isLoadingLikes = false;
+        let hasMoreLikes = true;
+        let searchTimeout = null;
+        let touchStartY = 0;
+        let isPullingToRefresh = false;
+
+        // Función mejorada para abrir el modal de likes
+        function openLikesModal(postId = null) {
+            const modal = document.getElementById('likesModal');
+            const content = document.getElementById('likesModalContent');
+
+            if (!modal || !content) {
+                console.error('❌ No se encontraron elementos del modal');
+                return;
+            }
+
+            // Usar el postId pasado o el actual
+            const targetPostId = postId || currentPostId;
+
+            try {
+                // Reset completo del contenido del modal antes de mostrar
+                content.style.transform = '';
+                content.style.opacity = '';
+                content.style.scale = '';
+
+                // Mostrar modal usando clases de Tailwind
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+                document.body.classList.add('modal-open');
+
+                // Configurar el modal para listas largas
+                setupLikesModal();
+
+                // Cargar likes del post
+                loadLikesData(targetPostId, true);
+            } catch (error) {
+                console.error('❌ Error al abrir modal:', error);
+            }
+        }        // Configurar funcionalidades del modal
+        function setupLikesModal() {
+            const scrollContainer = document.getElementById('likesScrollContainer');
+
+            // Solo scroll básico para paginación - estilo Instagram
+            if (scrollContainer) {
+                scrollContainer.addEventListener('scroll', handleLikesScroll);
+            }
+
+            // Reset variables
+            currentLikesPage = 1;
+            hasMoreLikes = true;
+            filteredLikesData = [];
+        }
+
+        // Función mejorada para cerrar el modal de likes
+        function closeLikesModal() {
+            const modal = document.getElementById('likesModal');
+            const content = document.getElementById('likesModalContent');
+            const searchInput = document.getElementById('likesSearchInput');
+
+            try {
+                // Ocultar modal usando clases de Tailwind
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+
+                // Restaurar scroll del body
+                document.body.style.overflow = '';
+                document.body.classList.remove('modal-open');
+
+                // Reset completo del contenido modal
+                if (content) {
+                    content.style.transform = '';
+                    content.style.opacity = '';
+                    content.style.scale = '';
+                    content.classList.remove('few-likes', 'medium-likes'); // Limpiar clases de tamaño
+                }
+
+                // Limpiar datos y reset
+                likesData = [];
+                filteredLikesData = [];
+                currentLikesPage = 1;
+
+                if (searchInput) {
+                    searchInput.value = '';
+                }
+
+            } catch (error) {
+                console.error('❌ Error al cerrar modal:', error);
+                // Forzar cierre en caso de error
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+                document.body.style.overflow = '';
+                document.body.classList.remove('modal-open');
+            }
+        }
+
+        // Instagram no usa búsqueda - función simplificada para compatibilidad
+        function filterLikes(query = '') {
+            // Instagram no filtra, solo muestra todos los usuarios
+            filteredLikesData = [...likesData];
+            renderLikesList();
+        }
+
+        // Manejar scroll infinito básico - estilo Instagram
+        function handleLikesScroll(event) {
+            const container = event.target;
+            const scrollTop = container.scrollTop;
+            const scrollHeight = container.scrollHeight;
+            const clientHeight = container.clientHeight;
+
+            // Cargar más cuando llegue cerca del final
+            if (scrollTop + clientHeight >= scrollHeight - 100 && hasMoreLikes && !isLoadingLikes) {
+                loadMoreLikes();
+            }
+        }
+
+        // Cargar más likes - estilo Instagram
+        function loadMoreLikes() {
+            if (!hasMoreLikes || isLoadingLikes) return;
+            currentLikesPage++;
+            loadLikesData(currentPostId, false);
+        }
+
+        // Función mejorada para cargar los datos de likes - estilo Instagram simple
+        function loadLikesData(postId, reset = false) {
+            if (isLoadingLikes) return;
+
+            isLoadingLikes = true;
+
+            if (reset) {
+                showLikesLoader();
+                currentLikesPage = 1;
+                likesData = [];
+                filteredLikesData = [];
+            } else {
+                showLoadMoreIndicator();
+            }
+
+            const url = `/posts/${postId}/likes?page=${currentLikesPage}&per_page=${likesPerPage}`;
+
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const newLikes = data.likes || [];
+                    const pagination = data.pagination || {};
+
+                    if (reset) {
+                        likesData = newLikes;
+                    } else {
+                        likesData = [...likesData, ...newLikes];
+                    }
+
+                    filteredLikesData = [...likesData];
+                    hasMoreLikes = pagination.has_more || false;
+
+                    updateLikesCount(data.total || likesData.length);
+                    renderLikesList();
+
+                    hideLikesLoader();
+                    hideLoadMoreIndicator();
+                })
+                .catch(error => {
+                    console.error('❌ Error al cargar likes:', error);
+                    showLikesError();
+                    hideLikesLoader();
+                    hideLoadMoreIndicator();
+                })
+                .finally(() => {
+                    isLoadingLikes = false;
+                });
+        }
+
+        // Cargar más likes
+        function loadMoreLikes() {
+            currentLikesPage++;
+            loadLikesData(currentPostId, false);
+        }
+
+        // Reintentar carga
+        function retryLoadLikes() {
+            const targetPostId = currentPostId;
+            loadLikesData(targetPostId, true);
+        }
+
+        // Actualizar contador de likes
+        function updateLikesCount(total) {
+            const countElement = document.getElementById('likesCount');
+            if (countElement && total > 0) {
+                countElement.textContent = `(${total})`;
+                countElement.classList.remove('hidden');
+            }
+        }
+
+        // Mostrar/ocultar estados
+        function showLikesLoader() {
+            hideAllLikesStates();
+            const loader = document.getElementById('likesLoader');
+            if (loader) {
+                loader.classList.remove('hidden');
+                loader.style.display = 'flex';
+            }
+        }
+
+        function hideLikesLoader() {
+            const loader = document.getElementById('likesLoader');
+            if (loader) {
+                loader.classList.add('hidden');
+                loader.style.display = 'none';
+            }
+        }
+
+        function showLikesEmpty() {
+            hideAllLikesStates();
+            const emptyState = document.getElementById('likesEmptyState');
+            if (emptyState) {
+                emptyState.classList.remove('hidden');
+                emptyState.style.display = 'flex';
+            }
+        }
+
+        function showLikesError() {
+            hideAllLikesStates();
+            const errorState = document.getElementById('likesErrorState');
+            if (errorState) {
+                errorState.classList.remove('hidden');
+                errorState.style.display = 'flex';
+            }
+        }
+
+        function showLikesNoResults() {
+            hideAllLikesStates();
+            const noResultsState = document.getElementById('likesNoResultsState');
+            if (noResultsState) {
+                noResultsState.classList.remove('hidden');
+                noResultsState.style.display = 'flex';
+            }
+        }
+
+        function showLoadMoreIndicator() {
+            const indicator = document.getElementById('loadMoreIndicator');
+            if (indicator) {
+                indicator.classList.remove('hidden');
+                indicator.style.display = 'flex';
+            }
+        }
+
+        function hideLoadMoreIndicator() {
+            const indicator = document.getElementById('loadMoreIndicator');
+            if (indicator) {
+                indicator.classList.add('hidden');
+                indicator.style.display = 'none';
+            }
+        }
+
+        function hideAllLikesStates() {
+            const states = ['likesLoader', 'likesEmptyState', 'likesErrorState', 'likesNoResultsState', 'loadMoreIndicator'];
+            states.forEach(stateId => {
+                const element = document.getElementById(stateId);
+                if (element) {
+                    element.classList.add('hidden');
+                    element.style.display = 'none';
+                }
+            });
+        }
+
+        // Función mejorada para renderizar la lista de likes
+        function renderLikesList() {
+            const usersList = document.getElementById('likesUsersList');
+            const modalContainer = document.getElementById('likesModalContent');
+            if (!usersList || !modalContainer) return;
+
+            hideAllLikesStates();
+
+            // Usar datos filtrados
+            const dataToRender = filteredLikesData;
+
+            // Manejar diferentes estados
+            if (likesData.length === 0) {
+                showLikesEmpty();
+                return;
+            }
+
+            if (dataToRender.length === 0 && filteredLikesData !== likesData) {
+                showLikesNoResults();
+                return;
+            }
+
+            // Aplicar clase para pocos likes en móvil según cantidad
+            modalContainer.classList.remove('few-likes', 'medium-likes');
+
+            if (dataToRender.length <= 3) {
+                modalContainer.classList.add('few-likes');
+            } else if (dataToRender.length <= 8) {
+                modalContainer.classList.add('medium-likes');
+            }
+
+            // Render users with animations
+            renderUsersWithAnimation(dataToRender, usersList);
+        }
+
+        // Renderizar usuarios estilo Instagram - SIN efectos ni animaciones
+        function renderUsersWithAnimation(data, container) {
+            let html = '';
+            const currentUserId = {{ Auth::check() ? Auth::id() : 'null' }};
+
+            data.forEach(like => {
+                const user = like.user;
+                const avatarUrl = user.imagen ? `/perfiles/${user.imagen}` : '/img/img.jpg';
+                const isFollowing = like.isFollowing || false;
+
+                html += `
+                                                    <div class="py-3 flex items-center justify-between">
+                                                        <div class="flex items-center gap-3">
+                                                            <a href="/${user.username}">
+                                                                <img src="${avatarUrl}" 
+                                                                     alt="${user.username}"
+                                                                     class="w-12 h-12 rounded-full object-cover"
+                                                                     onerror="this.src='/img/img.jpg'">
+                                                            </a>
+                                                            <div>
+                                                                <a href="/${user.username}" class="block">
+                                                                    <p class="font-semibold text-sm text-gray-900">${user.name || user.username}</p>
+                                                                    <p class="text-sm text-gray-500">${user.username}</p>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        ${currentUserId && currentUserId !== user.id ? `
+                                                            <button onclick="toggleFollow(${user.id}, this)" 
+                                                                    data-user-id="${user.id}"
+                                                                    class="px-4 py-1.5 text-sm font-medium rounded-lg ${isFollowing
+                            ? 'bg-gray-200 text-gray-700'
+                            : 'bg-blue-500 text-white'
+                        }">
+                                                                <span class="follow-text">${isFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                                            </button>
+                                                        ` : ''}
+                                                    </div>`;
+            });
+
+            container.innerHTML = html;
+        }        // Función para toggle seguir/no seguir usuario
+        // Función mejorada para toggle seguir/no seguir usuario
+        function toggleFollow(userId, button) {
+            if (!button || button.disabled) return;
+
+            const textElement = button.querySelector('.follow-text');
+            const iconElement = button.querySelector('.follow-icon');
+
+            if (!textElement) {
+                // Fallback para botones sin estructura nueva
+                const isCurrentlyFollowing = button.textContent.trim() === 'Siguiendo';
+                const action = isCurrentlyFollowing ? 'unfollow' : 'follow';
+
+                button.disabled = true;
+                button.textContent = 'Procesando...';
+
+                performFollowAction(userId, action, button, null, null, button.textContent);
+                return;
+            }
+
+            const isCurrentlyFollowing = textElement.textContent.trim() === 'Siguiendo';
+            const action = isCurrentlyFollowing ? 'unfollow' : 'follow';
+            const originalText = textElement.textContent;
+
+            // Deshabilitar botón y mostrar estado de carga
+            button.disabled = true;
+
+            // Animación de carga
+            button.innerHTML = `
+                                                            <div class="flex items-center gap-2">
+                                                                <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                                                <span class="text-sm">Procesando...</span>
+                                                            </div>
+                                                        `;
+
+            performFollowAction(userId, action, button, textElement, iconElement, originalText);
+        }
+
+        // Función auxiliar para realizar la acción de seguir
+        function performFollowAction(userId, action, button, textElement, iconElement, originalText) {
+            fetch(`/users/${userId}/${action}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'Error en la respuesta del servidor');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        const isNowFollowing = action === 'follow';
+
+                        if (textElement) {
+                            // Estructura nueva del botón
+                            button.innerHTML = `
+                                                                            <span class="follow-text">${isNowFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                                                            <svg class="follow-icon w-4 h-4 ml-1 ${isNowFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                            </svg>
+                                                                        `;
+
+                            // Actualizar clases del botón
+                            button.className = `follow-btn flex items-center justify-center px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 ${isNowFollowing
+                                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-400 border border-gray-300'
+                                : 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500 shadow-sm hover:shadow-md'
+                                }`;
+                        } else {
+                            // Estructura antigua del botón
+                            button.textContent = isNowFollowing ? 'Siguiendo' : 'Seguir';
+                            button.className = `follow-btn px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${isNowFollowing ? 'bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-500' : 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500'}`;
+                        }
+
+                        // Actualizar datos en los arrays locales
+                        const likeIndex = filteredLikesData.findIndex(like => like.user.id === userId);
+                        if (likeIndex !== -1) {
+                            filteredLikesData[likeIndex].isFollowing = isNowFollowing;
+                        }
+
+                        const originalLikeIndex = likesData.findIndex(like => like.user.id === userId);
+                        if (originalLikeIndex !== -1) {
+                            likesData[originalLikeIndex].isFollowing = isNowFollowing;
+                        }
+
+                        // Animación de éxito
+                        button.style.transform = 'scale(1.1)';
+                        setTimeout(() => {
+                            button.style.transform = 'scale(1)';
+                        }, 150);
+                    } else {
+                        throw new Error(data.message || 'Error desconocido');
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ Error al cambiar estado de seguimiento:', error);
+
+                    if (textElement) {
+                        // Restaurar botón con estructura nueva
+                        const isFollowing = originalText === 'Siguiendo';
+                        button.innerHTML = `
+                                                                        <span class="follow-text">${originalText}</span>
+                                                                        <svg class="follow-icon w-4 h-4 ml-1 ${isFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                        </svg>
+                                                                    `;
+
+                        // Mostrar error temporal
+                        const errorTextElement = button.querySelector('.follow-text');
+                        if (errorTextElement) {
+                            const originalButtonText = errorTextElement.textContent;
+                            errorTextElement.textContent = 'Error';
+                            button.style.backgroundColor = '#ef4444';
+
+                            setTimeout(() => {
+                                errorTextElement.textContent = originalButtonText;
+                                button.style.backgroundColor = '';
+                            }, 2000);
+                        }
+                    } else {
+                        // Restaurar botón con estructura antigua
+                        button.textContent = originalText;
+
+                        // Mostrar error temporal
+                        const originalBg = button.style.backgroundColor;
+                        button.style.backgroundColor = '#ef4444';
+                        button.textContent = 'Error';
+
+                        setTimeout(() => {
+                            button.style.backgroundColor = originalBg;
+                            button.textContent = originalText;
+                        }, 2000);
+                    }
+                })
+                .finally(() => {
+                    button.disabled = false;
+                });
+        }
+
+        // Event listeners para el modal de likes
+        document.addEventListener('DOMContentLoaded', function () {
+            // Cerrar modal al hacer clic fuera
+            const likesModal = document.getElementById('likesModal');
+            if (likesModal) {
+                likesModal.addEventListener('click', function (e) {
+                    if (e.target === this) {
+                        closeLikesModal();
+                    }
+                });
+            }
+        });
+
+        // Exponer función globalmente
+        window.openLikesModal = openLikesModal;
+
+        // Ajustes adicionales para mejorar la experiencia
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mejorar experiencia de navegación por teclado
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    const modal = document.getElementById('likesModal');
+                    if (modal && !modal.classList.contains('hidden')) {
+                        closeLikesModal();
+                    }
+                }
+            });
+
+            // Optimización para dispositivos táctiles
+            if ('ontouchstart' in window) {
+                document.body.classList.add('touch-device');
+            }
+
+            // Observer para lazy loading de avatares si hay muchas imágenes
+            if ('IntersectionObserver' in window) {
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            if (img.dataset.src) {
+                                img.src = img.dataset.src;
+                                img.removeAttribute('data-src');
+                                observer.unobserve(img);
+                            }
+                        }
+                    });
+                }, { rootMargin: '50px' });
+
+                // La función se activará cuando se rendericen nuevas imágenes
+                window.observeNewImages = function () {
+                    const lazyImages = document.querySelectorAll('img[data-src]');
+                    lazyImages.forEach(img => imageObserver.observe(img));
+                };
+            }
+
+            // Drag to close para el modal de likes en móvil
+            if (window.innerWidth <= 640) {
+                let startY = null;
+                let dragging = false;
+                let modal = document.getElementById('likesModalContent');
+                let modalWrapper = document.getElementById('likesModal');
+                let dragHandle = document.querySelector('.drag-handle');
+                let initialTop = 0;
+
+                if (dragHandle && modal) {
+                    dragHandle.addEventListener('touchstart', function (e) {
+                        dragging = true;
+                        startY = e.touches[0].clientY;
+                        modal.style.transition = 'none';
+                    });
+                    document.addEventListener('touchmove', function (e) {
+                        if (!dragging) return;
+                        let deltaY = e.touches[0].clientY - startY;
+                        if (deltaY > 0) {
+                            modal.style.transform = `translateY(${deltaY}px)`;
+                        }
+                    });
+                    document.addEventListener('touchend', function (e) {
+                        if (!dragging) return;
+                        let deltaY = e.changedTouches[0].clientY - startY;
+                        modal.style.transition = 'transform 0.2s';
+                        if (deltaY > 80) {
+                            closeLikesModal();
+                            setTimeout(() => { modal.style.transform = ''; }, 200);
+                        } else {
+                            modal.style.transform = '';
+                        }
+                        dragging = false;
+                    });
+                }
             }
         });
     </script>
+
+    <!-- CSS adicional para mejoras específicas del modal -->
+    <style>
+        /* Asegurar que no haya conflictos con Livewire */
+        [wire\:loading],
+        [wire\:loading\.delay],
+        [wire\:loading\.inline-block],
+        [wire\:loading\.inline],
+        [wire\:loading\.block],
+        [wire\:loading\.flex],
+        [wire\:loading\.table],
+        [wire\:loading\.grid] {
+            display: none;
+        }
+
+        [wire\:loading\.delay\.shortest],
+        [wire\:loading\.delay\.shorter],
+        [wire\:loading\.delay\.short],
+        [wire\:loading\.delay\.long],
+        [wire\:loading\.delay\.longer],
+        [wire\:loading\.delay\.longest] {
+            display: none;
+        }
+
+        /* ESTILOS MÍNIMOS - TODO LO DEMÁS CON TAILWIND CSS */
+
+        /* Solo las animaciones esenciales */
+        .animate-modal-enter {
+            animation: modal-enter 0.3s ease-out;
+        }
+
+        @keyframes modal-enter {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Solo scroll suave para iOS - estilo Instagram */
+        #likesScrollContainer {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Estilos específicos para el modal de likes en móvil tipo hoja deslizante */
+        @media (max-width: 640px) {
+            #likesModalContent {
+                width: 100% !important;
+                max-width: 480px !important;
+                min-width: 0 !important;
+                border-radius: 22px 22px 0 0 !important;
+                margin: 0 auto 8rem auto !important;
+                position: fixed !important;
+                left: 50% !important;
+                bottom: 0 !important;
+                top: auto !important;
+                transform: translateX(-50%) !important;
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.18) !important;
+                height: auto !important;
+                max-height: 80vh !important;
+                transition: max-height 0.3s cubic-bezier(.4, 0, .2, 1), border-radius 0.2s;
+                overflow: hidden !important;
+                display: flex;
+                flex-direction: column;
+                padding: 0 !important;
+            }
+
+            #likesModal {
+                align-items: flex-end !important;
+                justify-content: flex-end !important;
+                padding: 0 !important;
+            }
+
+            #likesScrollContainer {
+                max-height: 60vh !important;
+                min-height: 120px !important;
+                padding-bottom: 0 !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            #likesModalContent {
+                width: 100% !important;
+                max-width: 480px !important;
+                min-width: 0 !important;
+                border-radius: 22px 22px 0 0 !important;
+                margin: 0 auto 0 auto !important;
+                position: fixed !important;
+                left: 50% !important;
+                bottom: 0 !important;
+                top: auto !important;
+                transform: translateX(-50%) !important;
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.18) !important;
+                height: auto !important;
+                max-height: 90vh !important;
+                transition: max-height 0.3s cubic-bezier(.4, 0, .2, 1), border-radius 0.2s;
+                overflow: hidden !important;
+                display: flex;
+                flex-direction: column;
+                padding: 0 !important;
+            }
+
+            #likesModal {
+                align-items: flex-end !important;
+                justify-content: flex-end !important;
+                padding: 0 !important;
+            }
+
+            #likesScrollContainer {
+                max-height: 70vh !important;
+                min-height: 120px !important;
+                padding-bottom: 0 !important;
+            }
+        }
+
+        /* Asegurar que los modales estén por encima del menú móvil */
+        #likesModal,
+        #deletePostModal {
+            z-index: 1100 !important;
+        }
+
+        /* Prevenir scroll del body cuando los modales están abiertos */
+        body.modal-open {
+            overflow: hidden !important;
+        }
+    </style>
 @endsection

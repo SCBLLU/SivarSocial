@@ -6,6 +6,8 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
@@ -17,6 +19,11 @@ class PostController extends Controller
 
     public function index(User $user)
     {
+        // Verificar si el usuario existe
+        if (!$user->exists) {
+            abort(404, 'Usuario no encontrado');
+        }
+
         $postsPerPage = config('pagination.posts_per_page', 6);
 
         $posts = $user->posts()
@@ -129,6 +136,21 @@ class PostController extends Controller
 
     public function show(User $user, Post $post)
     {
+        // Verificar si el usuario existe
+        if (!$user->exists) {
+            abort(404, 'Usuario no encontrado');
+        }
+
+        // Verificar si el post existe
+        if (!$post->exists) {
+            abort(404, 'Publicación no encontrada');
+        }
+
+        // Verificar que el post pertenece al usuario
+        if ($post->user_id !== $user->id) {
+            abort(404, 'La publicación no pertenece a este usuario');
+        }
+
         // Cargar las relaciones necesarias para el post
         $post->load(['likes', 'comentarios', 'user']);
 
@@ -158,5 +180,98 @@ class PostController extends Controller
         // Redirigir al muro del usuario autenticado
         return redirect()->route('posts.index', ['user' => Auth::user()])
             ->with('success', 'Post eliminado correctamente');
+    }
+
+    public function getLikes(Request $request, Post $post)
+    {
+        try {
+            // Parámetros de paginación
+            $page = max(1, (int) $request->get('page', 1));
+            $perPage = min(50, max(10, (int) $request->get('per_page', 20))); // Limitar entre 10 y 50
+            $offset = ($page - 1) * $perPage;
+
+            // Obtener total de likes para paginación
+            $totalLikes = $post->likes()->count();
+
+            // Obtener likes paginados con información del usuario ordenados por más recientes
+            $likes = $post->likes()
+                ->with(['user:id,name,username,imagen,profession'])
+                ->latest() // Ordenar por más recientes
+                ->offset($offset)
+                ->limit($perPage)
+                ->get()
+                ->map(function ($like) {
+                    $isFollowing = false;
+
+                    // Solo verificar estado de seguimiento si hay usuario autenticado
+                    if (Auth::check() && Auth::id() !== $like->user->id) {
+                        try {
+                            // Verificar si el usuario autenticado sigue a este usuario
+                            $isFollowing = DB::table('followers')
+                                ->where('follower_id', Auth::id())
+                                ->where('user_id', $like->user->id)
+                                ->exists();
+                        } catch (\Exception $e) {
+                            // Si hay error en la verificación de seguimiento, continuar sin ese dato
+                            $isFollowing = false;
+                        }
+                    }
+
+                    return [
+                        'id' => $like->id,
+                        'user' => [
+                            'id' => $like->user->id,
+                            'name' => $like->user->name,
+                            'username' => $like->user->username,
+                            'imagen' => $like->user->imagen,
+                            'profession' => $like->user->profession ?? null,
+                            'verified' => $like->user->verified ?? false, // Campo para futuro uso
+                        ],
+                        'isFollowing' => $isFollowing,
+                        'created_at' => $like->created_at->toDateTimeString(),
+                    ];
+                });
+
+            // Calcular metadatos de paginación
+            $hasMore = ($offset + $perPage) < $totalLikes;
+            $totalPages = ceil($totalLikes / $perPage);
+
+            return response()->json([
+                'success' => true,
+                'likes' => $likes,
+                'total' => $totalLikes,
+                'pagination' => [
+                    'current_page' => $page,
+                    'per_page' => $perPage,
+                    'total_pages' => $totalPages,
+                    'has_more' => $hasMore,
+                    'from' => $offset + 1,
+                    'to' => min($offset + $perPage, $totalLikes),
+                ]
+            ]);
+        } catch (\Exception $e) {
+            // Log del error para debugging
+            Log::error('Error in getLikes: ' . $e->getMessage(), [
+                'post_id' => $post->id,
+                'page' => $request->get('page'),
+                'per_page' => $request->get('per_page'),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al cargar los likes: ' . $e->getMessage(),
+                'likes' => [],
+                'total' => 0,
+                'pagination' => [
+                    'current_page' => 1,
+                    'per_page' => $perPage ?? 20,
+                    'total_pages' => 0,
+                    'has_more' => false,
+                    'from' => 0,
+                    'to' => 0,
+                ]
+            ], 500);
+        }
     }
 }
