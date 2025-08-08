@@ -173,19 +173,19 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                                                                                                                                                                                                                                                                                                                                                h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                                                                                                                                                                                                                                                                                                            h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
                                                     <div id="progress-bar"
                                                         class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                                                                                                                                                                                                                                                                                                                                                    transition-all duration-100 ease-out"
+                                                                                                                                                                                                                                                                                                                                                                transition-all duration-100 ease-out"
                                                         style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
                                                     <div id="progress-thumb"
                                                         class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                                                                                                                                                                                                                                                                                                                                                    shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                                                                                                                                                                                                                                                                                                                                                    opacity-0 transition-all duration-200 ease-out
-                                                                                                                                                                                                                                                                                                                                                                                                    hover:scale-110 active:scale-95"
+                                                                                                                                                                                                                                                                                                                                                                shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                                                                                                                                                                                                                                                                                                                opacity-0 transition-all duration-200 ease-out
+                                                                                                                                                                                                                                                                                                                                                                hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 
@@ -346,15 +346,14 @@
                             </div>
                         </div>
 
-                        <!-- Imagen del post mejorada para no recortar -->
-                        <div class="w-full flex justify-center bg-neutral-900 rounded-2xl min-h-80" style="min-height:20rem;">
+                        <!-- Imagen del post -->
+                        <div class="w-full flex justify-center bg-black rounded-b-none rounded-t-none">
                             <img src="{{ asset('uploads') . '/' . $post->imagen }}" alt="Imagen del post {{ $post->titulo }}"
-                                class="object-contain w-full max-h-96 sm:max-h-[500px] lg:max-h-96 bg-neutral-900 mb-0"
-                                style="background-color:#1a1a1a;margin-bottom:0;" loading="lazy">
+                                class="object-cover w-full max-h-96 sm:max-h-[500px] lg:max-h-96 aspect-square rounded-none">
                         </div>
 
                         <!-- Detalles debajo de la imagen -->
-                        <div class="w-full px-4 pt-2 pb-3">
+                        <div class="w-full px-4 py-3">
                             <!-- Layout unificado para móviles y PC: título y acciones en la misma línea -->
                             <div class="flex items-center justify-between mb-2">
                                 @if($post->titulo)
@@ -1426,32 +1425,32 @@
                 const isFollowing = like.isFollowing || false;
 
                 html += `
-                                                                <div class="py-3 flex items-center justify-between">
-                                                                    <div class="flex items-center gap-3">
-                                                                        <a href="/${user.username}">
-                                                                            <img src="${avatarUrl}" 
-                                                                                 alt="${user.username}"
-                                                                                 class="w-12 h-12 rounded-full object-cover"
-                                                                                 onerror="this.src='/img/img.jpg'">
-                                                                        </a>
-                                                                        <div>
-                                                                            <a href="/${user.username}" class="block">
-                                                                                <p class="font-semibold text-sm text-gray-900">${user.name || user.username}</p>
-                                                                                <p class="text-sm text-gray-500">${user.username}</p>
-                                                                            </a>
-                                                                        </div>
-                                                                    </div>
-                                                                    ${currentUserId && currentUserId !== user.id ? `
-                                                                        <button onclick="toggleFollow(${user.id}, this)" 
-                                                                                data-user-id="${user.id}"
-                                                                                class="px-4 py-1.5 text-sm font-medium rounded-lg ${isFollowing
+                                                    <div class="py-3 flex items-center justify-between">
+                                                        <div class="flex items-center gap-3">
+                                                            <a href="/${user.username}">
+                                                                <img src="${avatarUrl}" 
+                                                                     alt="${user.username}"
+                                                                     class="w-12 h-12 rounded-full object-cover"
+                                                                     onerror="this.src='/img/img.jpg'">
+                                                            </a>
+                                                            <div>
+                                                                <a href="/${user.username}" class="block">
+                                                                    <p class="font-semibold text-sm text-gray-900">${user.name || user.username}</p>
+                                                                    <p class="text-sm text-gray-500">${user.username}</p>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        ${currentUserId && currentUserId !== user.id ? `
+                                                            <button onclick="toggleFollow(${user.id}, this)" 
+                                                                    data-user-id="${user.id}"
+                                                                    class="px-4 py-1.5 text-sm font-medium rounded-lg ${isFollowing
                             ? 'bg-gray-200 text-gray-700'
                             : 'bg-blue-500 text-white'
                         }">
-                                                                            <span class="follow-text">${isFollowing ? 'Siguiendo' : 'Seguir'}</span>
-                                                                        </button>
-                                                                    ` : ''}
-                                                                </div>`;
+                                                                <span class="follow-text">${isFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                                            </button>
+                                                        ` : ''}
+                                                    </div>`;
             });
 
             container.innerHTML = html;
@@ -1484,11 +1483,11 @@
 
             // Animación de carga
             button.innerHTML = `
-                                                                        <div class="flex items-center gap-2">
-                                                                            <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                                                                            <span class="text-sm">Procesando...</span>
-                                                                        </div>
-                                                                    `;
+                                                            <div class="flex items-center gap-2">
+                                                                <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                                                <span class="text-sm">Procesando...</span>
+                                                            </div>
+                                                        `;
 
             performFollowAction(userId, action, button, textElement, iconElement, originalText);
         }
@@ -1518,11 +1517,11 @@
                         if (textElement) {
                             // Estructura nueva del botón
                             button.innerHTML = `
-                                                                                        <span class="follow-text">${isNowFollowing ? 'Siguiendo' : 'Seguir'}</span>
-                                                                                        <svg class="follow-icon w-4 h-4 ml-1 ${isNowFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                                                        </svg>
-                                                                                    `;
+                                                                            <span class="follow-text">${isNowFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                                                            <svg class="follow-icon w-4 h-4 ml-1 ${isNowFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                            </svg>
+                                                                        `;
 
                             // Actualizar clases del botón
                             button.className = `follow-btn flex items-center justify-center px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 ${isNowFollowing
@@ -1562,11 +1561,11 @@
                         // Restaurar botón con estructura nueva
                         const isFollowing = originalText === 'Siguiendo';
                         button.innerHTML = `
-                                                                                    <span class="follow-text">${originalText}</span>
-                                                                                    <svg class="follow-icon w-4 h-4 ml-1 ${isFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                                                    </svg>
-                                                                                `;
+                                                                        <span class="follow-text">${originalText}</span>
+                                                                        <svg class="follow-icon w-4 h-4 ml-1 ${isFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                        </svg>
+                                                                    `;
 
                         // Mostrar error temporal
                         const errorTextElement = button.querySelector('.follow-text');

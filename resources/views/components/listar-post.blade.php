@@ -18,14 +18,12 @@
 
                 <!-- Contenido de la publicación -->
                 @if ($post->tipo === 'imagen')
-                    <!-- Imagen del post mejorada para no recortar -->
+                    <!-- Imagen del post -->
                     <a href="{{ route('posts.show', ['user' => $post->user ? $post->user->username : 'usuario', 'post' => $post->id]) }}"
-                        class="w-full flex justify-center bg-neutral-900 rounded-b-none rounded-t-none min-h-60 sm:min-h-80"
-                        style="min-height:15rem;">
+                        class="w-full flex justify-center bg-black rounded-b-none rounded-t-none">
                         <img src="{{ asset('uploads') . '/' . $post->imagen }}"
                             alt="Imagen del post {{ $post->titulo ?? 'sin título' }}"
-                            class="object-contain w-full max-h-80 sm:max-h-96 bg-neutral-900 mb-0"
-                            style="background-color:#1a1a1a;margin-bottom:0;" loading="lazy">
+                            class="object-cover w-full max-h-80 sm:max-h-96 aspect-square rounded-none">
                     </a>
                 @elseif ($post->tipo === 'musica')
                     <!-- Publicacion de musica -->
@@ -110,7 +108,7 @@
                 @endif
 
                 <!-- Acciones de la publicación -->
-                <div class="w-full px-4 pt-2 pb-3">
+                <div class="w-full px-4 py-3">
                     <!-- Layout unificado para móviles y PC: título y acciones en la misma línea -->
                     <div class="flex items-center justify-between mb-2">
                         @if($post->tipo === 'musica')
