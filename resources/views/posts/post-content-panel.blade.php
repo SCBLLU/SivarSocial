@@ -14,9 +14,11 @@
                         d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12V4m0 0L8 8m4-4l4 4" />
                 </svg>
                 <p class="text-sm text-white/60">Haz clic o arrastra tu imagen aquí</p>
+                <p class="text-xs text-white/40 mt-2">Se convertirá automáticamente a formato cuadrado</p>
             </div>
         </form>
         <p class="text-gray-300 text-sm text-center mt-4">JPG, JPEG, PNG. Máx 20MB.</p>
+        <p class="text-gray-400 text-xs text-center mt-1">Todas las imágenes se optimizan automáticamente</p>
     </div>
 
     <!-- Contenido para post de música -->

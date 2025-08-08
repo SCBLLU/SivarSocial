@@ -1,5 +1,23 @@
 @import "tailwindcss";
 
+/* Prevenir salto de layout al cargar imágenes - Reservar espacio */
+.aspect-square {
+    aspect-ratio: 1 / 1;
+    min-height: 0;
+    /* Para flexbox */
+}
+
+/* Placeholder mientras carga la imagen */
+.aspect-square img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    background-color: #000000;
+    /* Gray-100 como placeholder */
+}
+
+
 /* Estilos para el formulario de edición de perfil */
 .profile-avatar {
     cursor: pointer;
@@ -36,6 +54,7 @@ input[type="password"] {
 #spotify-search {
     color: #ffffff !important;
 }
+
 #itunes-search {
     color: #ffffff !important;
 }
