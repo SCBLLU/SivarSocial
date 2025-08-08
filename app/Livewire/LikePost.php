@@ -18,7 +18,10 @@ class LikePost extends Component
         $this->post->loadMissing('likes');
 
         $this->color = $color;
-        $this->isLiked = $this->post->checkLike(Auth::user());
+
+        $user = Auth::user();
+        $this->isLiked = $user ? $this->post->checkLike($user) : false;
+
         $this->likes = $this->post->likes->count();
     }
 
