@@ -173,19 +173,19 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                                                                                                                                                                                                                                                                        h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                                                                                                                                                                                                                                                                                    h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
                                                     <div id="progress-bar"
                                                         class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                                                                                                                                                                                                                                                                            transition-all duration-100 ease-out"
+                                                                                                                                                                                                                                                                                                                                        transition-all duration-100 ease-out"
                                                         style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
                                                     <div id="progress-thumb"
                                                         class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                                                                                                                                                                                                                                                                            shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                                                                                                                                                                                                                                                                            opacity-0 transition-all duration-200 ease-out
-                                                                                                                                                                                                                                                                                                                            hover:scale-110 active:scale-95"
+                                                                                                                                                                                                                                                                                                                                        shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                                                                                                                                                                                                                                                                                        opacity-0 transition-all duration-200 ease-out
+                                                                                                                                                                                                                                                                                                                                        hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 
@@ -444,18 +444,30 @@
         </div>
     </div>
 
-    <!-- Modal de Likes - Estilo Instagram optimizado para móvil -->
-    <div id="likesModal" class="fixed inset-0 hidden items-center justify-center"
+    <!-- Modal de Likes - Estilo Instagram hoja deslizante para móvil -->
+    <div id="likesModal" class="fixed inset-0 hidden items-end sm:items-center justify-center"
         style="background-color: rgba(0, 0, 0, 0.6); z-index: 1100;">
         <!-- Backdrop para cerrar modal -->
         <div class="absolute inset-0 cursor-pointer" onclick="closeLikesModal()"></div>
 
-        <!-- Contenedor del modal - Adaptado para móvil con espacio para menú -->
-        <div class="relative bg-white w-full h-full sm:w-96 sm:h-96 sm:rounded-xl flex flex-col overflow-hidden shadow-2xl mobile-modal-container"
-            id="likesModalContent" style="margin-bottom: 7rem;">
-
-            <!-- Header simple como Instagram -->
-            <div class="flex-none border-b border-gray-200 bg-white sm:rounded-t-xl">
+        <!-- Contenedor del modal - Igual al panel de perfiles -->
+        <div id="likesModalContent"
+            class="fixed bottom-0 left-0 right-0 bg-white text-black rounded-t-2xl shadow-lg z-50 flex flex-col max-h-[80vh] w-full mx-auto sm:relative sm:w-96 sm:h-96 sm:rounded-xl overflow-hidden">
+            <!-- Drag handle -->
+            <div class="p-4 border-b border-gray-200 text-center text-lg font-semibold cursor-grab touch-none sm:hidden">
+                <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-2"></div>
+                <div class="flex items-center justify-between px-2">
+                    <span class="text-base font-bold text-gray-900">Me gusta</span>
+                    <button onclick="closeLikesModal()" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <!-- Header solo en desktop -->
+            <div class="hidden sm:block flex-none border-b border-gray-200 bg-white sm:rounded-t-xl sticky top-0 z-10">
                 <div class="flex items-center justify-between px-4 py-3">
                     <h3 class="text-base font-semibold text-gray-900">Me gusta</h3>
                     <button onclick="closeLikesModal()" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
@@ -466,17 +478,14 @@
                     </button>
                 </div>
             </div>
-
-            <!-- Lista scrolleable simple -->
-            <div class="flex-1 overflow-y-auto bg-white" id="likesScrollContainer">
+            <!-- Lista scrolleable -->
+            <div class="p-4 space-y-3 overflow-y-auto flex-1 pb-0 bg-white" id="likesScrollContainer">
                 <div id="likesUsersList"></div>
-
                 <!-- Estados básicos -->
                 <div id="likesLoader" class="hidden p-4 text-center">
                     <div class="inline-block w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin">
                     </div>
                 </div>
-
                 <div id="likesEmptyState" class="hidden p-8 text-center">
                     <p class="text-gray-500">Sin likes aún</p>
                 </div>
@@ -974,6 +983,18 @@
             }
         }
 
+        // Ocultar menú móvil al abrir modal de likes
+        if (window.innerWidth <= 640) {
+            const headerMenu = document.getElementById('header');
+            if (headerMenu) headerMenu.style.display = 'none';
+        }
+
+        // Mostrar menú móvil al cerrar modal de likes
+        if (window.innerWidth <= 640) {
+            const headerMenu = document.getElementById('header');
+            if (headerMenu) headerMenu.style.display = '';
+        }
+
         // Pausar audio al salir de la página
         window.addEventListener('beforeunload', function () {
             if (window.pauseAllAudio) {
@@ -1153,6 +1174,7 @@
                     content.style.transform = '';
                     content.style.opacity = '';
                     content.style.scale = '';
+                    content.classList.remove('few-likes', 'medium-likes'); // Limpiar clases de tamaño
                 }
 
                 // Limpiar datos y reset
@@ -1360,7 +1382,8 @@
         // Función mejorada para renderizar la lista de likes
         function renderLikesList() {
             const usersList = document.getElementById('likesUsersList');
-            if (!usersList) return;
+            const modalContainer = document.getElementById('likesModalContent');
+            if (!usersList || !modalContainer) return;
 
             hideAllLikesStates();
 
@@ -1378,6 +1401,15 @@
                 return;
             }
 
+            // Aplicar clase para pocos likes en móvil según cantidad
+            modalContainer.classList.remove('few-likes', 'medium-likes');
+
+            if (dataToRender.length <= 3) {
+                modalContainer.classList.add('few-likes');
+            } else if (dataToRender.length <= 8) {
+                modalContainer.classList.add('medium-likes');
+            }
+
             // Render users with animations
             renderUsersWithAnimation(dataToRender, usersList);
         }
@@ -1393,32 +1425,32 @@
                 const isFollowing = like.isFollowing || false;
 
                 html += `
-                                        <div class="px-4 py-3 flex items-center justify-between">
-                                            <div class="flex items-center gap-3">
-                                                <a href="/${user.username}">
-                                                    <img src="${avatarUrl}" 
-                                                         alt="${user.username}"
-                                                         class="w-12 h-12 rounded-full object-cover"
-                                                         onerror="this.src='/img/img.jpg'">
-                                                </a>
-                                                <div>
-                                                    <a href="/${user.username}" class="block">
-                                                        <p class="font-semibold text-sm text-gray-900">${user.name || user.username}</p>
-                                                        <p class="text-sm text-gray-500">@${user.username}</p>
+                                            <div class="px-4 py-3 flex items-center justify-between">
+                                                <div class="flex items-center gap-3">
+                                                    <a href="/${user.username}">
+                                                        <img src="${avatarUrl}" 
+                                                             alt="${user.username}"
+                                                             class="w-12 h-12 rounded-full object-cover"
+                                                             onerror="this.src='/img/img.jpg'">
                                                     </a>
+                                                    <div>
+                                                        <a href="/${user.username}" class="block">
+                                                            <p class="font-semibold text-sm text-gray-900">${user.name || user.username}</p>
+                                                            <p class="text-sm text-gray-500">@${user.username}</p>
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            ${currentUserId && currentUserId !== user.id ? `
-                                                <button onclick="toggleFollow(${user.id}, this)" 
-                                                        data-user-id="${user.id}"
-                                                        class="px-4 py-1.5 text-sm font-medium rounded-lg ${isFollowing
+                                                ${currentUserId && currentUserId !== user.id ? `
+                                                    <button onclick="toggleFollow(${user.id}, this)" 
+                                                            data-user-id="${user.id}"
+                                                            class="px-4 py-1.5 text-sm font-medium rounded-lg ${isFollowing
                             ? 'bg-gray-200 text-gray-700'
                             : 'bg-blue-500 text-white'
                         }">
-                                                    <span class="follow-text">${isFollowing ? 'Siguiendo' : 'Seguir'}</span>
-                                                </button>
-                                            ` : ''}
-                                        </div>`;
+                                                        <span class="follow-text">${isFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                                    </button>
+                                                ` : ''}
+                                            </div>`;
             });
 
             container.innerHTML = html;
@@ -1451,11 +1483,11 @@
 
             // Animación de carga
             button.innerHTML = `
-                                                <div class="flex items-center gap-2">
-                                                    <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                                                    <span class="text-sm">Procesando...</span>
-                                                </div>
-                                            `;
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                                        <span class="text-sm">Procesando...</span>
+                                                    </div>
+                                                `;
 
             performFollowAction(userId, action, button, textElement, iconElement, originalText);
         }
@@ -1485,11 +1517,11 @@
                         if (textElement) {
                             // Estructura nueva del botón
                             button.innerHTML = `
-                                                                <span class="follow-text">${isNowFollowing ? 'Siguiendo' : 'Seguir'}</span>
-                                                                <svg class="follow-icon w-4 h-4 ml-1 ${isNowFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                                </svg>
-                                                            `;
+                                                                    <span class="follow-text">${isNowFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                                                    <svg class="follow-icon w-4 h-4 ml-1 ${isNowFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                    </svg>
+                                                                `;
 
                             // Actualizar clases del botón
                             button.className = `follow-btn flex items-center justify-center px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 ${isNowFollowing
@@ -1529,11 +1561,11 @@
                         // Restaurar botón con estructura nueva
                         const isFollowing = originalText === 'Siguiendo';
                         button.innerHTML = `
-                                                            <span class="follow-text">${originalText}</span>
-                                                            <svg class="follow-icon w-4 h-4 ml-1 ${isFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                            </svg>
-                                                        `;
+                                                                <span class="follow-text">${originalText}</span>
+                                                                <svg class="follow-icon w-4 h-4 ml-1 ${isFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                </svg>
+                                                            `;
 
                         // Mostrar error temporal
                         const errorTextElement = button.querySelector('.follow-text');
@@ -1621,6 +1653,43 @@
                     lazyImages.forEach(img => imageObserver.observe(img));
                 };
             }
+
+            // Drag to close para el modal de likes en móvil
+            if (window.innerWidth <= 640) {
+                let startY = null;
+                let dragging = false;
+                let modal = document.getElementById('likesModalContent');
+                let modalWrapper = document.getElementById('likesModal');
+                let dragHandle = document.querySelector('.drag-handle');
+                let initialTop = 0;
+
+                if (dragHandle && modal) {
+                    dragHandle.addEventListener('touchstart', function (e) {
+                        dragging = true;
+                        startY = e.touches[0].clientY;
+                        modal.style.transition = 'none';
+                    });
+                    document.addEventListener('touchmove', function (e) {
+                        if (!dragging) return;
+                        let deltaY = e.touches[0].clientY - startY;
+                        if (deltaY > 0) {
+                            modal.style.transform = `translateY(${deltaY}px)`;
+                        }
+                    });
+                    document.addEventListener('touchend', function (e) {
+                        if (!dragging) return;
+                        let deltaY = e.changedTouches[0].clientY - startY;
+                        modal.style.transition = 'transform 0.2s';
+                        if (deltaY > 80) {
+                            closeLikesModal();
+                            setTimeout(() => { modal.style.transform = ''; }, 200);
+                        } else {
+                            modal.style.transform = '';
+                        }
+                        dragging = false;
+                    });
+                }
+            }
         });
     </script>
 
@@ -1671,26 +1740,74 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Estilos específicos para el modal de likes en móvil */
+        /* Estilos específicos para el modal de likes en móvil tipo hoja deslizante */
         @media (max-width: 640px) {
-            .mobile-modal-container {
-                height: calc(100vh - 8rem) !important;
-                /* Dejar espacio para el menú móvil */
-                margin-bottom: 0 !important;
-                bottom: 7rem !important;
-                top: 0 !important;
-                position: absolute !important;
+            #likesModalContent {
+                width: 100% !important;
+                max-width: 480px !important;
+                min-width: 0 !important;
+                border-radius: 22px 22px 0 0 !important;
+                margin: 0 auto 8rem auto !important;
+                position: fixed !important;
+                left: 50% !important;
+                bottom: 0 !important;
+                top: auto !important;
+                transform: translateX(-50%) !important;
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.18) !important;
+                height: auto !important;
+                max-height: 80vh !important;
+                transition: max-height 0.3s cubic-bezier(.4, 0, .2, 1), border-radius 0.2s;
+                overflow: hidden !important;
+                display: flex;
+                flex-direction: column;
+                padding: 0 !important;
             }
 
             #likesModal {
-                align-items: flex-start !important;
-                padding-top: 1rem;
+                align-items: flex-end !important;
+                justify-content: flex-end !important;
+                padding: 0 !important;
             }
 
-            /* También ajustar el modal de eliminar en móvil */
-            #deletePostModal {
-                padding-bottom: 8rem !important;
-                /* Espacio para el menú móvil */
+            #likesScrollContainer {
+                max-height: 60vh !important;
+                min-height: 120px !important;
+                padding-bottom: 0 !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            #likesModalContent {
+                width: 100% !important;
+                max-width: 480px !important;
+                min-width: 0 !important;
+                border-radius: 22px 22px 0 0 !important;
+                margin: 0 auto 0 auto !important;
+                position: fixed !important;
+                left: 50% !important;
+                bottom: 0 !important;
+                top: auto !important;
+                transform: translateX(-50%) !important;
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.18) !important;
+                height: auto !important;
+                max-height: 90vh !important;
+                transition: max-height 0.3s cubic-bezier(.4, 0, .2, 1), border-radius 0.2s;
+                overflow: hidden !important;
+                display: flex;
+                flex-direction: column;
+                padding: 0 !important;
+            }
+
+            #likesModal {
+                align-items: flex-end !important;
+                justify-content: flex-end !important;
+                padding: 0 !important;
+            }
+
+            #likesScrollContainer {
+                max-height: 70vh !important;
+                min-height: 120px !important;
+                padding-bottom: 0 !important;
             }
         }
 
