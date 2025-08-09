@@ -2,12 +2,7 @@
 <div class="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto" x-data="itunesComponent()">
     <!-- Header estilo Apple Music -->
     <div class="bg-black rounded-t-xl p-4 sm:p-6 border-b border-gray-800">
-        <div class="flex items-center justify-center mb-3 sm:mb-4">
-            <svg class="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15.5v-9l6 4.5-6 4.5z" />
-            </svg>
-        </div>
-        <h3 class="text-white text-lg sm:text-xl font-bold text-center mb-2">Buscar música</h3>
+        <h2 class="text-white text-lg sm:text-xl font-bold text-center mb-2">Buscar música</h2>
         <p class="text-gray-400 text-center text-xs sm:text-sm">Encuentra y comparte tu canción favorita</p>
     </div>
 
@@ -16,12 +11,6 @@
 
         <!-- Input de búsqueda -->
         <div class="relative mb-6">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 sm:pl-4 pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-            </div>
             <input type="text" id="itunes-search"
                 class="w-full pl-10 pr-4 py-3 bg-gray-900 border border-gray-700 text-white rounded-full placeholder-gray-400 focus:outline-none focus:border-white focus:bg-gray-800 transition-all duration-200 text-sm sm:text-base"
                 placeholder="¿Qué quieres compartir?" autocomplete="off" @focus="handleInputFocus()"
