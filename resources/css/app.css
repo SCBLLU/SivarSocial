@@ -59,6 +59,10 @@ input[type="password"] {
     color: #ffffff !important;
 }
 
+#descripcion {
+    color: #000000 !important;
+}
+
 /* Mejores estilos para el modal */
 .modal-backdrop {
     backdrop-filter: blur(4px);
@@ -276,3 +280,19 @@ input[type="password"] {
         font-size: 0.75rem;
     }
 }
+
+/* Dark mode support para el futuro */
+/* @media (prefers-color-scheme: dark) {
+    .bg-white {
+        background-color: #1f2937;
+        color: white;
+    }
+
+    .text-gray-700 {
+        color: #d1d5db;
+    }
+
+    .border-gray-300 {
+        border-color: #4b5563;
+    }
+} */

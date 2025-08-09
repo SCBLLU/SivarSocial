@@ -8,7 +8,7 @@
     @stack('styles')
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <title>SivarSocial</title>
-    @vite(['resources/css/app.css', 'resources/css/menu-mobile.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/menu-mobile.css', 'resources/css/post-creation.css', 'resources/js/app.js'])
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @livewireStyles()
