@@ -335,6 +335,26 @@ i.bx.bx-search-alt-2 {
   visibility: hidden;
 }*/
 
+
+
+@media only screen and  (min-width: 648px) {
+/*  .botton-menu {
+    bottom: calc(var(--spacing) * 30);
+  }*/
+ #perfilPanel {
+    z-index: 1005;
+/*    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    z-index: 1005;
+    max-width: 480px !important;
+    width: 100%;
+    max-height: 400px;
+    margin: 0 auto;*/
+  }
+}
+
 @media only screen and (min-width: 768px) {
   .header {
     bottom: 3rem;
@@ -355,6 +375,9 @@ i.bx.bx-search-alt-2 {
 
   #perfilPanel {
     z-index: 1005;
+    max-width: 480px !important;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   a.profile-cont .profile-cont-title {
@@ -713,3 +736,105 @@ img, video, iframe {
     font-size: 2rem;
   }
 }
+
+/*other menu*/
+
+@media (max-width: 640px) {
+    #modalmenu {
+        width: 100% ;
+        max-width: 480px ;
+        min-width: 0 ;
+        border-radius: 22px 22px 0 0 ;
+        margin: 0 auto 0 auto ;
+        position: fixed ;
+        bottom: 0 ;
+        top: auto ;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.18) ;
+        height: auto !important;
+        max-height: 90vh ;
+        transition: max-height 0.3s cubic-bezier(.4, 0, .2, 1), border-radius 0.2s;
+        overflow: hidden ;
+        display: flex;
+        flex-direction: column;
+        padding: 0 ;
+    }
+}
+
+
+/* Animaciones solo para MOBILE */
+@keyframes likeSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+  }
+}
+
+@keyframes likeSlideDown {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+/* Animaciones para DESKTOP */
+@keyframes likeFadeInDesktop {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+
+  }
+}
+
+@keyframes likeFadeOutDesktop {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* Clases únicas */
+.like-mobile-open {
+  animation: likeSlideUp 0.35s ease-out forwards;
+}
+
+.like-mobile-close {
+  animation: likeSlideDown 0.3s ease-in forwards;
+}
+
+.like-desktop-open {
+  animation: likeFadeInDesktop 0.25s ease-out forwards;
+}
+
+.like-desktop-close {
+  animation: likeFadeOutDesktop 0.2s ease-in forwards;
+}
+
+@media (max-width: 640px) {
+    #likesModalContent2 {
+        left: 0% ;
+        transform: translateX(0) ;
+        max-width: 480px !important;
+        margin-left: auto;
+       margin-right: auto;
+    }
+
+  .contenedor-scroll {
+    scroll-behavior: smooth;
+  }
+}
+
+#likesScrollContainer {
+   -webkit-overflow-scrolling: touch;
+  scrollbar-color: var(--color-white) var(--color-white);
+  scrollbar-width: thin;
+}
+    
