@@ -454,7 +454,7 @@
         <div id="likesModalContent"
             class="fixed bottom-0 left-0 right-0 bg-white text-black rounded-t-2xl shadow-lg z-50 flex flex-col max-h-[80vh] w-full mx-auto sm:relative sm:w-96 sm:h-96 sm:rounded-xl overflow-hidden">
             <!-- Drag handle -->
-            <div class="p-4 border-b border-gray-200 text-center text-lg font-semibold cursor-grab touch-none sm:hidden">
+            <div id="draghadlelike" class="p-4 border-b border-gray-200 text-center text-lg font-semibold cursor-grab touch-none sm:hidden">
                 <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-2"></div>
                 <div class="flex items-center justify-between px-2">
                     <span class="text-base font-bold text-gray-900">Me gusta</span>
@@ -1091,6 +1091,51 @@
             }
         });
 
+        document.addEventListener("DOMContentLoaded", () => {
+            const modal = document.getElementById("likesModal");
+            const modalContent = document.getElementById("likesModalContent");
+            const dragHandle = document.getElementById("draghadlelike");
+
+            let startY = 0;
+            let currentY = 0;
+            let isDragging = false;
+
+            dragHandle.addEventListener("touchstart", (e) => {
+                startY = e.touches[0].clientY;
+                isDragging = true;
+                modalContent.style.transition = "none"; // sin animación mientras se arrastra
+            });
+
+            dragHandle.addEventListener("touchmove", (e) => {
+                if (!isDragging) return;
+                currentY = e.touches[0].clientY;
+                let diff = currentY - startY;
+
+                if (diff > 0) { // solo arrastrar hacia abajo
+                    modalContent.style.transform = `translateY(${diff}px)`;
+                }
+               
+            });
+
+            dragHandle.addEventListener("touchend", () => {
+                isDragging = false;
+                modalContent.style.transition = "transform 0.3s ease";
+
+                // Si se arrastró más de 100px, cerramos modal
+                if (currentY - startY > 100) {
+                    modalContent.style.transform = `translateY(100%)`;
+                    setTimeout(() => {
+                        modal.classList.add("hidden");
+                        modalContent.style.transform = ""; 
+                        document.documentElement.style.overflow = "";
+                    }, 300);
+                } else {
+                    // Vuelve a posición original
+                    modalContent.style.transform = "translateY(0)";
+                }
+            });
+        });
+
         // ===== FUNCIONES PARA EL MODAL DE LIKES =====
         // Variables globales para el modal de likes mejorado
         let currentPostId = {{ $post->id }}; // ID del post actual
@@ -1108,36 +1153,30 @@
         function openLikesModal(postId = null) {
             const modal = document.getElementById('likesModal');
             const content = document.getElementById('likesModalContent');
-
-            if (!modal || !content) {
-                console.error('❌ No se encontraron elementos del modal');
-                return;
-            }
-
-            // Usar el postId pasado o el actual
             const targetPostId = postId || currentPostId;
 
-            try {
-                // Reset completo del contenido del modal antes de mostrar
-                content.style.transform = '';
-                content.style.opacity = '';
-                content.style.scale = '';
+            if (!modal || !content) return;
 
-                // Mostrar modal usando clases de Tailwind
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                document.body.style.overflow = 'hidden';
-                document.body.classList.add('modal-open');
+            // Reset animaciones
+            content.classList.remove('like-mobile-close', 'like-desktop-close');
+            void content.offsetWidth; // Reinicia animación
 
-                // Configurar el modal para listas largas
-                setupLikesModal();
-
-                // Cargar likes del post
-                loadLikesData(targetPostId, true);
-            } catch (error) {
-                console.error('❌ Error al abrir modal:', error);
+            // Detectar mobile
+            if (window.innerWidth < 648) {
+                content.classList.add('like-mobile-open');
+            } else {
+                content.classList.add('like-desktop-open');
             }
-        }        // Configurar funcionalidades del modal
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = "hidden";
+
+            setupLikesModal();
+            loadLikesData(targetPostId, true);
+        }
+        // Configurar funcionalidades del modal
         function setupLikesModal() {
             const scrollContainer = document.getElementById('likesScrollContainer');
 
@@ -1158,44 +1197,32 @@
             const content = document.getElementById('likesModalContent');
             const searchInput = document.getElementById('likesSearchInput');
 
-            try {
-                // Ocultar modal usando clases de Tailwind
-                if (modal) {
-                    modal.classList.add('hidden');
-                    modal.classList.remove('flex');
-                }
+            if (!modal || !content) return;
 
-                // Restaurar scroll del body
+            // Reset animaciones
+            content.classList.remove('like-mobile-open', 'like-desktop-open');
+            void content.offsetWidth;
+
+            // Detectar mobile
+            if (window.innerWidth < 648) {
+                content.classList.add('like-mobile-close');
+                content.style.transform = "";
+            } else {
+                content.classList.add('like-desktop-close');
+            }
+
+            content.addEventListener('animationend', function handler() {
+                content.removeEventListener('animationend', handler);
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
                 document.body.style.overflow = '';
-                document.body.classList.remove('modal-open');
+                document.documentElement.style.overflow = "";
 
-                // Reset completo del contenido modal
-                if (content) {
-                    content.style.transform = '';
-                    content.style.opacity = '';
-                    content.style.scale = '';
-                    content.classList.remove('few-likes', 'medium-likes'); // Limpiar clases de tamaño
-                }
-
-                // Limpiar datos y reset
                 likesData = [];
                 filteredLikesData = [];
                 currentLikesPage = 1;
-
-                if (searchInput) {
-                    searchInput.value = '';
-                }
-
-            } catch (error) {
-                console.error('❌ Error al cerrar modal:', error);
-                // Forzar cierre en caso de error
-                if (modal) {
-                    modal.classList.add('hidden');
-                    modal.classList.remove('flex');
-                }
-                document.body.style.overflow = '';
-                document.body.classList.remove('modal-open');
-            }
+                if (searchInput) searchInput.value = '';
+            });
         }
 
         // Instagram no usa búsqueda - función simplificada para compatibilidad
@@ -1747,47 +1774,10 @@
                 max-width: 480px !important;
                 min-width: 0 !important;
                 border-radius: 22px 22px 0 0 !important;
-                margin: 0 auto 8rem auto !important;
-                position: fixed !important;
-                left: 50% !important;
-                bottom: 0 !important;
-                top: auto !important;
-                transform: translateX(-50%) !important;
-                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.18) !important;
-                height: auto !important;
-                max-height: 80vh !important;
-                transition: max-height 0.3s cubic-bezier(.4, 0, .2, 1), border-radius 0.2s;
-                overflow: hidden !important;
-                display: flex;
-                flex-direction: column;
-                padding: 0 !important;
-            }
-
-            #likesModal {
-                align-items: flex-end !important;
-                justify-content: flex-end !important;
-                padding: 0 !important;
-            }
-
-            #likesScrollContainer {
-                max-height: 60vh !important;
-                min-height: 120px !important;
-                padding-bottom: 0 !important;
-            }
-        }
-
-        @media (max-width: 640px) {
-            #likesModalContent {
-                width: 100% !important;
-                max-width: 480px !important;
-                min-width: 0 !important;
-                border-radius: 22px 22px 0 0 !important;
                 margin: 0 auto 0 auto !important;
                 position: fixed !important;
-                left: 50% !important;
                 bottom: 0 !important;
                 top: auto !important;
-                transform: translateX(-50%) !important;
                 box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.18) !important;
                 height: auto !important;
                 max-height: 90vh !important;
@@ -1796,18 +1786,6 @@
                 display: flex;
                 flex-direction: column;
                 padding: 0 !important;
-            }
-
-            #likesModal {
-                align-items: flex-end !important;
-                justify-content: flex-end !important;
-                padding: 0 !important;
-            }
-
-            #likesScrollContainer {
-                max-height: 70vh !important;
-                min-height: 120px !important;
-                padding-bottom: 0 !important;
             }
         }
 
@@ -1818,7 +1796,7 @@
         }
 
         /* Prevenir scroll del body cuando los modales están abiertos */
-        body.modal-open {
+        *.modal-open {
             overflow: hidden !important;
         }
     </style>
