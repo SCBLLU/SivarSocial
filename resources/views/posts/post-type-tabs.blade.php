@@ -4,14 +4,14 @@
         <button id="tab-imagen"
             :class="tab === 'imagen' ? 'bg-white text-black border border-white' : 'bg-black text-white hover:bg-gray-900 border border-gray-700'"
             class="tab-button px-6 py-3 rounded-xl font-semibold text-sm flex items-center gap-2 transition-colors duration-200"
-            @click="tab = 'imagen'">
+            @click="tab = 'imagen'; switchTab('imagen')">
             <i class="fas fa-camera text-xl"></i>
             Foto
         </button>
         <button id="tab-musica"
             :class="tab === 'musica' ? 'bg-white text-black border border-white' : 'bg-black text-white hover:bg-gray-900 border border-gray-700'"
             class="tab-button px-6 py-3 rounded-xl font-semibold text-sm flex items-center gap-2 transition-colors duration-200"
-            @click="tab = 'musica'">
+            @click="tab = 'musica'; switchTab('musica')">
             <i class="fas fa-music text-xl"></i>
             Música
         </button>
