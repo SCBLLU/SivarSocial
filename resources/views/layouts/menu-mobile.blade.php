@@ -17,7 +17,11 @@
 
       if ($currentRoute && $currentRoute->getName() === 'posts.index') {
       $routeUser = $currentRoute->parameter('user');
-      if ($routeUser && $routeUser->username === Auth::user()->username) {
+
+      // Manejar tanto cuando $routeUser es un objeto como cuando es un string
+      $routeUsername = is_object($routeUser) ? $routeUser->username : $routeUser;
+
+      if ($routeUsername && $routeUsername === Auth::user()->username) {
         $isProfile = true;
       }
       }
@@ -59,16 +63,16 @@
         <!-- Fin Mensajes -->
 
       @elseif(Route::is('perfil.index'))
-        <li class="menu__item">
-          <a class="menu__link btn" href="{{ url('/') }}#home">
-          <i class='bx bx-home-smile'></i>
-          </a>
-        </li>
-        <li class="menu__item">
-          <a class="menu__link btn" href="{{ route('posts.create') }}">
-          <i class='bx bx-plus'></i>
-          </a>
-        </li>
+      <li class="menu__item">
+      <a class="menu__link btn" href="{{ url('/') }}#home">
+        <i class='bx bx-home-smile'></i>
+      </a>
+      </li>
+      <li class="menu__item">
+      <a class="menu__link btn" href="{{ route('posts.create') }}">
+        <i class='bx bx-plus'></i>
+      </a>
+      </li>
 
       @else
 
