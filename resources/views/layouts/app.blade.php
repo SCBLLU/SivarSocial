@@ -8,7 +8,7 @@
     @stack('styles')
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <title>SivarSocial</title>
-    @vite(['resources/css/app.css', 'resources/css/menu-mobile.css', 'resources/css/post-creation.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/menu-mobile.css', 'resources/js/app.js'])
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @livewireStyles()
@@ -221,13 +221,13 @@
         <!-- fin menu para mobile -->
 
         <div class="contenido">
-        @if(Route::is('recuperar', 'code.verific', 'restablecer'))
-            @yield('contenido-recover')
-        @else
-            <main class="container p-5 mx-auto mt-10 mb-5">
-                <h2 class="mb-10 text-3xl font-bold text-center">
-                    @yield('titulo')
-                </h2>
+            @if(Route::is('recuperar', 'code.verific', 'restablecer'))
+                @yield('contenido-recover')
+            @else
+                <main class="container p-5 mx-auto mt-10 mb-5">
+                    <h2 class="mb-10 text-3xl font-bold text-center">
+                        @yield('titulo')
+                    </h2>
 
                     <div>
                         @yield('contenido')
@@ -235,9 +235,9 @@
                 </main>
             @endif
 
-        <footer class="p-5 font-bold text-center text-gray-300 uppercase">
-            <small>SivarSocial &copy; {{ now()->year }}</small>
-        </footer>
+            <footer class="p-5 font-bold text-center text-gray-300 uppercase">
+                <small>SivarSocial &copy; {{ now()->year }}</small>
+            </footer>
         </div>
         <!-- menu de perfil para mobile -->
         @yield('lista-perfiles-mobile')
@@ -261,21 +261,21 @@
             document.getElementById("buscar2").focus();
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const camposBusqueda = [{
-                    inputId: 'buscar',
-                    resultIds: ['resultados-busqueda']
-                },
-                {
-                    inputId: 'buscar2',
-                    resultIds: ['resultados-busqueda2']
-                }
+                inputId: 'buscar',
+                resultIds: ['resultados-busqueda']
+            },
+            {
+                inputId: 'buscar2',
+                resultIds: ['resultados-busqueda2']
+            }
             ];
 
             camposBusqueda.forEach(campo => {
                 const input = document.getElementById(campo.inputId);
                 if (input) {
-                    input.addEventListener('keyup', function() {
+                    input.addEventListener('keyup', function () {
                         const query = this.value;
 
                         fetch(`/buscar-usuarios?buscar=${encodeURIComponent(query)}`)
@@ -325,13 +325,13 @@
             document.querySelector('meta[name="theme-color"]').setAttribute('content', '');
         }
 
-        window.addEventListener("resize", function() {
+        window.addEventListener("resize", function () {
             if (window.innerWidth > 768) {
                 closeComments();
             }
         });
 
-        dragHandle.addEventListener('touchstart', function(e) {
+        dragHandle.addEventListener('touchstart', function (e) {
             dragging = true;
             startY = e.touches[0].clientY;
             panel.style.transition = "none";
@@ -339,7 +339,7 @@
             passive: true
         });
 
-        dragHandle.addEventListener('touchmove', function(e) {
+        dragHandle.addEventListener('touchmove', function (e) {
             if (!dragging) return;
             currentY = e.touches[0].clientY;
             const diff = currentY - startY;
@@ -350,7 +350,7 @@
             passive: true
         });
 
-        dragHandle.addEventListener('touchend', function() {
+        dragHandle.addEventListener('touchend', function () {
             dragging = false;
             const diff = currentY - startY;
             panel.style.transition = "transform 0.2s";
