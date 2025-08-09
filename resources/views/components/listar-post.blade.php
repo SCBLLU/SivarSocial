@@ -12,6 +12,21 @@
                         <span class="ml-3 font-bold text-black group-hover:underline text-sm sm:text-base">
                             {{ $post->user ? ($post->user->name ?? $post->user->username) : 'usuario' }}
                         </span>
+                        @if(isset($post->user) && $post->user->insignia === 'Colaborador')
+                            <span class="ml-1 flex items-center">
+                                <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png" alt="Colaborador" width="16" height="16">
+                            </span>
+                        @elseif(isset($post->user) && $post->user->insignia === 'Docente')
+                            <span class="ml-1 flex items-center">
+                                <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png" alt="Docente" width="16" height="16">
+                            </span>
+                        @elseif(isset($post->user) && $post->user->insignia === 'Comunidad')
+                            <span class="ml-1 flex items-center">
+                                <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png" alt="Comunidad" width="16" height="16">
+                            </span>
+                        @else
+
+                        @endif
                     </a>
                     <span class="text-xs text-gray-500 ml-auto">{{ ucfirst($post->created_at->diffForHumans()) }}</span>
                 </div>

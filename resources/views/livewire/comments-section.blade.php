@@ -30,8 +30,22 @@
                             <div class="flex-1 min-w-0 flex items-center justify-between">
                                 <div class="flex items-center gap-2 min-w-0">
                                     <a href="{{ route('posts.index', $comentario->user->username) }}"
-                                        class="font-semibold text-sm text-gray-900 hover:text-blue-600 transition-colors truncate">
+                                        class="font-semibold text-sm text-gray-900 hover:text-blue-600 transition-colors truncate d-flex">
                                         {{ $comentario->user->username }}
+
+                            @if(isset($comentario->user) && $comentario->user->insignia === 'Colaborador')
+                                <span class="ml-1 flex items-center">
+                                    <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png" alt="Colaborador" width="16" height="16">
+                                </span>
+                            @elseif(isset($comentario->user) && $comentario->user->insignia === 'Docente')
+                                <span class="ml-1 flex items-center">
+                                    <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png" alt="Docente" width="16" height="16">
+                                </span>
+                            @elseif(isset($comentario->user) && $comentario->user->insignia === 'Comunidad')
+                                <span class="ml-1 flex items-center">
+                                    <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png" alt="Comunidad" width="16" height="16">
+                                </span>
+                            @endif
                                     </a>
                                     @if($comentario->user_id === $post->user_id)
                                         <span
@@ -186,7 +200,7 @@
                             class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover border-2 border-[#3B25DD] flex-shrink-0">
                     @endif
                     <input type="text" wire:model="comentario"
-                        class="flex-1 bg-transparent border-none outline-none text-xs sm:text-sm placeholder-gray-500 text-gray-800 {{ $errors->has('comentario') ? 'text-red-500' : '' }}"
+                        class="flex-1 min-w-0 bg-transparent border-none outline-none text-xs sm:text-sm placeholder-gray-500 text-gray-800 {{ $errors->has('comentario') ? 'text-red-500' : '' }}"
                         placeholder="Agrega un comentario..." maxlength="500" required wire:loading.attr="disabled"
                         wire:target="store">
                     <button type="submit" wire:loading.attr="disabled" wire:target="store"

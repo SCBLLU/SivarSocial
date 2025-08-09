@@ -17,7 +17,6 @@
         <div class="max-w-6xl w-full">
             <!-- Contenido principal -->
             <div class="flex flex-col lg:flex-row gap-4 lg:gap-8 w-full justify-center items-start">
-
                 <!-- Post -->
                 @if($post->isMusicPost())
                     <!-- Post musical -->
@@ -31,8 +30,23 @@
                                     class="w-10 h-10 rounded-full object-cover border-2 border-[#3B25DD] group-hover:border-[#120073] transition"
                                     onerror="this.src='{{ asset('img/img.jpg') }}'">
                                 <span class="ml-3 font-bold text-black group-hover:underline text-sm sm:text-base">
-                                    {{ $post->user->name ?? $post->user->username }}
+                                    {{ $post->user->name ?? $post->user->username }} 
                                 </span>
+                                @if(isset($post->user) && $post->user->insignia === 'Colaborador')
+                                    <span class="ml-1 flex items-center">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png" alt="Colaborador" width="16" height="16">
+                                    </span>
+                                @elseif(isset($post->user) && $post->user->insignia === 'Docente')
+                                    <span class="ml-1 flex items-center">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png" alt="Docente" width="16" height="16">
+                                    </span>
+                                @elseif(isset($post->user) && $post->user->insignia === 'Comunidad')
+                                    <span class="ml-1 flex items-center">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png" alt="Comunidad" width="16" height="16">
+                                    </span>
+                                @else
+
+                                @endif
                             </a>
                             <div class="flex items-center gap-2 ml-auto">
                                 <span class="text-xs text-gray-500">{{ ucfirst($post->created_at->diffForHumans()) }}</span>
@@ -292,6 +306,21 @@
                                 <span class="ml-3 font-bold text-black group-hover:underline text-sm sm:text-base">
                                     {{ $post->user->name ?? $post->user->username }}
                                 </span>
+                                @if(isset($post->user) && $post->user->insignia === 'Colaborador')
+                                    <span class="ml-1 flex items-center">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png" alt="Colaborador" width="16" height="16">
+                                    </span>
+                                @elseif(isset($post->user) && $post->user->insignia === 'Docente')
+                                    <span class="ml-1 flex items-center">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png" alt="Docente" width="16" height="16">
+                                    </span>
+                                @elseif(isset($post->user) && $post->user->insignia === 'Comunidad')
+                                    <span class="ml-1 flex items-center">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png" alt="Comunidad" width="16" height="16">
+                                    </span>
+                                @else
+
+                                @endif
                             </a>
                             <div class="flex items-center gap-2 ml-auto">
                                 <span class="text-xs text-gray-500">{{ ucfirst($post->created_at->diffForHumans()) }}</span>
