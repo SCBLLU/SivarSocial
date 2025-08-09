@@ -55,7 +55,7 @@ function switchTab(type) {
     updateSubmitButton();
 }
 
-// Función para actualizar el estado del botón submit
+// Función para actualizar el estado del botón submit - VERSION SIMPLE
 function updateSubmitButton() {
     const submitBtn = document.getElementById('btn-submit');
     let canSubmit = false;
@@ -65,29 +65,39 @@ function updateSubmitButton() {
     // Validación según el tipo de post
     if (currentPostType === 'imagen') {
         const imagenInput = document.querySelector('[name="imagen"]');
-        const tituloInput = document.getElementById('titulo');
-        const descripcionInput = document.getElementById('descripcion');
+        const tituloInput = document.querySelector('[name="titulo"]');
+        const descripcionInput = document.querySelector('[name="descripcion"]');
 
         console.log('imagen value:', imagenInput?.value || 'not found');
         console.log('titulo value:', tituloInput?.value || 'not found');
         console.log('descripcion value:', descripcionInput?.value || 'not found');
 
-        canSubmit = imagenInput && imagenInput.value.trim() !== '' &&
-            tituloInput && tituloInput.value.trim() !== '' &&
-            descripcionInput && descripcionInput.value.trim() !== '';
+        // Para imagen: requiere imagen, título y descripción
+        const hasImage = imagenInput && imagenInput.value.trim() !== '';
+        const hasTitle = tituloInput && tituloInput.value.trim() !== '';
+        const hasDescription = descripcionInput && descripcionInput.value.trim() !== '';
+        
+        canSubmit = hasImage && hasTitle && hasDescription;
+        
     } else if (currentPostType === 'musica') {
         const trackIdInput = document.querySelector('[name="itunes_track_id"]');
-        canSubmit = trackIdInput && trackIdInput.value.trim() !== '';
+        const hasTrack = trackIdInput && trackIdInput.value.trim() !== '';
+        canSubmit = hasTrack;
     }
 
     console.log('canSubmit:', canSubmit);
 
-    // Habilitar/deshabilitar botón submit
+    // Habilitar/deshabilitar botón submit de forma simple
     if (submitBtn) {
         submitBtn.disabled = !canSubmit;
         console.log('Button disabled state:', submitBtn.disabled);
     } else {
         console.log('Submit button not found');
+    }
+
+    // Llamar a la función del formulario si existe
+    if (typeof window.updateSubmitButton === 'function' && window.updateSubmitButton !== updateSubmitButton) {
+        window.updateSubmitButton();
     }
 }
 
@@ -315,11 +325,11 @@ async function searchiTunes(query) {
     }
 }
 
-// Función para seleccionar track de iTunes
+// Función para seleccionar track de iTunes - VERSION DINAMICA
 function itunesSelectTrack(track) {
     itunesSelectedTrack = track;
 
-    // Actualizar campos del formulario
+    // Actualizar campos del formulario de forma más eficiente
     const fields = {
         'music_source': 'itunes',
         'itunes_track_id': track.trackId,
@@ -334,16 +344,28 @@ function itunesSelectTrack(track) {
         'itunes_primary_genre_name': track.primaryGenreName || ''
     };
 
+    // Actualizar campos con eventos personalizados para mejor reactividad
     Object.entries(fields).forEach(([name, value]) => {
         const input = document.querySelector(`[name="${name}"]`);
-        if (input) input.value = value;
+        if (input) {
+            input.value = value;
+            // Disparar evento personalizado para notificar el cambio
+            input.dispatchEvent(new Event('valueChanged'));
+        }
     });
 
     // Limpiar búsqueda
     itunesClearSearch();
 
+    // Disparar evento personalizado inmediatamente
+    document.dispatchEvent(new CustomEvent('itunes:trackSelected', { detail: track }));
+
     showNotification(`${track.trackName} seleccionada`, 'success');
-    updateSubmitButton();
+
+    // Actualizar botón submit de forma inmediata
+    if (typeof updateSubmitButton === 'function') {
+        updateSubmitButton();
+    }
 }
 
 // Función para mostrar loader
@@ -377,7 +399,7 @@ function itunesClearSearch() {
     document.dispatchEvent(new CustomEvent('itunes:clearSearch'));
 }
 
-// Función para limpiar selección
+// Función para limpiar selección - VERSION DINAMICA
 function itunesClearSelection() {
     itunesSelectedTrack = null;
 
@@ -388,19 +410,31 @@ function itunesClearSelection() {
         'itunes_primary_genre_name'
     ];
 
+    // Limpiar campos con eventos personalizados
     fieldNames.forEach(name => {
         const input = document.querySelector(`[name="${name}"]`);
-        if (input) input.value = '';
+        if (input) {
+            input.value = '';
+            // Disparar evento personalizado para notificar el cambio
+            input.dispatchEvent(new Event('valueChanged'));
+        }
     });
 
     // También limpiar el music_source si era iTunes
     const musicSourceInput = document.querySelector('[name="music_source"]');
     if (musicSourceInput && musicSourceInput.value === 'itunes') {
         musicSourceInput.value = '';
+        musicSourceInput.dispatchEvent(new Event('valueChanged'));
     }
 
+    // Disparar evento personalizado inmediatamente
     document.dispatchEvent(new CustomEvent('itunes:trackCleared'));
-    updateSubmitButton();
+
+    // Actualizar botón submit de forma inmediata
+    if (typeof updateSubmitButton === 'function') {
+        updateSubmitButton();
+    }
+
     showNotification('Selección eliminada', 'info');
 }
 
@@ -517,19 +551,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Event listeners para campos de formulario para actualizar botón submit
+    // Event listeners para campos de formulario - VERSION SIMPLE
     const tituloInput = document.getElementById('titulo');
     const descripcionInput = document.getElementById('descripcion');
 
+    // Listeners básicos sin efectos
     if (tituloInput) {
         tituloInput.addEventListener('input', updateSubmitButton);
-        tituloInput.addEventListener('keyup', updateSubmitButton);
         tituloInput.addEventListener('change', updateSubmitButton);
     }
 
     if (descripcionInput) {
         descripcionInput.addEventListener('input', updateSubmitButton);
-        descripcionInput.addEventListener('keyup', updateSubmitButton);
         descripcionInput.addEventListener('change', updateSubmitButton);
     }
 
@@ -549,51 +582,98 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 1500); // Reducido de 2000ms a 1500ms para mejor sincronización
 });
 
-// DROPZONE PARA CREAR POSTS - SIMPLICADO AUTOMÁTICO
+// DROPZONE PARA CREAR POSTS - NUEVA INTERFAZ SIMPLIFICADA
 if (document.getElementById('dropzone')) {
     let dropzone = new Dropzone('#dropzone', {
         url: '/imagenes',
         dictDefaultMessage: 'Sube tu imagen aquí',
         acceptedFiles: '.jpg,.jpeg,.png',
-        addRemoveLinks: true,
-        dictRemoveFile: 'Eliminar archivo',
+        addRemoveLinks: false, // Los controles están en la nueva UI
         maxFiles: 1,
         maxFilesize: 20,
         uploadMultiple: false,
         paramName: 'imagen',
+        autoProcessQueue: true,
+        createImageThumbnails: false, // No necesitamos thumbnails de Dropzone
+        previewTemplate: '<div style="display:none;"></div>', // Ocultar preview de Dropzone
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         init: function () {
-            // Si ya hay una imagen cargada, mostrarla como mockFile
+            // Exponer instancia globalmente para uso desde otros scripts
+            window.dropzoneInstance = this;
+
+            // Si ya hay una imagen cargada, configurar estado
             const imagenInput = document.querySelector('[name="imagen"]');
             if (imagenInput && imagenInput.value.trim()) {
                 const mockFile = {
                     name: imagenInput.value,
-                    size: 1234
+                    size: 1234,
+                    status: Dropzone.SUCCESS
                 };
-                this.emit('addedfile', mockFile);
-                this.emit('thumbnail', mockFile, `/uploads/${mockFile.name}`);
+                this.files.push(mockFile);
                 this.emit('complete', mockFile);
-                mockFile.previewElement.classList.add('dz-success', 'dz-complete');
+                updateSubmitButton();
+            }
+        },
+
+        // Interceptar cuando se añade un archivo
+        addedfile: function (file) {
+            // No hacer nada aquí, la UI personalizada maneja el preview
+        },
+
+        // Cuando se procesa un archivo
+        processing: function (file) {
+            if (typeof showNotification === 'function') {
+                showNotification('Procesando imagen...', 'info');
+            }
+        },
+
+        // Éxito en la subida
+        success: function (file, response) {
+            // Actualizar campo hidden
+            const imagenInput = document.querySelector('[name="imagen"]');
+            if (imagenInput) {
+                imagenInput.value = response.imagen;
+            }
+
+            // Actualizar botón submit
+            if (typeof updateSubmitButton === 'function') {
+                updateSubmitButton();
+            }
+
+            // Mostrar notificación
+            if (typeof showNotification === 'function') {
+                showNotification(response.message || 'Imagen subida correctamente', 'success');
+            }
+        },
+
+        // Error en la subida
+        error: function (file, errorMessage) {
+            console.error('Error uploading file:', errorMessage);
+
+            if (typeof showNotification === 'function') {
+                const message = typeof errorMessage === 'string' ? errorMessage : 'Error al subir imagen';
+                showNotification(message, 'error');
+            }
+
+            // Limpiar archivo fallido
+            this.removeFile(file);
+        },
+
+        // Archivo removido
+        removedfile: function (file) {
+            // Limpiar campo hidden
+            const imagenInput = document.querySelector('[name="imagen"]');
+            if (imagenInput) {
+                imagenInput.value = '';
+            }
+
+            // Actualizar botón submit
+            if (typeof updateSubmitButton === 'function') {
                 updateSubmitButton();
             }
         }
-    });
-
-    // Al subir imagen exitosamente, actualizar input
-    dropzone.on("success", function (file, response) {
-        document.querySelector('[name="imagen"]').value = response.imagen;
-        updateSubmitButton();
-
-        // Mostrar notificación de procesamiento automático
-        showNotification('Imagen procesada automáticamente', 'success');
-    });
-
-    // Al eliminar imagen, limpiar input
-    dropzone.on("removedfile", function (file) {
-        document.querySelector('[name="imagen"]').value = "";
-        updateSubmitButton();
     });
 }
 
