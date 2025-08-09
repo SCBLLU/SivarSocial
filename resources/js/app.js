@@ -55,7 +55,7 @@ function switchTab(type) {
     updateSubmitButton();
 }
 
-// Función para actualizar el estado del botón submit
+// Función para actualizar el estado del botón submit - VERSION SIMPLE
 function updateSubmitButton() {
     const submitBtn = document.getElementById('btn-submit');
     let canSubmit = false;
@@ -65,24 +65,39 @@ function updateSubmitButton() {
     // Validación según el tipo de post
     if (currentPostType === 'imagen') {
         const imagenInput = document.querySelector('[name="imagen"]');
+        const tituloInput = document.querySelector('[name="titulo"]');
+        const descripcionInput = document.querySelector('[name="descripcion"]');
 
         console.log('imagen value:', imagenInput?.value || 'not found');
+        console.log('titulo value:', tituloInput?.value || 'not found');
+        console.log('descripcion value:', descripcionInput?.value || 'not found');
 
-        // Solo requiere imagen para posts de imagen
-        canSubmit = imagenInput && imagenInput.value.trim() !== '';
+        // Para imagen: requiere imagen, título y descripción
+        const hasImage = imagenInput && imagenInput.value.trim() !== '';
+        const hasTitle = tituloInput && tituloInput.value.trim() !== '';
+        const hasDescription = descripcionInput && descripcionInput.value.trim() !== '';
+        
+        canSubmit = hasImage && hasTitle && hasDescription;
+        
     } else if (currentPostType === 'musica') {
         const trackIdInput = document.querySelector('[name="itunes_track_id"]');
-        canSubmit = trackIdInput && trackIdInput.value.trim() !== '';
+        const hasTrack = trackIdInput && trackIdInput.value.trim() !== '';
+        canSubmit = hasTrack;
     }
 
     console.log('canSubmit:', canSubmit);
 
-    // Habilitar/deshabilitar botón submit
+    // Habilitar/deshabilitar botón submit de forma simple
     if (submitBtn) {
         submitBtn.disabled = !canSubmit;
         console.log('Button disabled state:', submitBtn.disabled);
     } else {
         console.log('Submit button not found');
+    }
+
+    // Llamar a la función del formulario si existe
+    if (typeof window.updateSubmitButton === 'function' && window.updateSubmitButton !== updateSubmitButton) {
+        window.updateSubmitButton();
     }
 }
 
@@ -310,11 +325,11 @@ async function searchiTunes(query) {
     }
 }
 
-// Función para seleccionar track de iTunes
+// Función para seleccionar track de iTunes - VERSION DINAMICA
 function itunesSelectTrack(track) {
     itunesSelectedTrack = track;
 
-    // Actualizar campos del formulario
+    // Actualizar campos del formulario de forma más eficiente
     const fields = {
         'music_source': 'itunes',
         'itunes_track_id': track.trackId,
@@ -329,16 +344,28 @@ function itunesSelectTrack(track) {
         'itunes_primary_genre_name': track.primaryGenreName || ''
     };
 
+    // Actualizar campos con eventos personalizados para mejor reactividad
     Object.entries(fields).forEach(([name, value]) => {
         const input = document.querySelector(`[name="${name}"]`);
-        if (input) input.value = value;
+        if (input) {
+            input.value = value;
+            // Disparar evento personalizado para notificar el cambio
+            input.dispatchEvent(new Event('valueChanged'));
+        }
     });
 
     // Limpiar búsqueda
     itunesClearSearch();
 
+    // Disparar evento personalizado inmediatamente
+    document.dispatchEvent(new CustomEvent('itunes:trackSelected', { detail: track }));
+
     showNotification(`${track.trackName} seleccionada`, 'success');
-    updateSubmitButton();
+
+    // Actualizar botón submit de forma inmediata
+    if (typeof updateSubmitButton === 'function') {
+        updateSubmitButton();
+    }
 }
 
 // Función para mostrar loader
@@ -372,7 +399,7 @@ function itunesClearSearch() {
     document.dispatchEvent(new CustomEvent('itunes:clearSearch'));
 }
 
-// Función para limpiar selección
+// Función para limpiar selección - VERSION DINAMICA
 function itunesClearSelection() {
     itunesSelectedTrack = null;
 
@@ -383,19 +410,31 @@ function itunesClearSelection() {
         'itunes_primary_genre_name'
     ];
 
+    // Limpiar campos con eventos personalizados
     fieldNames.forEach(name => {
         const input = document.querySelector(`[name="${name}"]`);
-        if (input) input.value = '';
+        if (input) {
+            input.value = '';
+            // Disparar evento personalizado para notificar el cambio
+            input.dispatchEvent(new Event('valueChanged'));
+        }
     });
 
     // También limpiar el music_source si era iTunes
     const musicSourceInput = document.querySelector('[name="music_source"]');
     if (musicSourceInput && musicSourceInput.value === 'itunes') {
         musicSourceInput.value = '';
+        musicSourceInput.dispatchEvent(new Event('valueChanged'));
     }
 
+    // Disparar evento personalizado inmediatamente
     document.dispatchEvent(new CustomEvent('itunes:trackCleared'));
-    updateSubmitButton();
+
+    // Actualizar botón submit de forma inmediata
+    if (typeof updateSubmitButton === 'function') {
+        updateSubmitButton();
+    }
+
     showNotification('Selección eliminada', 'info');
 }
 
@@ -512,19 +551,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Event listeners para campos de formulario para actualizar botón submit
+    // Event listeners para campos de formulario - VERSION SIMPLE
     const tituloInput = document.getElementById('titulo');
     const descripcionInput = document.getElementById('descripcion');
 
+    // Listeners básicos sin efectos
     if (tituloInput) {
         tituloInput.addEventListener('input', updateSubmitButton);
-        tituloInput.addEventListener('keyup', updateSubmitButton);
         tituloInput.addEventListener('change', updateSubmitButton);
     }
 
     if (descripcionInput) {
         descripcionInput.addEventListener('input', updateSubmitButton);
-        descripcionInput.addEventListener('keyup', updateSubmitButton);
         descripcionInput.addEventListener('change', updateSubmitButton);
     }
 

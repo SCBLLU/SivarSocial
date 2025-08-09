@@ -1,5 +1,17 @@
 @extends('layouts.app')
 
+@section('titulo')
+    <div class="flex items-center justify-center relative w-full">
+        <a href="{{ url()->previous() }}"
+            class="absolute left-0 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow">
+            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+        <h1 class="text-white text-2xl font-bold mx-auto">Crear Publicación</h1>
+    </div>
+@endsection
+
 @push('styles')
     <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
     <style>
@@ -94,11 +106,6 @@
 
 @section('contenido')
     <div class="max-w-2xl mx-auto px-4">
-        <!-- Header simplificado -->
-        <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold text-white mb-2">Crear Publicación</h1>
-            <p class="text-gray-300 text-sm">Comparte una foto o música con tus amigos</p>
-        </div>
         <!-- Tabs minimalistas -->
         @include('posts.post-type-tabs')
 
@@ -119,7 +126,7 @@
 
             <!-- Formulario -->
             <div class="border-t border-gray-100 p-6">
-                @include('posts.simplified-form')
+                @include('posts.form')
             </div>
         </div>
     </div>

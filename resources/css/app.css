@@ -59,6 +59,10 @@ input[type="password"] {
     color: #ffffff !important;
 }
 
+#descripcion {
+    color: #000000 !important;
+}
+
 /* Mejores estilos para el modal */
 .modal-backdrop {
     backdrop-filter: blur(4px);
