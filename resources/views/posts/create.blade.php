@@ -101,6 +101,38 @@
         .hidden {
             display: none !important;
         }
+
+        /* Mejoras adicionales para móvil en el componente iTunes */
+        @media (max-width: 640px) {
+
+            /* Contenedor principal más compacto */
+            .max-w-md {
+                max-width: 100% !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            /* Mejora el padding en dispositivos muy pequeños */
+            .bg-black.rounded-t-xl,
+            .bg-black.rounded-b-xl {
+                margin-left: -0.5rem;
+                margin-right: -0.5rem;
+            }
+
+            /* Optimizar el espaciado del contenedor principal del formulario */
+            .bg-white.rounded-2xl {
+                margin-top: 0.75rem;
+                border-radius: 1rem;
+            }
+        }
+
+        /* Para pantallas muy pequeñas */
+        @media (max-width: 375px) {
+            .px-2 {
+                padding-left: 0.75rem !important;
+                padding-right: 0.75rem !important;
+            }
+        }
     </style>
 @endpush
 
