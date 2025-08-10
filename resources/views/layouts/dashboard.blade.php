@@ -172,7 +172,7 @@
                                 <div class="relative w-full rounded-xl sm:rounded-2xl overflow-hidden shadow-md hover:shadow-xl aspect-square">
                                     <img src="{{ asset('uploads/' . $post->imagen) }}" 
                                          alt="Imagen del post {{ $post->titulo }}"
-                                         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                         class="w-full h-full object-cover transition-transform duration-300"
                                          loading="lazy">
 
                                     {{-- Overlay con información del post --}}
