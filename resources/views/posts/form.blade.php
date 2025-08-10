@@ -58,14 +58,9 @@
             <i class="fas fa-paper-plane"></i>
             <span id="submit-text">Publicar</span>
         </button>
-        <a href="{{ route('home') }}"
-            class="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center">
-            Cancelar
-        </a>
     </div>
     <!-- Indicador de estado -->
     <div id="submit-status" class="mt-3 text-center text-sm text-gray-500 hidden">
-        <i class="fas fa-info-circle mr-1"></i>
         <span id="status-message">Completa los campos requeridos para publicar</span>
     </div>
 </form>
@@ -148,10 +143,8 @@
                 statusMessage.textContent = message;
                 if (canSubmit) {
                     statusIndicator.className = 'mt-3 text-center text-sm text-green-600';
-                    statusMessage.innerHTML = `<i class="fas fa-check-circle mr-1"></i>${message}`;
                 } else {
                     statusIndicator.className = 'mt-3 text-center text-sm text-gray-500';
-                    statusMessage.innerHTML = `<i class="fas fa-info-circle mr-1"></i>${message}`;
                 }
             }
             // Mostrar barra de progreso para imágenes siempre

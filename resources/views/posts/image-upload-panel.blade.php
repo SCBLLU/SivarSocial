@@ -28,11 +28,6 @@
             <i class="fas fa-camera"></i>
             Tomar Foto
         </button>
-        <button type="button" id="open-gallery"
-            class="flex-1 bg-gray-500 text-white px-4 py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-gray-600 transition-colors">
-            <i class="fas fa-images"></i>
-            Galería
-        </button>
     </div>
     <!-- Input oculto para archivos -->
     <input type="file" id="file-input" accept="image/*" class="hidden">
