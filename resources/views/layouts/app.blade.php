@@ -299,109 +299,109 @@
         });
     </script>
     <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const modalConfigs = [
-            { overlay: "overlay0", content: "modalmenu0", drag: "dragHandle0" },
-            { overlay: "overlay1", content: "modalmenu1", drag: "dragHandle1" },
-            // Agrega más aquí
-        ];
+        document.addEventListener("DOMContentLoaded", () => {
+            const modalConfigs = [
+                { overlay: "overlay0", content: "modalmenu0", drag: "dragHandle0" },
+                { overlay: "overlay1", content: "modalmenu1", drag: "dragHandle1" },
+                // Agrega más aquí
+            ];
 
-        modalConfigs.forEach(cfg => {
-            const modal2 = document.getElementById(cfg.overlay);
-            const modalContent2 = document.getElementById(cfg.content);
-            const dragHandle2 = document.getElementById(cfg.drag);
+            modalConfigs.forEach(cfg => {
+                const modal2 = document.getElementById(cfg.overlay);
+                const modalContent2 = document.getElementById(cfg.content);
+                const dragHandle2 = document.getElementById(cfg.drag);
 
-            let startY2 = 0;
-            let currentY2 = 0;
-            let isDragging2 = false;
+                let startY2 = 0;
+                let currentY2 = 0;
+                let isDragging2 = false;
 
-            if (dragHandle2) {
-                dragHandle2.addEventListener("touchstart", (e) => {
-                    startY2 = e.touches[0].clientY;
-                    isDragging2 = true;
-                    modalContent2.style.transition = "none";
-                });
+                if (dragHandle2) {
+                    dragHandle2.addEventListener("touchstart", (e) => {
+                        startY2 = e.touches[0].clientY;
+                        isDragging2 = true;
+                        modalContent2.style.transition = "none";
+                    });
 
-                dragHandle2.addEventListener("touchmove", (e) => {
-                    if (!isDragging2) return;
-                    currentY2 = e.touches[0].clientY;
-                    let diff2 = currentY2 - startY2;
+                    dragHandle2.addEventListener("touchmove", (e) => {
+                        if (!isDragging2) return;
+                        currentY2 = e.touches[0].clientY;
+                        let diff2 = currentY2 - startY2;
 
-                    if (diff2 > 0) {
-                        modalContent2.style.transform = `translateY(${diff2}px)`;
-                    }
-                });
+                        if (diff2 > 0) {
+                            modalContent2.style.transform = `translateY(${diff2}px)`;
+                        }
+                    });
 
-                dragHandle2.addEventListener("touchend", () => {
-                    isDragging2 = false;
-                    modalContent2.style.transition = "transform 0.3s ease";
+                    dragHandle2.addEventListener("touchend", () => {
+                        isDragging2 = false;
+                        modalContent2.style.transition = "transform 0.3s ease";
 
-                    if (currentY2 - startY2 > 100) {
-                        modalContent2.style.transform = `translateY(100%)`;
-                        setTimeout(() => {
-                            modal2.classList.add("hidden");
-                            modalContent2.style.transform = "";
-                            document.documentElement.style.overflow = "";
-                        }, 300);
-                    } else {
-                        modalContent2.style.transform = "translateY(0)";
-                    }
-                });
-            }
-        });
+                        if (currentY2 - startY2 > 100) {
+                            modalContent2.style.transform = `translateY(100%)`;
+                            setTimeout(() => {
+                                modal2.classList.add("hidden");
+                                modalContent2.style.transform = "";
+                                document.documentElement.style.overflow = "";
+                            }, 300);
+                        } else {
+                            modalContent2.style.transform = "translateY(0)";
+                        }
+                    });
+                }
+            });
 
-        window.addEventListener('resize', function () {
+            window.addEventListener('resize', function () {
                 if (window.innerWidth > 768) {
                     closeModal(0);
                 }
             });
         });
 
-    function openModal(index) {
-        const modal2 = document.getElementById(`overlay${index}`);
-        const content = document.getElementById(`modalmenu${index}`);
+        function openModal(index) {
+            const modal2 = document.getElementById(`overlay${index}`);
+            const content = document.getElementById(`modalmenu${index}`);
 
-        if (!modal2 || !content) return;
+            if (!modal2 || !content) return;
 
-        content.classList.remove('like-mobile-close', 'like-desktop-close');
-        void content.offsetWidth;
+            content.classList.remove('like-mobile-close', 'like-desktop-close');
+            void content.offsetWidth;
 
-        if (window.innerWidth < 648) {
-            content.classList.add('like-mobile-open');
-        } else {
-            content.classList.add('like-desktop-open');
+            if (window.innerWidth < 648) {
+                content.classList.add('like-mobile-open');
+            } else {
+                content.classList.add('like-desktop-open');
+            }
+
+            modal2.classList.remove('hidden');
+            modal2.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = "hidden";
         }
 
-        modal2.classList.remove('hidden');
-        modal2.classList.add('flex');
-        document.body.style.overflow = 'hidden';
-        document.documentElement.style.overflow = "hidden";
-    }
+        function closeModal(index) {
+            const modal2 = document.getElementById(`overlay${index}`);
+            const content = document.getElementById(`modalmenu${index}`);
 
-    function closeModal(index) {
-        const modal2 = document.getElementById(`overlay${index}`);
-        const content = document.getElementById(`modalmenu${index}`);
+            if (!modal2 || !content) return;
 
-        if (!modal2 || !content) return;
+            content.classList.remove('like-mobile-open', 'like-desktop-open');
+            void content.offsetWidth;
 
-        content.classList.remove('like-mobile-open', 'like-desktop-open');
-        void content.offsetWidth;
+            if (window.innerWidth < 648) {
+                content.classList.add('like-mobile-close');
+                content.style.transform = "";
+            } else {
+                content.classList.add('like-desktop-close');
+            }
 
-        if (window.innerWidth < 648) {
-            content.classList.add('like-mobile-close');
-            content.style.transform = "";
-        } else {
-            content.classList.add('like-desktop-close');
+            content.addEventListener('animationend', function handler() {
+                content.removeEventListener('animationend', handler);
+                modal2.classList.add('hidden');
+                modal2.classList.remove('flex');
+                document.body.style.overflow = '';
+                document.documentElement.style.overflow = "";
+            });
         }
-
-        content.addEventListener('animationend', function handler() {
-            content.removeEventListener('animationend', handler);
-            modal2.classList.add('hidden');
-            modal2.classList.remove('flex');
-            document.body.style.overflow = '';
-            document.documentElement.style.overflow = "";
-        });
-    }
     </script>
 </body>
 

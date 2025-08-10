@@ -37,28 +37,25 @@
 
         {{-- Info de usuario --}}
         <div class="flex flex-col gap-1 text-center lg:text-left w-full lg:w-auto">
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center lg-justify-start justify-center">
-                {{ $user->name }}
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+                <div class="flex items-center justify-center lg:justify-start gap-2 min-h-5">
+                    <span>{{ $user->name }}</span>
 
-                @if($user->insignia === 'Colaborador')
-                <a  onclick="openModal(1)">
-                    <span class="ml-1 flex items-center">
+                    {{-- Solo mostrar insignia si existe --}}
+                    @if($user->insignia === 'Colaborador')
+                    <a onclick="openModal(1)" class="flex-shrink-0 cursor-pointer transition-transform duration-200 hover:scale-110">
                         <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png" alt="Colaborador" width="20" height="20">
-                    </span>
-                </a>
-                @elseif($user->insignia === 'Docente')
-                <a  onclick="openModal(1)">
-                    <span class="ml-1 flex items-center">
+                    </a>
+                    @elseif($user->insignia === 'Docente')
+                    <a onclick="openModal(1)" class="flex-shrink-0 cursor-pointer transition-transform duration-200 hover:scale-110">
                         <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png" alt="Docente" width="20" height="20">
-                    </span>
-                </a>
-                @elseif($user->insignia === 'Comunidad')
-                <a  onclick="openModal(1)">
-                    <span class="ml-1 flex items-center">
+                    </a>
+                    @elseif($user->insignia === 'Comunidad')
+                    <a onclick="openModal(1)" class="flex-shrink-0 cursor-pointer transition-transform duration-200 hover:scale-110">
                         <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png" alt="Comunidad" width="20" height="20">
-                    </span>
-                </a>
-                @endif
+                    </a>
+                    @endif
+                </div>
             </h2>
             <p class="text-gray-600 font-semibold text-sm sm:text-base">{{ '@' . $user->username }}</p>
 
