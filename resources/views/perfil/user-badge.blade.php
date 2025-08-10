@@ -2,7 +2,7 @@
     // Configuración centralizada de todas las insignias
     $badgeConfig = [
         'Colaborador' => [
-            'url' => 'https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png',
+            'url' => 'https://res.cloudinary.com/dtmemrt1j/image/upload/v1754851324/28_20250810_121848_0002_gruigg.png',
             'alt' => 'Colaborador',
             'title' => 'Usuario Colaborador',
             'color' => 'text-blue-600',
@@ -11,16 +11,16 @@
             'linkText' => 'Más información sobre su colaboración'
         ],
         'Docente' => [
-            'url' => 'https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png',
+            'url' => 'https://res.cloudinary.com/dtmemrt1j/image/upload/v1754851324/27_20250810_121848_0001_giingp.png',
             'alt' => 'Docente',
             'title' => 'Docente Verificado',
             'color' => 'text-green-600',
-            'description' => 'Sivar Social, reconoce a este usuario como "docente", con el propósito de reconocer su rol y facilitar su interacción dentro de la red social.',
+            'description' => 'Sivar Social, reconoce a este usuario como "docente", con el propósito de identificar su rol y facilitar su interacción dentro de la red social.',
             'link' => null,
             'linkText' => null
         ],
         'Comunidad' => [
-            'url' => 'https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png',
+            'url' => 'https://res.cloudinary.com/dtmemrt1j/image/upload/v1754851323/26_20250810_121848_0000_ijoshy.png',
             'alt' => 'Comunidad',
             'title' => 'Miembro de la Comunidad',
             'color' => 'text-purple-600',
@@ -54,7 +54,7 @@
     {{-- Modo completo para modales --}}
     @if($currentBadge)
         <div class="flex flex-col items-center justify-center p-4 space-y-3 flex-1 pb-0 bg-white">
-            <img src="{{ $currentBadge['url'] }}" alt="{{ $currentBadge['alt'] }}" width="40" height="40" class="object-contain"
+            <img src="{{ $currentBadge['url'] }}" alt="{{ $currentBadge['alt'] }}" width="45" height="45" class="object-contain"
                 loading="lazy">
 
             <h1 class="text-center text-black mb-3 font-medium text-2xl">Insignia</h1>
