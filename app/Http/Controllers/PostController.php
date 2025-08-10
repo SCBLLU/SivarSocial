@@ -25,18 +25,34 @@ class PostController extends Controller
         }
 
         $postsPerPage = config('pagination.posts_per_page', 6);
+        $authUser = Auth::user();
 
-        $posts = $user->posts()
+        // Filtrar posts según la visibilidad y relación con el usuario autenticado
+        $postsQuery = $user->posts();
+
+        if (!$authUser || $authUser->id !== $user->id) {
+            // Si no está autenticado o es otro usuario, filtrar por visibilidad
+            $postsQuery->where(function ($query) use ($authUser, $user) {
+                // Siempre mostrar publicaciones públicas
+                $query->where('visibility', 'public');
+                
+                // Si está autenticado y sigue al usuario, mostrar también las privadas
+                if ($authUser && $authUser->following->contains('id', $user->id)) {
+                    $query->orWhere('visibility', 'followers');
+                }
+            });
+        }
+        // Si es el dueño del perfil, mostrar todas sus publicaciones
+
+        $posts = $postsQuery
             ->with('comentarios')
             ->latest()
             ->paginate($postsPerPage);
 
-        // Obtener el total de publicaciones del usuario (sin paginación)
-        $totalPosts = $user->posts()->count();
+        // Obtener el total de publicaciones visibles para el usuario actual
+        $totalPosts = $postsQuery->count();
 
         $users = \App\Models\User::latest()->get();
-
-        $authUser = Auth::user();
 
         // Verifica si el usuario autenticado es el mismo que el del muro
         return view('layouts.dashboard', [
@@ -66,6 +82,7 @@ class PostController extends Controller
                 'titulo' => 'required|max:255',
                 'descripcion' => 'required',
                 'tipo' => 'required|in:imagen,musica',
+                'visibility' => 'required|in:public,followers',
                 'imagen' => 'required|string',
             ]);
         } else if ($request->tipo === 'musica') {
@@ -73,6 +90,7 @@ class PostController extends Controller
                 'titulo' => 'nullable|max:255',
                 'descripcion' => 'nullable',
                 'tipo' => 'required|in:imagen,musica',
+                'visibility' => 'required|in:public,followers',
                 'music_source' => 'required|in:itunes,spotify',
                 // Campos iTunes
                 'itunes_track_id' => 'nullable|string',
@@ -97,6 +115,7 @@ class PostController extends Controller
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,
             'tipo' => $request->tipo,
+            'visibility' => $request->visibility,
             'user_id' => Auth::id(),
         ];
 
@@ -156,9 +175,19 @@ class PostController extends Controller
             abort(404, 'La publicación no pertenece a este usuario');
         }
 
+        // Verificar si el usuario actual puede ver esta publicación
+        $authUser = Auth::user();
+        if (!$post->canBeViewedBy($authUser)) {
+            // Si es solo para seguidores y no está autenticado, redirigir al login
+            if (!$authUser && $post->isForFollowersOnly()) {
+                return redirect()->route('login')->with('message', 'Inicia sesión para ver esta publicación');
+            }
+            // Si está autenticado pero no puede verla, mostrar error 403
+            abort(403, 'No tienes permisos para ver esta publicación');
+        }
+
         // Cargar las relaciones necesarias para el post
         $post->load(['likes', 'comentarios', 'user']);
-        $authUser = Auth::user();
 
         $users = \App\Models\User::latest()->get();
         return view('posts.show', [

@@ -28,6 +28,36 @@
             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
         @enderror
     </div>
+
+    <!-- Campo de visibilidad -->
+    <div class="mb-6">
+        <label class="block text-gray-700 font-medium mb-3">
+            ¿Quién puede ver esta publicación?
+        </label>
+        <div class="space-y-2">
+            <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer transition-colors visibility-option bg-white">
+                <input type="radio" name="visibility" value="public"
+                       class="text-gray-600 focus:ring-gray-400"
+                       {{ old('visibility', 'public') === 'public' ? 'checked' : '' }}>
+                <div class="ml-3">
+                    <span class="font-medium text-gray-800">Público</span>
+                    <p class="text-xs text-gray-500 mt-1">Cualquier persona puede ver esta publicación</p>
+                </div>
+            </label>
+            <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer transition-colors visibility-option bg-white">
+                <input type="radio" name="visibility" value="followers"
+                       class="text-gray-600 focus:ring-gray-400"
+                       {{ old('visibility') === 'followers' ? 'checked' : '' }}>
+                <div class="ml-3">
+                    <span class="font-medium text-gray-800">Solo seguidores</span>
+                    <p class="text-xs text-gray-500 mt-1">Solo tus seguidores pueden ver esta publicación</p>
+                </div>
+            </label>
+        </div>
+        @error('visibility')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+        @enderror
+    </div>
     <!-- Campos ocultos para imagen -->
     <div id="imagen-fields">
         <input name="imagen" type="hidden" value="{{ old('imagen') }}">
@@ -310,5 +340,32 @@
         updateSubmitButton();
         // Asegurar que el status indicator esté visible desde el inicio
         statusIndicator.classList.remove('hidden');
+
+        // Agregar interactividad visual a las opciones de visibilidad
+        document.addEventListener('DOMContentLoaded', function() {
+            const visibilityOptions = document.querySelectorAll('.visibility-option');
+            const radioInputs = document.querySelectorAll('input[name="visibility"]');
+            
+            function updateVisibilityStyles() {
+                visibilityOptions.forEach((option, index) => {
+                    const radio = radioInputs[index];
+                    if (radio.checked) {
+                        option.classList.add('border-blue-500', 'bg-blue-50');
+                        option.classList.remove('border-gray-200');
+                    } else {
+                        option.classList.remove('border-blue-500', 'bg-blue-50');
+                        option.classList.add('border-gray-200');
+                    }
+                });
+            }
+            
+            // Aplicar estilos iniciales
+            updateVisibilityStyles();
+            
+            // Escuchar cambios en los radio buttons
+            radioInputs.forEach(radio => {
+                radio.addEventListener('change', updateVisibilityStyles);
+            });
+        });
     });
 </script>

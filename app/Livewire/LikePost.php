@@ -35,6 +35,8 @@ class LikePost extends Component
         $user = Auth::user();
 
         if (!$user) {
+            // Emitir evento para mostrar modal de registro/login
+            $this->dispatch('show-auth-modal', action: 'like');
             return;
         }
 

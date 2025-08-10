@@ -3,21 +3,10 @@
         @foreach ($posts as $post)
             <div class="bg-white rounded-2xl shadow-lg mb-6 sm:mb-10 w-full max-w-md sm:max-w-lg flex flex-col items-center">
 
-                <!-- Encabezado de la publicación -->
-                <div class="flex items-center w-full px-4 py-3 border-b border-gray-200">
-                    <a href="{{ $post->user ? route('posts.index', $post->user) : '#' }}" class="flex items-center group">
-                        <img src="{{ $post->user && $post->user->imagen ? asset('perfiles/' . $post->user->imagen) : asset('img/default-avatar.png') }}"
-                            alt="Avatar de {{ $post->user ? $post->user->username : 'usuario' }}"
-                            class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-[#3B25DD] group-hover:border-[#120073] transition">
-                        <span class="ml-3 font-bold text-black group-hover:underline text-sm sm:text-base">
-                            <div class="flex items-center gap-1 min-h-5">
-                                <span>{{ $post->user ? ($post->user->name ?? $post->user->username) : 'usuario' }}</span>
-                                <x-user-badge :badge="$post->user->insignia ?? null" size="medium" />
-                            </div>
-                        </span>
-                    </a>
-                    <span class="text-xs text-gray-500 ml-auto">{{ ucfirst($post->created_at->diffForHumans()) }}</span>
-                </div>
+                <!-- Encabezado de la publicación usando componente -->
+                <x-post-header :post="$post" :showMenu="false" :showFollowButton="true">
+                    <!-- Botón de seguir se maneja internamente en el componente -->
+                </x-post-header>
 
                 <!-- Contenido de la publicación -->
                 @if ($post->tipo === 'imagen')

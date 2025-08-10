@@ -34,6 +34,8 @@ class FollowUser extends Component
         $currentUser = Auth::user();
 
         if (!$currentUser) {
+            // Emitir evento para mostrar modal de registro/login
+            $this->dispatch('show-auth-modal', action: 'follow');
             return;
         }
 

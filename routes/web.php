@@ -87,8 +87,8 @@ Route::post('/restablecer', [RecoverController::class, 'restablecer'])->name('re
  * EDICIÓN DE PERFIL
  * Permite al usuario modificar su información personal y configuración
  */
-Route::get('/editar-perfil', [PerfilController::class, 'index'])->name('perfil.index');
-Route::post('/editar-perfil', [PerfilController::class, 'store'])->name('perfil.store');
+Route::get('/editar-perfil', [PerfilController::class, 'index'])->name('perfil.index')->middleware('auth');
+Route::post('/editar-perfil', [PerfilController::class, 'store'])->name('perfil.store')->middleware('auth');
 
 /**
  * BÚSQUEDA DE USUARIOS
@@ -120,15 +120,15 @@ Route::get('/colaboradores', [ColaboradoresController::class, 'index'])->name('c
  * CREACIÓN DE POSTS
  * Formulario para crear nuevas publicaciones
  */
-Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
-Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create')->middleware('auth');
+Route::post('/posts', [PostController::class, 'store'])->name('posts.store')->middleware('auth');
 
 /**
  * VISUALIZACIÓN Y GESTIÓN DE POSTS
  * Ver post individual y eliminar posts propios
  */
 Route::get('/{user:username}/posts/{post}', [PostController::class, 'show'])->name('posts.show');
-Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy')->middleware('auth');
 
 /**
  * PERFIL DE USUARIO
@@ -144,8 +144,8 @@ Route::get('/{user:username}', [PostController::class, 'index'])->name('posts.in
  * GESTIÓN DE LIKES
  * Dar like y quitar like a publicaciones
  */
-Route::post('/posts/{post}/likes', [LikeController::class, 'store'])->name('posts.likes.store');
-Route::delete('/posts/{post}/likes', [LikeController::class, 'destroy'])->name('posts.likes.destroy');
+Route::post('/posts/{post}/likes', [LikeController::class, 'store'])->name('posts.likes.store')->middleware('auth');
+Route::delete('/posts/{post}/likes', [LikeController::class, 'destroy'])->name('posts.likes.destroy')->middleware('auth');
 
 /**
  * OBTENER LIKES VIA AJAX
@@ -161,7 +161,7 @@ Route::get('/posts/{post}/likes', [PostController::class, 'getLikes'])->name('po
  * AGREGAR COMENTARIOS
  * Permite comentar en las publicaciones de otros usuarios
  */
-Route::post('/{user:username}/posts/{post}', [ComentarioController::class, 'store'])->name('comentarios.store');
+Route::post('/{user:username}/posts/{post}', [ComentarioController::class, 'store'])->name('comentarios.store')->middleware('auth');
 
 // ============================================================================
 // GESTIÓN DE IMÁGENES
@@ -193,15 +193,15 @@ Route::delete('/imagenes', [ImagenController::class, 'destroy'])->name('imagenes
  * SEGUIR/DEJAR DE SEGUIR POR USERNAME
  * Sistema básico de seguimiento usando el nombre de usuario
  */
-Route::post('/{user:username}/follow', [FollowerController::class, 'store'])->name('users.follow');
-Route::delete('/{user:username}/unfollow', [FollowerController::class, 'destroy'])->name('users.unfollow');
+Route::post('/{user:username}/follow', [FollowerController::class, 'store'])->name('users.follow')->middleware('auth');
+Route::delete('/{user:username}/unfollow', [FollowerController::class, 'destroy'])->name('users.unfollow')->middleware('auth');
 
 /**
  * SEGUIR/DEJAR DE SEGUIR POR ID
  * Para funcionalidades AJAX y llamadas asíncronas
  */
-Route::post('/users/{user}/follow', [FollowerController::class, 'storeById'])->name('users.follow.id');
-Route::post('/users/{user}/unfollow', [FollowerController::class, 'destroyById'])->name('users.unfollow.id');
+Route::post('/users/{user}/follow', [FollowerController::class, 'storeById'])->name('users.follow.id')->middleware('auth');
+Route::post('/users/{user}/unfollow', [FollowerController::class, 'destroyById'])->name('users.unfollow.id')->middleware('auth');
 
 // ============================================================================
 // INTEGRACIÓN CON APIs MUSICALES

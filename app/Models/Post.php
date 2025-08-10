@@ -17,6 +17,7 @@ class Post extends Model
         'imagen',
         'user_id',
         'tipo',
+        'visibility',
         // Campos iTunes (para búsquedas principales)
         'itunes_track_id',
         'itunes_track_name',
@@ -186,5 +187,76 @@ class Post extends Model
             'artist' => $this->artist_search_term ?: $this->getArtistName(),
             'track' => $this->track_search_term ?: $this->getTrackName()
         ];
+    }
+
+    /**
+     * Verificar si la publicación es pública
+     */
+    public function isPublic()
+    {
+        return $this->visibility === 'public';
+    }
+
+    /**
+     * Verificar si la publicación es solo para seguidores
+     */
+    public function isForFollowersOnly()
+    {
+        return $this->visibility === 'followers';
+    }
+
+    /**
+     * Verificar si un usuario puede ver esta publicación
+     */
+    public function canBeViewedBy($user = null)
+    {
+        // Si es pública, cualquiera puede verla
+        if ($this->isPublic()) {
+            return true;
+        }
+
+        // Si no hay usuario (no autenticado), solo pueden ver las públicas
+        if (!$user) {
+            return false;
+        }
+
+        // El dueño siempre puede ver sus propias publicaciones
+        if ($this->user_id === $user->id) {
+            return true;
+        }
+
+        // Si es solo para seguidores, verificar si el usuario sigue al autor
+        if ($this->isForFollowersOnly()) {
+            return $user->following->contains('id', $this->user_id);
+        }
+
+        return false;
+    }
+
+    /**
+     * Formato compacto de tiempo transcurrido
+     */
+    public function getCompactTimeAttribute()
+    {
+        $diff = $this->created_at->diffInSeconds(now());
+
+        if ($diff < 60) {
+            return 'ahora';
+        } elseif ($diff < 3600) {
+            $minutes = floor($diff / 60);
+            return $minutes . ' M';
+        } elseif ($diff < 86400) {
+            $hours = floor($diff / 3600);
+            return $hours . ' H';
+        } elseif ($diff < 604800) {
+            $days = floor($diff / 86400);
+            return $days . ' D';
+        } elseif ($diff < 2629746) {
+            $weeks = floor($diff / 604800);
+            return $weeks . ' S'; // semanas
+        } else {
+            $months = floor($diff / 2629746);
+            return $months . ' Mes';
+        }
     }
 }

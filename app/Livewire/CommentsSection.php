@@ -55,6 +55,13 @@ class CommentsSection extends Component
 
     public function store()
     {
+        // Solo usuarios autenticados pueden comentar
+        if (!Auth::check()) {
+            // Emitir evento para mostrar modal de registro/login
+            $this->dispatch('show-auth-modal', action: 'comment');
+            return;
+        }
+
         // Validación
         $this->validate([
             'comentario' => 'required|string|max:500|min:1',
@@ -63,11 +70,6 @@ class CommentsSection extends Component
             'comentario.max' => 'El comentario no puede exceder los 500 caracteres.',
             'comentario.min' => 'El comentario debe tener al menos 1 caracter.',
         ]);
-
-        // Solo usuarios autenticados pueden comentar
-        if (!Auth::check()) {
-            return;
-        }
 
         // Verificar que el comentario no esté vacío o solo contenga espacios
         if (trim($this->comentario) === '') {

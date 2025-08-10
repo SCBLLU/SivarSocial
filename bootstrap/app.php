@@ -11,7 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // Agregar middleware para extender duración de sesión
+        $middleware->web(append: [
+            \App\Http\Middleware\ExtendSessionLifetime::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Configurar manejo personalizado de errores HTTP
