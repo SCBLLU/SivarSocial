@@ -202,6 +202,16 @@
                                         class="block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
                                         INICIAR SESIÓN
                                     </a>
+                                @elseif (request()->routeIs('code.verific'))
+                                    <a onclick="openModal(1)" 
+                                        class="cursor-pointer block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
+                                        INFORMACIÓN
+                                    </a>
+                                @elseif (request()->routeIs('restablecer'))
+                                    <a onclick="openModal(1)"
+                                        class="cursor-pointer block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
+                                        INFORMACIÓN
+                                    </a>
                                 @else
                                     <a href="{{ route('login') }}"
                                         class="block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">

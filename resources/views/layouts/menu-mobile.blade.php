@@ -335,7 +335,7 @@
 
     @guest
       @if (request()->routeIs('code.verific'))
-      <div class="flex flex-col items-center justify-center p-4 space-y-3 flex-1 pb-0 bg-white">
+      <div class="flex flex-col items-center justify-center p-4 space-y-3 flex-1 bg-white">
       <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754752332/Dise%C3%B1o_sin_t%C3%ADtulo_mxsofs.png"
       alt="" width="60" height="60">
       <h1 class="text-center text-black mb-3 font-medium text-2xl">Aviso</h1>
@@ -345,7 +345,7 @@
       </p>
       </div>
       @elseif (request()->routeIs('restablecer'))
-      <div class="flex flex-col items-center justify-center p-4 space-y-3 flex-1 pb-0 bg-white">
+      <div class="flex flex-col items-center justify-center p-4 space-y-3 flex-1 bg-white">
       <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754752332/Dise%C3%B1o_sin_t%C3%ADtulo_mxsofs.png"
       alt="" width="60" height="60">
       <h1 class="text-center text-black mb-3 font-medium text-2xl">Aviso</h1>
