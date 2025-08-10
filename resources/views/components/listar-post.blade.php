@@ -10,23 +10,28 @@
                             alt="Avatar de {{ $post->user ? $post->user->username : 'usuario' }}"
                             class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-[#3B25DD] group-hover:border-[#120073] transition">
                         <span class="ml-3 font-bold text-black group-hover:underline text-sm sm:text-base">
-                            {{ $post->user ? ($post->user->name ?? $post->user->username) : 'usuario' }}
-                        </span>
-                        @if(isset($post->user) && $post->user->insignia === 'Colaborador')
-                            <span class="ml-1 flex items-center">
-                                <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png" alt="Colaborador" width="16" height="16">
-                            </span>
-                        @elseif(isset($post->user) && $post->user->insignia === 'Docente')
-                            <span class="ml-1 flex items-center">
-                                <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png" alt="Docente" width="16" height="16">
-                            </span>
-                        @elseif(isset($post->user) && $post->user->insignia === 'Comunidad')
-                            <span class="ml-1 flex items-center">
-                                <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png" alt="Comunidad" width="16" height="16">
-                            </span>
-                        @else
+                            <div class="flex items-center gap-1 min-h-5">
+                                <span>{{ $post->user ? ($post->user->name ?? $post->user->username) : 'usuario' }}</span>
 
-                        @endif
+                                {{-- Solo mostrar insignia si existe --}}
+                                @if(isset($post->user) && $post->user->insignia === 'Colaborador')
+                                    <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png"
+                                            alt="Colaborador" width="16" height="16">
+                                    </span>
+                                @elseif(isset($post->user) && $post->user->insignia === 'Docente')
+                                    <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png"
+                                            alt="Docente" width="16" height="16">
+                                    </span>
+                                @elseif(isset($post->user) && $post->user->insignia === 'Comunidad')
+                                    <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png"
+                                            alt="Comunidad" width="16" height="16">
+                                    </span>
+                                @endif
+                            </div>
+                        </span>
                     </a>
                     <span class="text-xs text-gray-500 ml-auto">{{ ucfirst($post->created_at->diffForHumans()) }}</span>
                 </div>
@@ -39,9 +44,7 @@
                             href="{{ route('posts.show', ['user' => $post->user ? $post->user->username : 'usuario', 'post' => $post->id]) }}">
                             <img src="{{ asset('uploads') . '/' . $post->imagen }}"
                                 alt="Imagen del post {{ $post->titulo ?? 'sin título' }}"
-                                class="w-full h-full object-cover rounded-none" 
-                                width="1080" height="1080"
-                                loading="lazy">
+                                class="w-full h-full object-cover rounded-none" width="1080" height="1080" loading="lazy">
                         </a>
                     </div>
                 @elseif ($post->tipo === 'musica')
