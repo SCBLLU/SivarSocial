@@ -22,72 +22,49 @@
                     <!-- Post musical -->
                     <div id="post-container"
                         class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col min-h-[500px] mt-4 lg:mt-0">
-                        <!-- Header: perfil y username -->
-                        <div class="flex items-center w-full px-4 py-3 border-b border-gray-200">
-                            <a href="{{ route('posts.index', $post->user->username) }}" class="flex items-center group">
-                                <img src="{{ $post->user && $post->user->imagen ? asset('perfiles/' . $post->user->imagen) : asset('img/img.jpg') }}"
-                                    alt="Avatar de {{ $post->user->username }}"
-                                    class="w-10 h-10 rounded-full object-cover border-2 border-[#3B25DD] group-hover:border-[#120073] transition"
-                                    onerror="this.src='{{ asset('img/img.jpg') }}'">
-                                <span class="ml-3 font-bold text-black group-hover:underline text-sm sm:text-base">
-                                    {{ $post->user->name ?? $post->user->username }}
-                                </span>
-                                <x-user-badge :badge="$post->user->insignia ?? null" size="medium" />
-                            </a>
-                            <div class="flex items-center gap-2 ml-auto">
-                                <span class="text-xs text-gray-500">{{ ucfirst($post->created_at->diffForHumans()) }}</span>
+                        <!-- Header usando componente reutilizable -->
+                        <x-post-header :post="$post" :showMenu="true" :showFollowButton="false">
+                            <div class="relative" x-data="{ showMusicMenu: false }" @close-menus.window="showMusicMenu = false">
+                                <button @click="showMusicMenu = !showMusicMenu"
+                                    class="p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                    </svg>
+                                </button>
 
-                                <!-- Menú de opciones (solo para el propietario) -->
-                                @auth
-                                    @if ($post->user_id === Auth::user()->id)
-                                        <div class="relative" x-data="{ showMusicMenu: false }"
-                                            @close-menus.window="showMusicMenu = false">
-                                            <button @click="showMusicMenu = !showMusicMenu"
-                                                class="p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
-                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path
-                                                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                                                </svg>
-                                            </button>
+                                <!-- Dropdown menu -->
+                                <div x-show="showMusicMenu" x-cloak @click.away="showMusicMenu = false" x-transition
+                                    class="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1">
 
-                                            <!-- Dropdown menu -->
-                                            <div x-show="showMusicMenu" x-cloak @click.away="showMusicMenu = false" x-transition
-                                                class="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1">
+                                    <!-- Opción Editar (preparada para futura implementación) -->
+                                    <button onclick="alert('Función de editar en desarrollo')"
+                                        class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                            </path>
+                                        </svg>
+                                        Editar
+                                    </button>
 
-                                                <!-- Opción Editar (preparada para futura implementación) -->
-                                                <button onclick="alert('Función de editar en desarrollo')"
-                                                    class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                                        </path>
-                                                    </svg>
-                                                    Editar
-                                                </button>
+                                    <!-- Separador -->
+                                    <hr class="my-1">
 
-                                                <!-- Separador -->
-                                                <hr class="my-1">
-
-                                                <!-- Opción Eliminar -->
-                                                <button onclick="openDeleteModal()"
-                                                    class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
-                                                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16">
-                                                        </path>
-                                                    </svg>
-                                                    Eliminar
-                                                </button>
-                                            </div>
-                                        </div>
-                                    @endif
-                                @endauth
+                                    <!-- Opción Eliminar -->
+                                    <button onclick="openDeleteModal()"
+                                        class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16">
+                                            </path>
+                                        </svg>
+                                        Eliminar
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-
-                        <!-- Contenido musical principal -->
+                        </x-post-header> <!-- Contenido musical principal -->
                         <div class="w-full p-4 sm:p-6 bg-gradient-to-br from-[#121212] to-[#1a1a1a] relative overflow-hidden">
                             <!-- Fondo decorativo con el color dominante -->
                             <div class="absolute inset-0 opacity-10"
@@ -173,19 +150,19 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
                                                     <div id="progress-bar"
                                                         class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    transition-all duration-100 ease-out"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                transition-all duration-100 ease-out"
                                                         style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
                                                     <div id="progress-thumb"
                                                         class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    opacity-0 transition-all duration-200 ease-out
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    hover:scale-110 active:scale-95"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                opacity-0 transition-all duration-200 ease-out
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 
@@ -282,72 +259,49 @@
                     <!-- Post de imagen -->
                     <div id="post-container"
                         class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col items-center min-h-[500px]">
-                        <!-- Header: perfil y username -->
-                        <div class="flex items-center w-full px-4 py-3 border-b border-gray-200">
-                            <a href="{{ route('posts.index', $post->user->username) }}" class="flex items-center group">
-                                <img src="{{ $post->user && $post->user->imagen ? asset('perfiles/' . $post->user->imagen) : asset('img/img.jpg') }}"
-                                    alt="Avatar de {{ $post->user->username }}"
-                                    class="w-10 h-10 rounded-full object-cover border-2 border-[#3B25DD] group-hover:border-[#120073] transition"
-                                    onerror="this.src='{{ asset('img/img.jpg') }}'">
-                                <span class="ml-3 font-bold text-black group-hover:underline text-sm sm:text-base">
-                                    {{ $post->user->name ?? $post->user->username }}
-                                </span>
-                                <x-user-badge :badge="$post->user->insignia ?? null" size="medium" />
-                            </a>
-                            <div class="flex items-center gap-2 ml-auto">
-                                <span class="text-xs text-gray-500">{{ ucfirst($post->created_at->diffForHumans()) }}</span>
+                        <!-- Header usando componente reutilizable -->
+                        <x-post-header :post="$post" :showMenu="true" :showFollowButton="false">
+                            <div class="relative" x-data="{ showImageMenu: false }" @close-menus.window="showImageMenu = false">
+                                <button @click="showImageMenu = !showImageMenu"
+                                    class="p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                    </svg>
+                                </button>
 
-                                <!-- Menú de opciones (solo para el propietario) -->
-                                @auth
-                                    @if ($post->user_id === Auth::user()->id)
-                                        <div class="relative" x-data="{ showImageMenu: false }"
-                                            @close-menus.window="showImageMenu = false">
-                                            <button @click="showImageMenu = !showImageMenu"
-                                                class="p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
-                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path
-                                                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                                                </svg>
-                                            </button>
+                                <!-- Dropdown menu -->
+                                <div x-show="showImageMenu" x-cloak @click.away="showImageMenu = false" x-transition
+                                    class="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1">
 
-                                            <!-- Dropdown menu -->
-                                            <div x-show="showImageMenu" x-cloak @click.away="showImageMenu = false" x-transition
-                                                class="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1">
+                                    <!-- Opción Editar (preparada para futura implementación) -->
+                                    <button onclick="alert('Función de editar en desarrollo')"
+                                        class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                            </path>
+                                        </svg>
+                                        Editar
+                                    </button>
 
-                                                <!-- Opción Editar (preparada para futura implementación) -->
-                                                <button onclick="alert('Función de editar en desarrollo')"
-                                                    class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                                        </path>
-                                                    </svg>
-                                                    Editar
-                                                </button>
+                                    <!-- Separador -->
+                                    <hr class="my-1">
 
-                                                <!-- Separador -->
-                                                <hr class="my-1">
-
-                                                <!-- Opción Eliminar -->
-                                                <button onclick="openDeleteModal()"
-                                                    class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
-                                                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16">
-                                                        </path>
-                                                    </svg>
-                                                    Eliminar
-                                                </button>
-                                            </div>
-                                        </div>
-                                    @endif
-                                @endauth
+                                    <!-- Opción Eliminar -->
+                                    <button onclick="openDeleteModal()"
+                                        class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16">
+                                            </path>
+                                        </svg>
+                                        Eliminar
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-
-                        <!-- Imagen del post - SIEMPRE CUADRADA -->
+                        </x-post-header> <!-- Imagen del post - SIEMPRE CUADRADA -->
                         <div class="w-full bg-white rounded-b-none rounded-t-none aspect-square">
                             <img src="{{ asset('uploads') . '/' . $post->imagen }}" alt="Imagen del post {{ $post->titulo }}"
                                 class="w-full h-full object-cover rounded-none" width="1080" height="1080" loading="lazy">
@@ -1398,32 +1352,32 @@
                 const isFollowing = like.isFollowing || false;
 
                 html += `
-                                                                                <div class="py-3 flex items-center justify-between">
-                                                                                    <div class="flex items-center gap-3">
-                                                                                        <a href="/${user.username}">
-                                                                                            <img src="${avatarUrl}" 
-                                                                                                 alt="${user.username}"
-                                                                                                 class="w-12 h-12 rounded-full object-cover"
-                                                                                                 onerror="this.src='/img/img.jpg'">
-                                                                                        </a>
-                                                                                        <div>
-                                                                                            <a href="/${user.username}" class="block">
-                                                                                                <p class="font-semibold text-sm text-gray-900">${user.name || user.username}</p>
-                                                                                                <p class="text-sm text-gray-500">${user.username}</p>
+                                                                                    <div class="py-3 flex items-center justify-between">
+                                                                                        <div class="flex items-center gap-3">
+                                                                                            <a href="/${user.username}">
+                                                                                                <img src="${avatarUrl}" 
+                                                                                                     alt="${user.username}"
+                                                                                                     class="w-12 h-12 rounded-full object-cover"
+                                                                                                     onerror="this.src='/img/img.jpg'">
                                                                                             </a>
+                                                                                            <div>
+                                                                                                <a href="/${user.username}" class="block">
+                                                                                                    <p class="font-semibold text-sm text-gray-900">${user.name || user.username}</p>
+                                                                                                    <p class="text-sm text-gray-500">${user.username}</p>
+                                                                                                </a>
+                                                                                            </div>
                                                                                         </div>
-                                                                                    </div>
-                                                                                    ${currentUserId && currentUserId !== user.id ? `
-                                                                                        <button onclick="toggleFollow(${user.id}, this)" 
-                                                                                                data-user-id="${user.id}"
-                                                                                                class="px-4 py-1.5 text-sm font-medium rounded-lg ${isFollowing
+                                                                                        ${currentUserId && currentUserId !== user.id ? `
+                                                                                            <button onclick="toggleFollow(${user.id}, this)" 
+                                                                                                    data-user-id="${user.id}"
+                                                                                                    class="px-4 py-1.5 text-sm font-medium rounded-lg ${isFollowing
                             ? 'bg-gray-200 text-gray-700'
                             : 'bg-blue-500 text-white'
                         }">
-                                                                                            <span class="follow-text">${isFollowing ? 'Siguiendo' : 'Seguir'}</span>
-                                                                                        </button>
-                                                                                    ` : ''}
-                                                                                </div>`;
+                                                                                                <span class="follow-text">${isFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                                                                            </button>
+                                                                                        ` : ''}
+                                                                                    </div>`;
             });
 
             container.innerHTML = html;
@@ -1456,11 +1410,11 @@
 
             // Animación de carga
             button.innerHTML = `
-                                                                                        <div class="flex items-center gap-2">
-                                                                                            <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                                                                                            <span class="text-sm">Procesando...</span>
-                                                                                        </div>
-                                                                                    `;
+                                                                                            <div class="flex items-center gap-2">
+                                                                                                <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                                                                                <span class="text-sm">Procesando...</span>
+                                                                                            </div>
+                                                                                        `;
 
             performFollowAction(userId, action, button, textElement, iconElement, originalText);
         }
@@ -1490,11 +1444,11 @@
                         if (textElement) {
                             // Estructura nueva del botón
                             button.innerHTML = `
-                                                                                                        <span class="follow-text">${isNowFollowing ? 'Siguiendo' : 'Seguir'}</span>
-                                                                                                        <svg class="follow-icon w-4 h-4 ml-1 ${isNowFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                                                                        </svg>
-                                                                                                    `;
+                                                                                                            <span class="follow-text">${isNowFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                                                                                            <svg class="follow-icon w-4 h-4 ml-1 ${isNowFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                                                            </svg>
+                                                                                                        `;
 
                             // Actualizar clases del botón
                             button.className = `follow-btn flex items-center justify-center px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 ${isNowFollowing
@@ -1532,11 +1486,11 @@
                         // Restaurar botón con estructura nueva
                         const isFollowing = originalText === 'Siguiendo';
                         button.innerHTML = `
-                                                                                                    <span class="follow-text">${originalText}</span>
-                                                                                                    <svg class="follow-icon w-4 h-4 ml-1 ${isFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                                                                    </svg>
-                                                                                                `;
+                                                                                                        <span class="follow-text">${originalText}</span>
+                                                                                                        <svg class="follow-icon w-4 h-4 ml-1 ${isFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                                                        </svg>
+                                                                                                    `;
 
                         // Mostrar error temporal
                         const errorTextElement = button.querySelector('.follow-text');

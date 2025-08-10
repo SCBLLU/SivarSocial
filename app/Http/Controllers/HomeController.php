@@ -17,24 +17,41 @@ class HomeController extends Controller
     {
         $postsPerPage = config('pagination.posts_per_page', 6);
 
-        // Si el usuario está autenticado, mostrar posts de quienes sigue + sus propios posts
+        // Si el usuario está autenticado, mostrar feed personalizado
         if (Auth::check()) {
-            $ids = Auth::user()->following->pluck('id')->toArray();
-            // Agregar el ID del usuario autenticado para ver sus propios posts
-            $ids[] = Auth::id();
-            $posts = Post::whereIn('user_id', $ids)
+            $user = Auth::user();
+            $followingIds = $user->following->pluck('id')->toArray();
+            
+            // Feed unificado para usuarios autenticados:
+            // 1. Publicaciones públicas de cualquier usuario
+            // 2. Publicaciones privadas de usuarios que sigue
+            // 3. Sus propias publicaciones (públicas y privadas)
+            $posts = Post::where(function ($query) use ($followingIds, $user) {
+                // Publicaciones públicas de cualquier usuario
+                $query->where('visibility', 'public')
+                      // O publicaciones privadas de usuarios que sigue
+                      ->orWhere(function ($subQuery) use ($followingIds) {
+                          $subQuery->where('visibility', 'followers')
+                                   ->whereIn('user_id', $followingIds);
+                      })
+                      // O sus propias publicaciones
+                      ->orWhere('user_id', $user->id);
+            })
+            ->with(['user', 'comentarios'])
+            ->latest()
+            ->paginate($postsPerPage);
+        } else {
+            // Si no está autenticado, solo mostrar publicaciones públicas
+            $posts = Post::where('visibility', 'public')
                 ->with(['user', 'comentarios'])
                 ->latest()
                 ->paginate($postsPerPage);
-        } else {
-            // Si no está autenticado, mostrar todos los posts
-            $posts = Post::with(['user', 'comentarios'])
-                ->latest()
-                ->paginate($postsPerPage);
         }
+        
         $authUser = Auth::user();
         // Obtener todos los usuarios para mostrar perfiles
         $users = \App\Models\User::latest()->get();
+        
         return view('home', [
             'posts' => $posts,
             'users' => $users,
