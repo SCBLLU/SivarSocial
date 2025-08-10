@@ -7,7 +7,7 @@
             'title' => 'Usuario Colaborador',
             'color' => 'text-blue-600',
             'description' => 'Sivar Social, reconoce a este usuario como "colaborador", con el propósito de valorar su aporte al desarrollo de la red social.',
-            'link' => '#',
+            'link' => 'colaboradores',
             'linkText' => 'Más información sobre su colaboración'
         ],
         'Docente' => [
