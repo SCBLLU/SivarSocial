@@ -14,24 +14,7 @@
                                     class="font-semibold text-gray-900 text-sm sm:text-base group-hover:border-[#3B25DD] transition">
                                     <div class="flex items-center gap-1 min-h-5">
                                         <span>{{ $user->name ?? $user->username }}</span>
-
-                                        {{-- Solo mostrar insignia si existe --}}
-                                        @if($user->insignia === 'Colaborador')
-                                            <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
-                                                <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png"
-                                                    alt="Colaborador" width="13" height="13">
-                                            </span>
-                                        @elseif($user->insignia === 'Docente')
-                                            <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
-                                                <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png"
-                                                    alt="Docente" width="13" height="13">
-                                            </span>
-                                        @elseif($user->insignia === 'Comunidad')
-                                            <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
-                                                <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png"
-                                                    alt="Comunidad" width="13" height="13">
-                                            </span>
-                                        @endif
+                                        <x-user-badge :badge="$user->insignia" size="small" />
                                     </div>
                                 </h3>
                                 <p class="text-xs sm:text-sm text-gray-500">{{ $user->profession ?? 'Usuario de muestra' }}</p>

@@ -12,24 +12,7 @@
                         <span class="ml-3 font-bold text-black group-hover:underline text-sm sm:text-base">
                             <div class="flex items-center gap-1 min-h-5">
                                 <span>{{ $post->user ? ($post->user->name ?? $post->user->username) : 'usuario' }}</span>
-
-                                {{-- Solo mostrar insignia si existe --}}
-                                @if(isset($post->user) && $post->user->insignia === 'Colaborador')
-                                    <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
-                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png"
-                                            alt="Colaborador" width="16" height="16">
-                                    </span>
-                                @elseif(isset($post->user) && $post->user->insignia === 'Docente')
-                                    <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
-                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png"
-                                            alt="Docente" width="16" height="16">
-                                    </span>
-                                @elseif(isset($post->user) && $post->user->insignia === 'Comunidad')
-                                    <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
-                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png"
-                                            alt="Comunidad" width="16" height="16">
-                                    </span>
-                                @endif
+                                <x-user-badge :badge="$post->user->insignia ?? null" size="medium" />
                             </div>
                         </span>
                     </a>

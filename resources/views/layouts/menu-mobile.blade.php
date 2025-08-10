@@ -329,58 +329,8 @@
     }
     @endphp
 
-    @if($userToShow && $userToShow->insignia === 'Colaborador')
-    <div class="flex flex-col items-center justify-center p-4 space-y-3 flex-1 pb-0 bg-white">
-      <img
-      src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png"
-      alt="" width="40" height="40">
-      <h1 class="text-center text-black mb-3 font-medium text-2xl">Insignia</h1>
-      <p class="text-center text-black text-xs sm:text-sm mb-10">
-      Sivar Social, reconoce a este usuario como "colaborador", con el propósito de valorar su aporte al desarrollo de
-      la red social.
-      </p>
-      <a href="" class="text-center text-blue-700 text-xs sm:text-sm mb-10">
-      Más información sobre su colaboración
-      </a>
-    </div>
-
-    @elseif($userToShow && $userToShow->insignia === 'Docente')
-    <div class="flex flex-col items-center justify-center p-4 space-y-3 flex-1 pb-0 bg-white">
-      <img
-      src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png"
-      alt="" width="40" height="40">
-      <h1 class="text-center text-black mb-3 font-medium text-2xl">Insignia</h1>
-      <p class="text-center text-black text-xs sm:text-sm mb-10">
-      Sivar Social, reconoce a este usuario como "docente", con el propósito de reconocer su rol y facilitar su
-      interacción dentro de la red social.
-      </p>
-    </div>
-
-    @elseif($userToShow && $userToShow->insignia === 'Comunidad')
-    <div class="flex flex-col items-center justify-center p-4 space-y-3 flex-1 pb-0 bg-white">
-      <img
-      src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png"
-      alt="" width="40" height="40">
-      <h1 class="text-center text-black mb-3 font-medium text-2xl">Insignia</h1>
-      <p class="text-center text-black text-xs sm:text-sm mb-10">
-      Sivar Social, reconoce a este usuario como "comunidad", con el propósito de demostrar las interacciones
-      continuas dentro de la red social.
-      </p>
-    </div>
-    @else
-    {{-- Mostrar mensaje cuando no hay insignia --}}
-    <div class="flex flex-col items-center justify-center p-4 space-y-3 flex-1 pb-0 bg-white">
-      <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-      <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-      </svg>
-      </div>
-      <h1 class="text-center text-black mb-3 font-medium text-2xl">Sin Insignia</h1>
-      <p class="text-center text-black text-xs sm:text-sm mb-10">
-      Este usuario aún no tiene ninguna insignia especial en Sivar Social.
-      </p>
-    </div>
+    @if($userToShow)
+    @include('perfil.user-badge', ['user' => $userToShow, 'mode' => 'full'])
     @endif
 
     @guest

@@ -49,12 +49,12 @@
 
                 <!-- Lista scrolleable -->
                 <div class="p-4 space-y-3 overflow-y-auto flex-1 pb-0 bg-white" x-data="{ 
-                                 scrollHandler() {
-                                     if (this.$el.scrollTop + this.$el.clientHeight >= this.$el.scrollHeight - 100) {
-                                         @this.loadMore();
-                                     }
-                                 }
-                             }" x-on:scroll="scrollHandler()">
+                            scrollHandler() {
+                                        if (this.$el.scrollTop + this.$el.clientHeight >= this.$el.scrollHeight - 100) {
+                                            @this.loadMore();
+                                            }
+                                            }
+                                    }" x-on:scroll="scrollHandler()">
 
                     @if(count($likes) > 0)
                         @foreach($likes as $like)
@@ -70,24 +70,7 @@
                                             <div class="font-semibold text-sm text-gray-900">
                                                 <div class="flex items-center gap-1 min-h-5">
                                                     <span>{{ $like['user']->name ?: $like['user']->username }}</span>
-
-                                                    {{-- Solo mostrar insignia si existe --}}
-                                                    @if($like['user']->insignia === 'Colaborador')
-                                                        <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
-                                                            <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png"
-                                                                alt="Colaborador" width="13" height="13">
-                                                        </span>
-                                                    @elseif($like['user']->insignia === 'Docente')
-                                                        <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
-                                                            <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png"
-                                                                alt="Docente" width="13" height="13">
-                                                        </span>
-                                                    @elseif($like['user']->insignia === 'Comunidad')
-                                                        <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
-                                                            <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png"
-                                                                alt="Comunidad" width="13" height="13">
-                                                        </span>
-                                                    @endif
+                                                    <x-user-badge :badge="$like['user']->insignia" size="small" />
                                                 </div>
                                             </div>
                                             <p class="text-sm text-gray-500">{{ $like['user']->username }}</p>
@@ -99,8 +82,7 @@
                                     @if(auth()->id() !== $like['user']->id)
                                         <button wire:click="toggleFollow({{ $like['user']->id }})"
                                             class="px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200
-                                                                                                                               {{ $like['isFollowing'] ? 'bg-white border border-black text-black hover:bg-gray-50' : 'bg-[#3B25DD] border border-black text-white hover:bg-[#120073]' }}">
-
+                                            {{ $like['isFollowing'] ? 'bg-white border border-black text-black hover:bg-gray-50' : 'bg-[#3B25DD] border border-black text-white hover:bg-[#120073]' }}">
                                             {{ $like['isFollowing'] ? 'NO SEGUIR' : 'SEGUIR' }}
                                         </button>
                                     @endif
