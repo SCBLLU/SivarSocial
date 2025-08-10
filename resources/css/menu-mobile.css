@@ -332,6 +332,11 @@ i.bx.bx-search-alt-2 {
   visibility: hidden;
 }*/
 
+.lg-justify-start {
+  @media (width >= 64rem) {
+    justify-content: flex-start;
+  }
+}
 
 
 @media only screen and  (min-width: 648px) {
