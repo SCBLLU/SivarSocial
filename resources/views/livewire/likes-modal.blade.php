@@ -1,17 +1,27 @@
 <!-- Modal de Likes Livewire -->
 <div>
     @if($showModal)
-        <div class="fixed inset-0 flex items-end sm:items-center justify-center"
-            style="background-color: rgba(0, 0, 0, 0.6); z-index: 1100;">
+        <div class="fixed inset-0 flex items-end sm:items-center justify-center transition-all duration-300 ease-out"
+            style="background-color: rgba(0, 0, 0, 0.6); z-index: 1100;" x-data="{ show: false }"
+            x-init="$nextTick(() => show = true)" x-show="show" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0">
             <!-- Backdrop para cerrar modal -->
             <div class="absolute inset-0 cursor-pointer" wire:click="closeModal"></div>
 
             <!-- Contenedor del modal -->
-            <div
-                class="fixed bottom-0 left-0 right-0 bg-white text-black rounded-t-2xl shadow-lg z-50 flex flex-col max-h-[80vh] w-full mx-auto sm:relative sm:w-96 sm:h-96 sm:rounded-xl overflow-hidden">
+            <div class="fixed bottom-0 left-0 right-0 bg-white text-black rounded-t-2xl shadow-lg z-50 flex flex-col max-h-[80vh] w-full mx-auto sm:relative sm:w-96 sm:h-96 sm:rounded-xl overflow-hidden transform transition-all duration-300 ease-out"
+                x-show="show" x-transition:enter="transition ease-out duration-300 transform"
+                x-transition:enter-start="translate-y-full sm:translate-y-0 sm:scale-95 sm:opacity-0"
+                x-transition:enter-end="translate-y-0 sm:translate-y-0 sm:scale-100 sm:opacity-100"
+                x-transition:leave="transition ease-in duration-200 transform"
+                x-transition:leave-start="translate-y-0 sm:translate-y-0 sm:scale-100 sm:opacity-100"
+                x-transition:leave-end="translate-y-full sm:translate-y-0 sm:scale-95 sm:opacity-0" x-data="dragToClose()"
+                x-on:touchstart="startDrag($event)" x-on:touchmove="onDrag($event)" x-on:touchend="endDrag($event)">
                 <!-- Drag handle mobile -->
-                <div
-                    class="p-4 border-b border-gray-200 text-center text-lg font-semibold cursor-grab touch-none sm:hidden">
+                <div class="p-4 border-b border-gray-200 text-center text-lg font-semibold cursor-grab touch-none sm:hidden"
+                    x-ref="dragHandle">
                     <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-2"></div>
                     <div class="flex items-center justify-between px-2">
                         <span class="text-base font-bold text-gray-900">Me gusta</span>
@@ -39,12 +49,12 @@
 
                 <!-- Lista scrolleable -->
                 <div class="p-4 space-y-3 overflow-y-auto flex-1 pb-0 bg-white" x-data="{ 
-                     scrollHandler() {
-                         if (this.$el.scrollTop + this.$el.clientHeight >= this.$el.scrollHeight - 100) {
-                             @this.loadMore();
-                         }
-                     }
-                 }" x-on:scroll="scrollHandler()">
+                                 scrollHandler() {
+                                     if (this.$el.scrollTop + this.$el.clientHeight >= this.$el.scrollHeight - 100) {
+                                         @this.loadMore();
+                                     }
+                                 }
+                             }" x-on:scroll="scrollHandler()">
 
                     @if(count($likes) > 0)
                         @foreach($likes as $like)
@@ -57,8 +67,29 @@
                                     </a>
                                     <div>
                                         <a href="{{ route('posts.index', $like['user']->username) }}" class="block">
-                                            <p class="font-semibold text-sm text-gray-900">
-                                                {{ $like['user']->name ?: $like['user']->username }}</p>
+                                            <div class="font-semibold text-sm text-gray-900">
+                                                <div class="flex items-center gap-1 min-h-5">
+                                                    <span>{{ $like['user']->name ?: $like['user']->username }}</span>
+
+                                                    {{-- Solo mostrar insignia si existe --}}
+                                                    @if($like['user']->insignia === 'Colaborador')
+                                                        <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
+                                                            <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png"
+                                                                alt="Colaborador" width="13" height="13">
+                                                        </span>
+                                                    @elseif($like['user']->insignia === 'Docente')
+                                                        <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
+                                                            <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png"
+                                                                alt="Docente" width="13" height="13">
+                                                        </span>
+                                                    @elseif($like['user']->insignia === 'Comunidad')
+                                                        <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
+                                                            <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png"
+                                                                alt="Comunidad" width="13" height="13">
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            </div>
                                             <p class="text-sm text-gray-500">{{ $like['user']->username }}</p>
                                         </a>
                                     </div>
@@ -68,7 +99,7 @@
                                     @if(auth()->id() !== $like['user']->id)
                                         <button wire:click="toggleFollow({{ $like['user']->id }})"
                                             class="px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200
-                                                                   {{ $like['isFollowing'] ? 'bg-white border border-black text-black hover:bg-gray-50' : 'bg-[#3B25DD] border border-black text-white hover:bg-[#120073]' }}">
+                                                                                                                               {{ $like['isFollowing'] ? 'bg-white border border-black text-black hover:bg-gray-50' : 'bg-[#3B25DD] border border-black text-white hover:bg-[#120073]' }}">
 
                                             {{ $like['isFollowing'] ? 'NO SEGUIR' : 'SEGUIR' }}
                                         </button>
@@ -97,3 +128,59 @@
         </div>
     @endif
 </div>
+
+<script>
+    function dragToClose() {
+        return {
+            isDragging: false,
+            startY: 0,
+            currentY: 0,
+            threshold: 100,
+
+            startDrag(event) {
+                // Solo en móvil
+                if (window.innerWidth >= 640) return;
+
+                this.isDragging = true;
+                this.startY = event.touches[0].clientY;
+                this.currentY = this.startY;
+            },
+
+            onDrag(event) {
+                if (!this.isDragging || window.innerWidth >= 640) return;
+
+                event.preventDefault();
+                this.currentY = event.touches[0].clientY;
+
+                const deltaY = this.currentY - this.startY;
+
+                if (deltaY > 0) {
+                    const modal = this.$el;
+                    modal.style.transform = `translateY(${deltaY}px)`;
+                    modal.style.transition = 'none';
+                }
+            },
+
+            endDrag() {
+                if (!this.isDragging || window.innerWidth >= 640) return;
+
+                this.isDragging = false;
+                const deltaY = this.currentY - this.startY;
+                const modal = this.$el;
+
+                modal.style.transition = 'transform 0.3s ease-out';
+
+                if (deltaY > this.threshold) {
+                    // Cerrar modal
+                    modal.style.transform = 'translateY(100%)';
+                    setTimeout(() => {
+                        @this.closeModal();
+                    }, 300);
+                } else {
+                    // Volver a posición original
+                    modal.style.transform = 'translateY(0)';
+                }
+            }
+        }
+    }
+</script>

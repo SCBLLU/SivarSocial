@@ -66,7 +66,7 @@ class LikesModal extends Component
             $offset = ($this->currentPage - 1) * $this->perPage;
 
             $likesData = $this->post->likes()
-                ->with(['user:id,name,username,imagen,profession'])
+                ->with(['user:id,name,username,imagen,profession,insignia'])
                 ->latest()
                 ->offset($offset)
                 ->limit($this->perPage)
