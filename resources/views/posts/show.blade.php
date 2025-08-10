@@ -30,23 +30,9 @@
                                     class="w-10 h-10 rounded-full object-cover border-2 border-[#3B25DD] group-hover:border-[#120073] transition"
                                     onerror="this.src='{{ asset('img/img.jpg') }}'">
                                 <span class="ml-3 font-bold text-black group-hover:underline text-sm sm:text-base">
-                                    {{ $post->user->name ?? $post->user->username }} 
+                                    {{ $post->user->name ?? $post->user->username }}
                                 </span>
-                                @if(isset($post->user) && $post->user->insignia === 'Colaborador')
-                                    <span class="ml-1 flex items-center">
-                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png" alt="Colaborador" width="16" height="16">
-                                    </span>
-                                @elseif(isset($post->user) && $post->user->insignia === 'Docente')
-                                    <span class="ml-1 flex items-center">
-                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png" alt="Docente" width="16" height="16">
-                                    </span>
-                                @elseif(isset($post->user) && $post->user->insignia === 'Comunidad')
-                                    <span class="ml-1 flex items-center">
-                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png" alt="Comunidad" width="16" height="16">
-                                    </span>
-                                @else
-
-                                @endif
+                                <x-user-badge :badge="$post->user->insignia ?? null" size="medium" />
                             </a>
                             <div class="flex items-center gap-2 ml-auto">
                                 <span class="text-xs text-gray-500">{{ ucfirst($post->created_at->diffForHumans()) }}</span>
@@ -187,19 +173,19 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                                                                                                                                                                                                                                                                                                                                    h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
                                                     <div id="progress-bar"
                                                         class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                                                                                                                                                                                                                                                                                                                                        transition-all duration-100 ease-out"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    transition-all duration-100 ease-out"
                                                         style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
                                                     <div id="progress-thumb"
                                                         class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                                                                                                                                                                                                                                                                                                                                        shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                                                                                                                                                                                                                                                                                                                                        opacity-0 transition-all duration-200 ease-out
-                                                                                                                                                                                                                                                                                                                                                                                        hover:scale-110 active:scale-95"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    opacity-0 transition-all duration-200 ease-out
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 
@@ -306,21 +292,7 @@
                                 <span class="ml-3 font-bold text-black group-hover:underline text-sm sm:text-base">
                                     {{ $post->user->name ?? $post->user->username }}
                                 </span>
-                                @if(isset($post->user) && $post->user->insignia === 'Colaborador')
-                                    <span class="ml-1 flex items-center">
-                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png" alt="Colaborador" width="16" height="16">
-                                    </span>
-                                @elseif(isset($post->user) && $post->user->insignia === 'Docente')
-                                    <span class="ml-1 flex items-center">
-                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png" alt="Docente" width="16" height="16">
-                                    </span>
-                                @elseif(isset($post->user) && $post->user->insignia === 'Comunidad')
-                                    <span class="ml-1 flex items-center">
-                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png" alt="Comunidad" width="16" height="16">
-                                    </span>
-                                @else
-
-                                @endif
+                                <x-user-badge :badge="$post->user->insignia ?? null" size="medium" />
                             </a>
                             <div class="flex items-center gap-2 ml-auto">
                                 <span class="text-xs text-gray-500">{{ ucfirst($post->created_at->diffForHumans()) }}</span>
@@ -473,55 +445,6 @@
         </div>
     </div>
 
-    <!-- Modal de Likes - Estilo Instagram hoja deslizante para móvil -->
-    <div id="likesModal" class="fixed inset-0 hidden items-end sm:items-center justify-center"
-        style="background-color: rgba(0, 0, 0, 0.6); z-index: 1100;">
-        <!-- Backdrop para cerrar modal -->
-        <div class="absolute inset-0 cursor-pointer" onclick="closeLikesModal()"></div>
-
-        <!-- Contenedor del modal - Igual al panel de perfiles -->
-        <div id="likesModalContent"
-            class="fixed bottom-0 left-0 right-0 bg-white text-black rounded-t-2xl shadow-lg z-50 flex flex-col max-h-[80vh] w-full mx-auto sm:relative sm:w-96 sm:h-96 sm:rounded-xl overflow-hidden">
-            <!-- Drag handle -->
-            <div id="draghadlelike" class="p-4 border-b border-gray-200 text-center text-lg font-semibold cursor-grab touch-none sm:hidden">
-                <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-2"></div>
-                <div class="flex items-center justify-between px-2">
-                    <span class="text-base font-bold text-gray-900">Me gusta</span>
-                    <button onclick="closeLikesModal()" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
-                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <!-- Header solo en desktop -->
-            <div class="hidden sm:block flex-none border-b border-gray-200 bg-white sm:rounded-t-xl sticky top-0 z-10">
-                <div class="flex items-center justify-between px-4 py-3">
-                    <h3 class="text-base font-semibold text-gray-900">Me gusta</h3>
-                    <button onclick="closeLikesModal()" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
-                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <!-- Lista scrolleable -->
-            <div class="p-4 space-y-3 overflow-y-auto flex-1 pb-0 bg-white" id="likesScrollContainer">
-                <div id="likesUsersList"></div>
-                {{-- <!-- Estados básicos -->
-                <div id="likesLoader" class="hidden p-4 text-center">
-                    <div class="inline-block w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin">
-                    </div>
-                </div> --}}
-                <div id="likesEmptyState" class="hidden p-8 text-center">
-                    <p class="text-gray-500">Sin likes aún</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         // Audio global para preview
         let currentPreviewAudio = null;
@@ -567,7 +490,7 @@
                         // Guardado de tiempo silencioso
                     }
                 } catch (error) {
-                    console.error('Error al leer estado guardado:', error);
+                    // Error handling silencioso
                 }
             }
 
@@ -617,7 +540,6 @@
             });
 
             currentPreviewAudio.addEventListener('error', (e) => {
-                console.error('Error al cargar audio:', e);
                 showNotification('Error al cargar la vista previa', 'error');
                 resetPlayer();
                 clearLocalAudioState();
@@ -625,7 +547,6 @@
 
             // Reproducir
             currentPreviewAudio.play().catch(error => {
-                console.error('Error al reproducir:', error);
                 resetPlayer();
                 showNotification('Error al reproducir vista previa', 'error');
                 clearLocalAudioState();
@@ -739,7 +660,6 @@
                     // Limpiar el estado después de intentar restaurar
                     sessionStorage.removeItem('sivarsocial_show_audio_state');
                 } catch (error) {
-                    console.error('Error al restaurar estado del audio local:', error);
                     sessionStorage.removeItem('sivarsocial_show_audio_state');
                 }
             }
@@ -990,8 +910,6 @@
         function showNotification(message, type = 'info') {
             if (window.showNotification) {
                 window.showNotification(message, type);
-            } else {
-                console.log(`${type.toUpperCase()}: ${message}`);
             }
         }
 
@@ -1143,7 +1061,7 @@
                 if (diff > 0) { // solo arrastrar hacia abajo
                     modalContent.style.transform = `translateY(${diff}px)`;
                 }
-               
+
             });
 
             dragHandle.addEventListener("touchend", () => {
@@ -1155,7 +1073,7 @@
                     modalContent.style.transform = `translateY(100%)`;
                     setTimeout(() => {
                         modal.classList.add("hidden");
-                        modalContent.style.transform = ""; 
+                        modalContent.style.transform = "";
                         document.documentElement.style.overflow = "";
                     }, 300);
                 } else {
@@ -1332,7 +1250,6 @@
                     hideLoadMoreIndicator();
                 })
                 .catch(error => {
-                    console.error('❌ Error al cargar likes:', error);
                     showLikesError();
                     hideLikesLoader();
                     hideLoadMoreIndicator();
@@ -1481,32 +1398,32 @@
                 const isFollowing = like.isFollowing || false;
 
                 html += `
-                                                            <div class="py-3 flex items-center justify-between">
-                                                                <div class="flex items-center gap-3">
-                                                                    <a href="/${user.username}">
-                                                                        <img src="${avatarUrl}" 
-                                                                             alt="${user.username}"
-                                                                             class="w-12 h-12 rounded-full object-cover"
-                                                                             onerror="this.src='/img/img.jpg'">
-                                                                    </a>
-                                                                    <div>
-                                                                        <a href="/${user.username}" class="block">
-                                                                            <p class="font-semibold text-sm text-gray-900">${user.name || user.username}</p>
-                                                                            <p class="text-sm text-gray-500">${user.username}</p>
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                                ${currentUserId && currentUserId !== user.id ? `
-                                                                    <button onclick="toggleFollow(${user.id}, this)" 
-                                                                            data-user-id="${user.id}"
-                                                                            class="px-4 py-1.5 text-sm font-medium rounded-lg ${isFollowing
+                                                                                <div class="py-3 flex items-center justify-between">
+                                                                                    <div class="flex items-center gap-3">
+                                                                                        <a href="/${user.username}">
+                                                                                            <img src="${avatarUrl}" 
+                                                                                                 alt="${user.username}"
+                                                                                                 class="w-12 h-12 rounded-full object-cover"
+                                                                                                 onerror="this.src='/img/img.jpg'">
+                                                                                        </a>
+                                                                                        <div>
+                                                                                            <a href="/${user.username}" class="block">
+                                                                                                <p class="font-semibold text-sm text-gray-900">${user.name || user.username}</p>
+                                                                                                <p class="text-sm text-gray-500">${user.username}</p>
+                                                                                            </a>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    ${currentUserId && currentUserId !== user.id ? `
+                                                                                        <button onclick="toggleFollow(${user.id}, this)" 
+                                                                                                data-user-id="${user.id}"
+                                                                                                class="px-4 py-1.5 text-sm font-medium rounded-lg ${isFollowing
                             ? 'bg-gray-200 text-gray-700'
                             : 'bg-blue-500 text-white'
                         }">
-                                                                        <span class="follow-text">${isFollowing ? 'Siguiendo' : 'Seguir'}</span>
-                                                                    </button>
-                                                                ` : ''}
-                                                            </div>`;
+                                                                                            <span class="follow-text">${isFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                                                                        </button>
+                                                                                    ` : ''}
+                                                                                </div>`;
             });
 
             container.innerHTML = html;
@@ -1539,11 +1456,11 @@
 
             // Animación de carga
             button.innerHTML = `
-                                                                    <div class="flex items-center gap-2">
-                                                                        <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                                                                        <span class="text-sm">Procesando...</span>
-                                                                    </div>
-                                                                `;
+                                                                                        <div class="flex items-center gap-2">
+                                                                                            <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                                                                            <span class="text-sm">Procesando...</span>
+                                                                                        </div>
+                                                                                    `;
 
             performFollowAction(userId, action, button, textElement, iconElement, originalText);
         }
@@ -1573,11 +1490,11 @@
                         if (textElement) {
                             // Estructura nueva del botón
                             button.innerHTML = `
-                                                                                    <span class="follow-text">${isNowFollowing ? 'Siguiendo' : 'Seguir'}</span>
-                                                                                    <svg class="follow-icon w-4 h-4 ml-1 ${isNowFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                                                    </svg>
-                                                                                `;
+                                                                                                        <span class="follow-text">${isNowFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                                                                                        <svg class="follow-icon w-4 h-4 ml-1 ${isNowFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                                                        </svg>
+                                                                                                    `;
 
                             // Actualizar clases del botón
                             button.className = `follow-btn flex items-center justify-center px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 ${isNowFollowing
@@ -1611,17 +1528,15 @@
                     }
                 })
                 .catch(error => {
-                    console.error('❌ Error al cambiar estado de seguimiento:', error);
-
                     if (textElement) {
                         // Restaurar botón con estructura nueva
                         const isFollowing = originalText === 'Siguiendo';
                         button.innerHTML = `
-                                                                                <span class="follow-text">${originalText}</span>
-                                                                                <svg class="follow-icon w-4 h-4 ml-1 ${isFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                                                </svg>
-                                                                            `;
+                                                                                                    <span class="follow-text">${originalText}</span>
+                                                                                                    <svg class="follow-icon w-4 h-4 ml-1 ${isFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                                                    </svg>
+                                                                                                `;
 
                         // Mostrar error temporal
                         const errorTextElement = button.querySelector('.follow-text');
@@ -1749,84 +1664,6 @@
         });
     </script>
 
-    <!-- CSS adicional para mejoras específicas del modal -->
-    <style>
-        /* Asegurar que no haya conflictos con Livewire */
-        [wire\:loading],
-        [wire\:loading\.delay],
-        [wire\:loading\.inline-block],
-        [wire\:loading\.inline],
-        [wire\:loading\.block],
-        [wire\:loading\.flex],
-        [wire\:loading\.table],
-        [wire\:loading\.grid] {
-            display: none;
-        }
-
-        [wire\:loading\.delay\.shortest],
-        [wire\:loading\.delay\.shorter],
-        [wire\:loading\.delay\.short],
-        [wire\:loading\.delay\.long],
-        [wire\:loading\.delay\.longer],
-        [wire\:loading\.delay\.longest] {
-            display: none;
-        }
-
-        /* ESTILOS MÍNIMOS - TODO LO DEMÁS CON TAILWIND CSS */
-
-        /* Solo las animaciones esenciales */
-        .animate-modal-enter {
-            animation: modal-enter 0.3s ease-out;
-        }
-
-        @keyframes modal-enter {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        /* Solo scroll suave para iOS - estilo Instagram */
-        #likesScrollContainer {
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Estilos específicos para el modal de likes en móvil tipo hoja deslizante */
-        @media (max-width: 640px) {
-            #likesModalContent {
-                width: 100% !important;
-                max-width: 480px !important;
-                min-width: 0 !important;
-                border-radius: 22px 22px 0 0 !important;
-                margin: 0 auto 0 auto !important;
-                position: fixed !important;
-                bottom: 0 !important;
-                top: auto !important;
-                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.18) !important;
-                height: auto !important;
-                max-height: 90vh !important;
-                transition: max-height 0.3s cubic-bezier(.4, 0, .2, 1), border-radius 0.2s;
-                overflow: hidden !important;
-                display: flex;
-                flex-direction: column;
-                padding: 0 !important;
-            }
-        }
-
-        /* Asegurar que los modales estén por encima del menú móvil */
-        #likesModal,
-        #deletePostModal {
-            z-index: 1100 !important;
-        }
-
-        /* Prevenir scroll del body cuando los modales están abiertos */
-        *.modal-open {
-            overflow: hidden !important;
-        }
-    </style>
+    <!-- Modal de Likes Livewire -->
+    <livewire:likes-modal />
 @endsection

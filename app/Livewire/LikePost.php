@@ -25,6 +25,11 @@ class LikePost extends Component
         $this->likes = $this->post->likes->count();
     }
 
+    public function openLikesModal()
+    {
+        $this->dispatch('open-likes-modal', postId: $this->post->id);
+    }
+
     public function clickLike()
     {
         $user = Auth::user();

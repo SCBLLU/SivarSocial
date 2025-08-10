@@ -40,31 +40,17 @@
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
                 <div class="flex items-center justify-center lg:justify-start gap-2 min-h-5">
                     <span>{{ $user->name }}</span>
-
-                    {{-- Solo mostrar insignia si existe --}}
-                    @if($user->insignia === 'Colaborador')
-                    <a onclick="openModal(1)" class="flex-shrink-0 cursor-pointer transition-transform duration-200 hover:scale-110">
-                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png" alt="Colaborador" width="20" height="20">
-                    </a>
-                    @elseif($user->insignia === 'Docente')
-                    <a onclick="openModal(1)" class="flex-shrink-0 cursor-pointer transition-transform duration-200 hover:scale-110">
-                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png" alt="Docente" width="20" height="20">
-                    </a>
-                    @elseif($user->insignia === 'Comunidad')
-                    <a onclick="openModal(1)" class="flex-shrink-0 cursor-pointer transition-transform duration-200 hover:scale-110">
-                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png" alt="Comunidad" width="20" height="20">
-                    </a>
+                    @if($user->insignia)
+                        <a onclick="openModal(1)" class="cursor-pointer">
+                            <x-user-badge :badge="$user->insignia" size="large" />
+                        </a>
                     @endif
                 </div>
             </h2>
             <p class="text-gray-600 font-semibold text-sm sm:text-base">{{ '@' . $user->username }}</p>
 
             {{-- Estadísticas --}}
-            <div class="mt-2 space-y-1 text-xs sm:text-sm text-gray-800">
-                <p><span class="font-semibold">{{ $user->followers->count() }}</span> Seguidores</p>
-                <p><span class="font-semibold">{{ $user->following->count() }}</span> Siguiendo</p>
-                <p><span class="font-semibold">{{ $totalPosts }}</span> Publicaciones</p>
-            </div>
+            <livewire:user-stats :user="$user" :postsCount="$totalPosts" />
 
             {{-- Acciones dinámicas --}}
             <div class="mt-4">
@@ -75,24 +61,7 @@
                             Editar perfil
                         </a>
                     @else
-                        @if (!auth()->user()->isFollowing($user))
-                            <form action="{{ route('users.follow', $user) }}" method="POST" class="inline-block">
-                                @csrf
-                                <button type="submit"
-                                    class="bg-[#3B25DD] text-white px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium hover:bg-[#120073] transition">
-                                    SEGUIR
-                                </button>
-                            </form>
-                        @else
-                            <form action="{{ route('users.unfollow', $user) }}" method="POST" class="inline-block">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="bg-white border-2 border-black text-black px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium hover:bg-gray-100 transition">
-                                    NO SEGUIR
-                                </button>
-                            </form>
-                        @endif
+                        <livewire:follow-user :user="$user" size="normal" />
                     @endif
                 @endauth
             </div>
@@ -203,7 +172,7 @@
                                 <div class="relative w-full rounded-xl sm:rounded-2xl overflow-hidden shadow-md hover:shadow-xl aspect-square">
                                     <img src="{{ asset('uploads/' . $post->imagen) }}" 
                                          alt="Imagen del post {{ $post->titulo }}"
-                                         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                         class="w-full h-full object-cover transition-transform duration-300"
                                          loading="lazy">
 
                                     {{-- Overlay con información del post --}}
@@ -243,4 +212,7 @@
             <p class="text-gray-400 uppercase text-xs sm:text-sm text-center font-bold mt-10">No hay publicaciones aún</p>
         @endif
     </section>
+
+    <!-- Modal de Likes Livewire -->
+    <livewire:likes-modal />
 @endsection

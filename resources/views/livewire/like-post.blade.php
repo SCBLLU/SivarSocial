@@ -44,7 +44,7 @@
     <div class="flex flex-col items-start">
         @if($likes > 0)
             @auth
-                <button onclick="openLikesModal({{ $post->id }})"
+                <button wire:click="openLikesModal"
                     class="text-sm font-semibold {{ $color === 'white' ? 'text-white hover:text-gray-200' : ($color === 'red' ? 'text-gray-600 hover:text-gray-800' : 'text-gray-900 hover:text-gray-700') }} transition-colors duration-150 hover:underline focus:outline-none likes-counter-mobile px-1 py-1 rounded">
                     <span class="border-b border-transparent hover:border-current">
                         {{ number_format($likes) }}

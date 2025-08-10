@@ -14,24 +14,7 @@
                                     class="font-semibold text-gray-900 text-sm sm:text-base group-hover:border-[#3B25DD] transition">
                                     <div class="flex items-center gap-1 min-h-5">
                                         <span>{{ $user->name ?? $user->username }}</span>
-
-                                        {{-- Solo mostrar insignia si existe --}}
-                                        @if($user->insignia === 'Colaborador')
-                                            <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
-                                                <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png"
-                                                    alt="Colaborador" width="13" height="13">
-                                            </span>
-                                        @elseif($user->insignia === 'Docente')
-                                            <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
-                                                <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png"
-                                                    alt="Docente" width="13" height="13">
-                                            </span>
-                                        @elseif($user->insignia === 'Comunidad')
-                                            <span class="flex-shrink-0 transition-transform duration-200 hover:scale-110">
-                                                <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png"
-                                                    alt="Comunidad" width="13" height="13">
-                                            </span>
-                                        @endif
+                                        <x-user-badge :badge="$user->insignia" size="small" />
                                     </div>
                                 </h3>
                                 <p class="text-xs sm:text-sm text-gray-500">{{ $user->profession ?? 'Usuario de muestra' }}</p>
@@ -40,24 +23,7 @@
                         {{-- Solo mostrar botones si el usuario está logueado --}}
                         @auth
                             <div class="flex-shrink-0">
-                                @if (!Auth::user()->isFollowing($user))
-                                    <form action="{{ route('users.follow', $user) }}" method="POST" class="inline">
-                                        @csrf
-                                        <button type="submit"
-                                            class="bg-[#3B25DD] border-1 border-[#000000] text-[#FFFFFF] px-3 py-1.5 sm:px-6 sm:py-2 rounded-full text-xs sm:text-sm font-medium hover:bg-[#120073]">
-                                            SEGUIR
-                                        </button>
-                                    </form>
-                                @else
-                                    <form action="{{ route('users.unfollow', $user) }}" method="POST" class="inline">
-                                        @method('DELETE')
-                                        @csrf
-                                        <button type="submit"
-                                            class="bg-[#FFFFFF] border-1 border-[#000000] text-[#000000] px-2 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium hover:bg-gray-50">
-                                            NO SEGUIR
-                                        </button>
-                                    </form>
-                                @endif
+                                <livewire:follow-user :user="$user" size="small" />
                             </div>
                         @endauth
                     </div>

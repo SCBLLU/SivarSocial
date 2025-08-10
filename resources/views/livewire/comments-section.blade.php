@@ -30,22 +30,9 @@
                             <div class="flex-1 min-w-0 flex items-center justify-between">
                                 <div class="flex items-center gap-2 min-w-0">
                                     <a href="{{ route('posts.index', $comentario->user->username) }}"
-                                        class="font-semibold text-sm text-gray-900 hover:text-blue-600 transition-colors truncate d-flex">
+                                        class="font-semibold text-sm text-gray-900 hover:text-blue-600 transition-colors truncate flex items-center gap-1">
                                         {{ $comentario->user->username }}
-
-                            @if(isset($comentario->user) && $comentario->user->insignia === 'Colaborador')
-                                <span class="ml-1 flex items-center">
-                                    <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png" alt="Colaborador" width="16" height="16">
-                                </span>
-                            @elseif(isset($comentario->user) && $comentario->user->insignia === 'Docente')
-                                <span class="ml-1 flex items-center">
-                                    <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png" alt="Docente" width="16" height="16">
-                                </span>
-                            @elseif(isset($comentario->user) && $comentario->user->insignia === 'Comunidad')
-                                <span class="ml-1 flex items-center">
-                                    <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png" alt="Comunidad" width="16" height="16">
-                                </span>
-                            @endif
+                                        <x-user-badge :badge="$comentario->user->insignia ?? null" size="medium" />
                                     </a>
                                     @if($comentario->user_id === $post->user_id)
                                         <span
@@ -104,7 +91,7 @@
                                                         </svg>
 
                                                         <span wire:loading.remove wire:target="deleteComment">
-                                                            Eliminar comentario
+                                                            Eliminar
                                                         </span>
                                                         <span wire:loading wire:target="deleteComment({{ $comentario->id }})">
                                                             Eliminando...
@@ -364,14 +351,7 @@
                     }));
                 }, 100);
             }
-
-            console.log('Comentario eliminado del post:', postId);
         });
-
-        // Mejorar el autosize del textarea (no aplicable para input)
-        // Removido ya que ahora usamos input en lugar de textarea
-
-        // El input no necesita autosize
     });
 
     // Función para enfocar el input (disponible globalmente)
