@@ -245,6 +245,7 @@
         </div>
         <!-- menu de perfil para mobile -->
         @yield('lista-perfiles-mobile')
+        @yield('aviso-recuperacion-mobile')
         <!-- fin menu de perfil para mobile -->
 
     </div>
@@ -298,84 +299,109 @@
         });
     </script>
     <script>
-        let panel = document.getElementById("perfilPanel");
-        let overlay = document.getElementById("overlay");
-        let dragHandle = document.getElementById("dragHandle");
+    document.addEventListener("DOMContentLoaded", () => {
+        const modalConfigs = [
+            { overlay: "overlay0", content: "modalmenu0", drag: "dragHandle0" },
+            { overlay: "overlay1", content: "modalmenu1", drag: "dragHandle1" },
+            // Agrega más aquí
+        ];
 
-        let startY = 0;
-        let currentY = 0;
-        let dragging = false;
+        modalConfigs.forEach(cfg => {
+            const modal2 = document.getElementById(cfg.overlay);
+            const modalContent2 = document.getElementById(cfg.content);
+            const dragHandle2 = document.getElementById(cfg.drag);
 
-        function openComments() {
-            panel.style.transition = "";
-            overlay.classList.remove("hidden");
-            setTimeout(() => overlay.classList.remove("opacity-0"), 10);
+            let startY2 = 0;
+            let currentY2 = 0;
+            let isDragging2 = false;
 
-            panel.classList.remove("translate-y-full");
-            panel.style.transform = "translateY(0)";
-            document.documentElement.style.overflow = "hidden";
+            if (dragHandle2) {
+                dragHandle2.addEventListener("touchstart", (e) => {
+                    startY2 = e.touches[0].clientY;
+                    isDragging2 = true;
+                    modalContent2.style.transition = "none";
+                });
 
-            document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff');
+                dragHandle2.addEventListener("touchmove", (e) => {
+                    if (!isDragging2) return;
+                    currentY2 = e.touches[0].clientY;
+                    let diff2 = currentY2 - startY2;
+
+                    if (diff2 > 0) {
+                        modalContent2.style.transform = `translateY(${diff2}px)`;
+                    }
+                });
+
+                dragHandle2.addEventListener("touchend", () => {
+                    isDragging2 = false;
+                    modalContent2.style.transition = "transform 0.3s ease";
+
+                    if (currentY2 - startY2 > 100) {
+                        modalContent2.style.transform = `translateY(100%)`;
+                        setTimeout(() => {
+                            modal2.classList.add("hidden");
+                            modalContent2.style.transform = "";
+                            document.documentElement.style.overflow = "";
+                        }, 300);
+                    } else {
+                        modalContent2.style.transform = "translateY(0)";
+                    }
+                });
+            }
+        });
+
+        window.addEventListener('resize', function () {
+                if (window.innerWidth > 768) {
+                    closeModal(0);
+                }
+            });
+        });
+
+    function openModal(index) {
+        const modal2 = document.getElementById(`overlay${index}`);
+        const content = document.getElementById(`modalmenu${index}`);
+
+        if (!modal2 || !content) return;
+
+        content.classList.remove('like-mobile-close', 'like-desktop-close');
+        void content.offsetWidth;
+
+        if (window.innerWidth < 648) {
+            content.classList.add('like-mobile-open');
+        } else {
+            content.classList.add('like-desktop-open');
         }
 
-        function closeComments() {
-            overlay.classList.add("opacity-0");
-            setTimeout(() => overlay.classList.add("hidden"), 300);
+        modal2.classList.remove('hidden');
+        modal2.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = "hidden";
+    }
 
-            panel.classList.add("translate-y-full");
-            panel.style.transform = "";
+    function closeModal(index) {
+        const modal2 = document.getElementById(`overlay${index}`);
+        const content = document.getElementById(`modalmenu${index}`);
+
+        if (!modal2 || !content) return;
+
+        content.classList.remove('like-mobile-open', 'like-desktop-open');
+        void content.offsetWidth;
+
+        if (window.innerWidth < 648) {
+            content.classList.add('like-mobile-close');
+            content.style.transform = "";
+        } else {
+            content.classList.add('like-desktop-close');
+        }
+
+        content.addEventListener('animationend', function handler() {
+            content.removeEventListener('animationend', handler);
+            modal2.classList.add('hidden');
+            modal2.classList.remove('flex');
+            document.body.style.overflow = '';
             document.documentElement.style.overflow = "";
-
-            document.querySelector('meta[name="theme-color"]').setAttribute('content', '');
-        }
-
-        window.addEventListener("resize", function () {
-            if (window.innerWidth > 768) {
-                closeComments();
-            }
         });
-
-        dragHandle.addEventListener('touchstart', function (e) {
-            dragging = true;
-            startY = e.touches[0].clientY;
-            panel.style.transition = "none";
-        }, {
-            passive: true
-        });
-
-        dragHandle.addEventListener('touchmove', function (e) {
-            if (!dragging) return;
-            currentY = e.touches[0].clientY;
-            const diff = currentY - startY;
-            if (diff > 0) {
-                panel.style.transform = `translateY(${diff}px)`;
-            }
-        }, {
-            passive: true
-        });
-
-        dragHandle.addEventListener('touchend', function () {
-            dragging = false;
-            const diff = currentY - startY;
-            panel.style.transition = "transform 0.2s";
-
-            if (diff > 100) {
-                panel.style.transform = `translateY(100%)`;
-                setTimeout(() => closeComments(), 300);
-            } else {
-                panel.style.transform = `translateY(0px)`;
-            }
-        });
-
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const panel = document.getElementById("perfilPanel");
-
-            // Verifica si tiene una transición inline específica
-            if (panel.style.transition.includes("transform")) {
-                panel.style.transition = ""; // Quita la transición inline
-            }
-        });
+    }
     </script>
 </body>
 

@@ -24,6 +24,7 @@ class User extends Authenticatable
         'imagen',      // Asegúrate de que este campo esté aquí
         'gender',
         'profession',
+        'insignia',
     ];
 
     /**

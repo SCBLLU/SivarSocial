@@ -53,7 +53,7 @@ class RecoverController extends Controller
                 'email' => $request->email
             ])->render();
             $message->to($request->email)
-                    ->subject('Código de verificación')
+                    ->subject('Tu código de recuperación de contraseña es: ' . $codigo)
                     ->html($html); // <- cambia esto
         });
 
@@ -156,8 +156,9 @@ class RecoverController extends Controller
         ])->render();
 
         Mail::send([], [], function ($message) use ($correo, $html) {
+            $hora = now()->format('H:i');
             $message->to($correo)
-                    ->subject('Contraseña Cambiada')
+                    ->subject("🔔 de seguridad: cambio de contraseña - $hora")
                     ->html($html);
         });
 

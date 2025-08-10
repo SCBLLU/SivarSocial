@@ -37,7 +37,29 @@
 
         {{-- Info de usuario --}}
         <div class="flex flex-col gap-1 text-center lg:text-left w-full lg:w-auto">
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-900">{{ $user->name }}</h2>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center lg:justify-start justify-center">
+                {{ $user->name }}
+
+                @if($user->insignia === 'Colaborador')
+                <a href="">
+                    <span class="ml-1 flex items-center">
+                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png" alt="Colaborador" width="20" height="20">
+                    </span>
+                </a>
+                @elseif($user->insignia === 'Docente')
+                <a href="">
+                    <span class="ml-1 flex items-center">
+                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png" alt="Docente" width="20" height="20">
+                    </span>
+                </a>
+                @elseif($user->insignia === 'Comunidad')
+                <a href="">
+                    <span class="ml-1 flex items-center">
+                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png" alt="Comunidad" width="20" height="20">
+                    </span>
+                </a>
+                @endif
+            </h2>
             <p class="text-gray-600 font-semibold text-sm sm:text-base">{{ '@' . $user->username }}</p>
 
             {{-- Estadísticas --}}

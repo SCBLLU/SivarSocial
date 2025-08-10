@@ -11,9 +11,23 @@
                                 class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-transparent group-hover:border-[#3B25DD] transition">
                             <div class="ml-3 sm:ml-4">
                                 <h3
-                                    class="font-semibold text-gray-900 text-sm sm:text-base group-hover:border-[#3B25DD] transition">
+                                    class="font-semibold text-gray-900 text-sm sm:text-base group-hover:border-[#3B25DD] transition d-flex">
                                     {{-- Mostrar nombre o username --}}
                                     {{ $user->name ?? $user->username }}
+
+                                   @if($user->insignia === 'Colaborador')
+                                    <span class="ml-1 flex items-center">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png" alt="Colaborador" width="13" height="13">
+                                    </span>
+                                    @elseif($user->insignia === 'Docente')
+                                    <span class="ml-1 flex items-center">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png" alt="Docente" width="13" height="13">
+                                    </span>
+                                    @elseif($user->insignia === 'Comunidad')
+                                    <span class="ml-1 flex items-center">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png" alt="Comunidad" width="13" height="13">
+                                    </span>
+                                    @endif
                                 </h3>
                                 <p class="text-xs sm:text-sm text-gray-500">{{ $user->profession ?? 'Usuario de muestra' }}</p>
                             </div>
@@ -25,7 +39,7 @@
                                     <form action="{{ route('users.follow', $user) }}" method="POST" class="inline">
                                         @csrf
                                         <button type="submit"
-                                            class="bg-[#3B25DD] border-1 border-[#000000] text-[#FFFFFF] px-3 py-1.5 sm:px-6 sm:py-2 rounded-full text-xs sm:text-sm font-medium hover:bg-[#120073]">
+                                            class="px-4 py-1.5 text-sm font-medium rounded-lg bg-blue-500 text-white">
                                             SEGUIR
                                         </button>
                                     </form>
@@ -34,7 +48,7 @@
                                         @method('DELETE')
                                         @csrf
                                         <button type="submit"
-                                            class="bg-[#FFFFFF] border-1 border-[#000000] text-[#000000] px-2 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium hover:bg-gray-50">
+                                            class="px-4 py-1.5 text-sm font-medium rounded-lg bg-gray-200 text-gray-700">
                                             NO SEGUIR
                                         </button>
                                     </form>
@@ -46,6 +60,6 @@
             @endif
         @endforeach
     @else
-        <p class="text-center text-gray-500 text-xs sm:text-sm">No se ha encontrado ningún perfil.</p>
+        <p class="p-4 mb-5 text-center text-gray-500 text-xs sm:text-sm">No se ha encontrado ningún perfil.</p>
     @endif
 </div>

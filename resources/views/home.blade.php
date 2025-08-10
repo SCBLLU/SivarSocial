@@ -23,7 +23,7 @@
                 <!-- Columna 3: Perfiles a la derecha con altura igual a posts -->
                 <div class="w-full h-full  lg:flex lg:flex-col">
                     <div id="users-container"
-                        class="perfilfor-pos flex flex-col p-4 bg-white shadow-lg rounded-2xl h-full max-h-[600px]">
+                        class="perfilfor-post flex flex-col p-4 bg-white shadow-lg rounded-2xl h-full max-h-[600px]">
                         <h2
                             class="flex items-center justify-center flex-shrink-0 gap-2 mb-4 text-xl font-bold text-purple-700">
                             Perfiles
