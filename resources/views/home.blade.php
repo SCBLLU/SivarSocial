@@ -158,4 +158,7 @@
             margin-top: 2rem !important;
         }
     </style>
+
+    <!-- Modal de Likes Livewire -->
+    <livewire:likes-modal />
 @endpush

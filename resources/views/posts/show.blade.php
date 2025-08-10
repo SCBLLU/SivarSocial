@@ -30,19 +30,22 @@
                                     class="w-10 h-10 rounded-full object-cover border-2 border-[#3B25DD] group-hover:border-[#120073] transition"
                                     onerror="this.src='{{ asset('img/img.jpg') }}'">
                                 <span class="ml-3 font-bold text-black group-hover:underline text-sm sm:text-base">
-                                    {{ $post->user->name ?? $post->user->username }} 
+                                    {{ $post->user->name ?? $post->user->username }}
                                 </span>
                                 @if(isset($post->user) && $post->user->insignia === 'Colaborador')
                                     <span class="ml-1 flex items-center">
-                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png" alt="Colaborador" width="16" height="16">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png"
+                                            alt="Colaborador" width="16" height="16">
                                     </span>
                                 @elseif(isset($post->user) && $post->user->insignia === 'Docente')
                                     <span class="ml-1 flex items-center">
-                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png" alt="Docente" width="16" height="16">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png"
+                                            alt="Docente" width="16" height="16">
                                     </span>
                                 @elseif(isset($post->user) && $post->user->insignia === 'Comunidad')
                                     <span class="ml-1 flex items-center">
-                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png" alt="Comunidad" width="16" height="16">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png"
+                                            alt="Comunidad" width="16" height="16">
                                     </span>
                                 @else
 
@@ -187,19 +190,19 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                                                                                                                                                                                                                                                                                                                                    h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                                                                                                                                                                                                                                                                                                                                                h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
                                                     <div id="progress-bar"
                                                         class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                                                                                                                                                                                                                                                                                                                                        transition-all duration-100 ease-out"
+                                                                                                                                                                                                                                                                                                                                                                                                    transition-all duration-100 ease-out"
                                                         style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
                                                     <div id="progress-thumb"
                                                         class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                                                                                                                                                                                                                                                                                                                                        shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                                                                                                                                                                                                                                                                                                                                        opacity-0 transition-all duration-200 ease-out
-                                                                                                                                                                                                                                                                                                                                                                                        hover:scale-110 active:scale-95"
+                                                                                                                                                                                                                                                                                                                                                                                                    shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                                                                                                                                                                                                                                                                                                                                                    opacity-0 transition-all duration-200 ease-out
+                                                                                                                                                                                                                                                                                                                                                                                                    hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 
@@ -308,15 +311,18 @@
                                 </span>
                                 @if(isset($post->user) && $post->user->insignia === 'Colaborador')
                                     <span class="ml-1 flex items-center">
-                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png" alt="Colaborador" width="16" height="16">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png"
+                                            alt="Colaborador" width="16" height="16">
                                     </span>
                                 @elseif(isset($post->user) && $post->user->insignia === 'Docente')
                                     <span class="ml-1 flex items-center">
-                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png" alt="Docente" width="16" height="16">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png"
+                                            alt="Docente" width="16" height="16">
                                     </span>
                                 @elseif(isset($post->user) && $post->user->insignia === 'Comunidad')
                                     <span class="ml-1 flex items-center">
-                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png" alt="Comunidad" width="16" height="16">
+                                        <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png"
+                                            alt="Comunidad" width="16" height="16">
                                     </span>
                                 @else
 
@@ -483,7 +489,8 @@
         <div id="likesModalContent"
             class="fixed bottom-0 left-0 right-0 bg-white text-black rounded-t-2xl shadow-lg z-50 flex flex-col max-h-[80vh] w-full mx-auto sm:relative sm:w-96 sm:h-96 sm:rounded-xl overflow-hidden">
             <!-- Drag handle -->
-            <div id="draghadlelike" class="p-4 border-b border-gray-200 text-center text-lg font-semibold cursor-grab touch-none sm:hidden">
+            <div id="draghadlelike"
+                class="p-4 border-b border-gray-200 text-center text-lg font-semibold cursor-grab touch-none sm:hidden">
                 <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-2"></div>
                 <div class="flex items-center justify-between px-2">
                     <span class="text-base font-bold text-gray-900">Me gusta</span>
@@ -567,7 +574,7 @@
                         // Guardado de tiempo silencioso
                     }
                 } catch (error) {
-                    console.error('Error al leer estado guardado:', error);
+                    // Error handling silencioso
                 }
             }
 
@@ -617,7 +624,6 @@
             });
 
             currentPreviewAudio.addEventListener('error', (e) => {
-                console.error('Error al cargar audio:', e);
                 showNotification('Error al cargar la vista previa', 'error');
                 resetPlayer();
                 clearLocalAudioState();
@@ -625,7 +631,6 @@
 
             // Reproducir
             currentPreviewAudio.play().catch(error => {
-                console.error('Error al reproducir:', error);
                 resetPlayer();
                 showNotification('Error al reproducir vista previa', 'error');
                 clearLocalAudioState();
@@ -739,7 +744,6 @@
                     // Limpiar el estado después de intentar restaurar
                     sessionStorage.removeItem('sivarsocial_show_audio_state');
                 } catch (error) {
-                    console.error('Error al restaurar estado del audio local:', error);
                     sessionStorage.removeItem('sivarsocial_show_audio_state');
                 }
             }
@@ -990,8 +994,6 @@
         function showNotification(message, type = 'info') {
             if (window.showNotification) {
                 window.showNotification(message, type);
-            } else {
-                console.log(`${type.toUpperCase()}: ${message}`);
             }
         }
 
@@ -1143,7 +1145,7 @@
                 if (diff > 0) { // solo arrastrar hacia abajo
                     modalContent.style.transform = `translateY(${diff}px)`;
                 }
-               
+
             });
 
             dragHandle.addEventListener("touchend", () => {
@@ -1155,7 +1157,7 @@
                     modalContent.style.transform = `translateY(100%)`;
                     setTimeout(() => {
                         modal.classList.add("hidden");
-                        modalContent.style.transform = ""; 
+                        modalContent.style.transform = "";
                         document.documentElement.style.overflow = "";
                     }, 300);
                 } else {
@@ -1332,7 +1334,6 @@
                     hideLoadMoreIndicator();
                 })
                 .catch(error => {
-                    console.error('❌ Error al cargar likes:', error);
                     showLikesError();
                     hideLikesLoader();
                     hideLoadMoreIndicator();
@@ -1481,32 +1482,32 @@
                 const isFollowing = like.isFollowing || false;
 
                 html += `
-                                                            <div class="py-3 flex items-center justify-between">
-                                                                <div class="flex items-center gap-3">
-                                                                    <a href="/${user.username}">
-                                                                        <img src="${avatarUrl}" 
-                                                                             alt="${user.username}"
-                                                                             class="w-12 h-12 rounded-full object-cover"
-                                                                             onerror="this.src='/img/img.jpg'">
-                                                                    </a>
-                                                                    <div>
-                                                                        <a href="/${user.username}" class="block">
-                                                                            <p class="font-semibold text-sm text-gray-900">${user.name || user.username}</p>
-                                                                            <p class="text-sm text-gray-500">${user.username}</p>
+                                                                <div class="py-3 flex items-center justify-between">
+                                                                    <div class="flex items-center gap-3">
+                                                                        <a href="/${user.username}">
+                                                                            <img src="${avatarUrl}" 
+                                                                                 alt="${user.username}"
+                                                                                 class="w-12 h-12 rounded-full object-cover"
+                                                                                 onerror="this.src='/img/img.jpg'">
                                                                         </a>
+                                                                        <div>
+                                                                            <a href="/${user.username}" class="block">
+                                                                                <p class="font-semibold text-sm text-gray-900">${user.name || user.username}</p>
+                                                                                <p class="text-sm text-gray-500">${user.username}</p>
+                                                                            </a>
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                                ${currentUserId && currentUserId !== user.id ? `
-                                                                    <button onclick="toggleFollow(${user.id}, this)" 
-                                                                            data-user-id="${user.id}"
-                                                                            class="px-4 py-1.5 text-sm font-medium rounded-lg ${isFollowing
+                                                                    ${currentUserId && currentUserId !== user.id ? `
+                                                                        <button onclick="toggleFollow(${user.id}, this)" 
+                                                                                data-user-id="${user.id}"
+                                                                                class="px-4 py-1.5 text-sm font-medium rounded-lg ${isFollowing
                             ? 'bg-gray-200 text-gray-700'
                             : 'bg-blue-500 text-white'
                         }">
-                                                                        <span class="follow-text">${isFollowing ? 'Siguiendo' : 'Seguir'}</span>
-                                                                    </button>
-                                                                ` : ''}
-                                                            </div>`;
+                                                                            <span class="follow-text">${isFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                                                        </button>
+                                                                    ` : ''}
+                                                                </div>`;
             });
 
             container.innerHTML = html;
@@ -1539,11 +1540,11 @@
 
             // Animación de carga
             button.innerHTML = `
-                                                                    <div class="flex items-center gap-2">
-                                                                        <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                                                                        <span class="text-sm">Procesando...</span>
-                                                                    </div>
-                                                                `;
+                                                                        <div class="flex items-center gap-2">
+                                                                            <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                                                            <span class="text-sm">Procesando...</span>
+                                                                        </div>
+                                                                    `;
 
             performFollowAction(userId, action, button, textElement, iconElement, originalText);
         }
@@ -1573,11 +1574,11 @@
                         if (textElement) {
                             // Estructura nueva del botón
                             button.innerHTML = `
-                                                                                    <span class="follow-text">${isNowFollowing ? 'Siguiendo' : 'Seguir'}</span>
-                                                                                    <svg class="follow-icon w-4 h-4 ml-1 ${isNowFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                                                    </svg>
-                                                                                `;
+                                                                                        <span class="follow-text">${isNowFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                                                                        <svg class="follow-icon w-4 h-4 ml-1 ${isNowFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                                        </svg>
+                                                                                    `;
 
                             // Actualizar clases del botón
                             button.className = `follow-btn flex items-center justify-center px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 ${isNowFollowing
@@ -1611,17 +1612,15 @@
                     }
                 })
                 .catch(error => {
-                    console.error('❌ Error al cambiar estado de seguimiento:', error);
-
                     if (textElement) {
                         // Restaurar botón con estructura nueva
                         const isFollowing = originalText === 'Siguiendo';
                         button.innerHTML = `
-                                                                                <span class="follow-text">${originalText}</span>
-                                                                                <svg class="follow-icon w-4 h-4 ml-1 ${isFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                                                </svg>
-                                                                            `;
+                                                                                    <span class="follow-text">${originalText}</span>
+                                                                                    <svg class="follow-icon w-4 h-4 ml-1 ${isFollowing ? '' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                                    </svg>
+                                                                                `;
 
                         // Mostrar error temporal
                         const errorTextElement = button.querySelector('.follow-text');
@@ -1829,4 +1828,7 @@
             overflow: hidden !important;
         }
     </style>
+
+    <!-- Modal de Likes Livewire -->
+    <livewire:likes-modal />
 @endsection

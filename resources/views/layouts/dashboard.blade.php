@@ -60,11 +60,7 @@
             <p class="text-gray-600 font-semibold text-sm sm:text-base">{{ '@' . $user->username }}</p>
 
             {{-- Estadísticas --}}
-            <div class="mt-2 space-y-1 text-xs sm:text-sm text-gray-800">
-                <p><span class="font-semibold">{{ $user->followers->count() }}</span> Seguidores</p>
-                <p><span class="font-semibold">{{ $user->following->count() }}</span> Siguiendo</p>
-                <p><span class="font-semibold">{{ $totalPosts }}</span> Publicaciones</p>
-            </div>
+            <livewire:user-stats :user="$user" :postsCount="$totalPosts" />
 
             {{-- Acciones dinámicas --}}
             <div class="mt-4">
@@ -75,24 +71,7 @@
                             Editar perfil
                         </a>
                     @else
-                        @if (!auth()->user()->isFollowing($user))
-                            <form action="{{ route('users.follow', $user) }}" method="POST" class="inline-block">
-                                @csrf
-                                <button type="submit"
-                                    class="bg-[#3B25DD] text-white px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium hover:bg-[#120073] transition">
-                                    SEGUIR
-                                </button>
-                            </form>
-                        @else
-                            <form action="{{ route('users.unfollow', $user) }}" method="POST" class="inline-block">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="bg-white border-2 border-black text-black px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium hover:bg-gray-100 transition">
-                                    NO SEGUIR
-                                </button>
-                            </form>
-                        @endif
+                        <livewire:follow-user :user="$user" size="normal" />
                     @endif
                 @endauth
             </div>
@@ -243,4 +222,7 @@
             <p class="text-gray-400 uppercase text-xs sm:text-sm text-center font-bold mt-10">No hay publicaciones aún</p>
         @endif
     </section>
+
+    <!-- Modal de Likes Livewire -->
+    <livewire:likes-modal />
 @endsection

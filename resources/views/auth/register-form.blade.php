@@ -286,7 +286,7 @@
                             return;
                         }
                     } catch (error) {
-                        console.error('Error en la validación:', error);
+                        // Error en la validación
                         return;
                     }
                 }
