@@ -34,7 +34,7 @@
         </a>
         </li>
         <li class="menu__item">
-        <a class="menu__link btn" onclick="openComments(0)">
+        <a class="menu__link btn" onclick="openModal(0)">
         <i class='bx bx-group'></i>
         </a>
         </li>
@@ -320,6 +320,37 @@
             </div>
         </div>
         <!-- Lista scrolleable -->
+
+          @if(($authUser->insignia ?? $user->insignia ?? null) === 'Colaborador')
+          <div class="flex flex-col items-center justify-center p-4 space-y-3 flex-1 pb-0 bg-white">
+            <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154251_0002_tvbo7l.png" alt="" width="40" height="40">
+            <h1 class="text-center text-black mb-3 font-medium text-2xl">Insignia</h1>
+            <p class="text-center text-black text-xs sm:text-sm mb-10">
+              Sivar Social, reconoce a este usuario como "colaborador", con el propósito de valorar su aporte al desarrollo de la red social.
+            </p>
+            <a href="" class="text-center text-blue-700 text-xs sm:text-sm mb-10">
+              Más información sobre su colaboración
+            </a>
+          </div>
+
+          @elseif(($authUser->insignia ?? $user->insignia ?? null) === 'Docente')
+           <div class="flex flex-col items-center justify-center p-4 space-y-3 flex-1 pb-0 bg-white">
+            <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0000_wtburi.png" alt="" width="40" height="40">
+            <h1 class="text-center text-black mb-3 font-medium text-2xl">Insignia</h1>
+            <p class="text-center text-black text-xs sm:text-sm mb-10">
+              Sivar Social, reconoce a este usuario como "docente", con el propósito de reconocer su rol y facilitar su interacción dentro de la red social.
+            </p>
+          </div>
+
+          @elseif(($authUser->insignia ?? $user->insignia ?? null) === 'Comunidad')
+            <div class="flex flex-col items-center justify-center p-4 space-y-3 flex-1 pb-0 bg-white">
+              <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754775975/Copia_de_social_20250809_154250_0001_b7euh4.png" alt="" width="40" height="40">
+              <h1 class="text-center text-black mb-3 font-medium text-2xl">Insignia</h1>
+              <p class="text-center text-black text-xs sm:text-sm mb-10">
+                Sivar Social, reconoce a este usuario como "comunidad", con el propósito de demostrar las interacciones continuas dentro de la red social.
+              </p>
+            </div>
+          @endif
 
         @guest
           @if (request()->routeIs('code.verific'))

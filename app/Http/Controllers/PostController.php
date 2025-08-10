@@ -36,9 +36,12 @@ class PostController extends Controller
 
         $users = \App\Models\User::latest()->get();
 
+        $authUser = Auth::user();
+
         // Verifica si el usuario autenticado es el mismo que el del muro
         return view('layouts.dashboard', [
             'user' => $user,
+            'authUser' => $authUser,
             'posts' => $posts,
             'totalPosts' => $totalPosts,
             'users' => $users,
@@ -48,8 +51,10 @@ class PostController extends Controller
     public function create()
     {
         $users = User::latest()->get();
+        $authUser = Auth::user();
         return view('posts.create', [
             'users' => $users,
+            'authUser' => $authUser,
         ]);
     }
 
@@ -153,11 +158,13 @@ class PostController extends Controller
 
         // Cargar las relaciones necesarias para el post
         $post->load(['likes', 'comentarios', 'user']);
+        $authUser = Auth::user();
 
         $users = \App\Models\User::latest()->get();
         return view('posts.show', [
             'post' => $post,
             'user' => $user,
+            'authUser' => $authUser,
             'users' => $users,
         ]);
     }

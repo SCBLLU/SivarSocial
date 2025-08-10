@@ -32,11 +32,13 @@ class HomeController extends Controller
                 ->latest()
                 ->paginate($postsPerPage);
         }
+        $authUser = Auth::user();
         // Obtener todos los usuarios para mostrar perfiles
         $users = \App\Models\User::latest()->get();
         return view('home', [
             'posts' => $posts,
             'users' => $users,
+            'authUser' => $authUser,
         ]);
     }
 }

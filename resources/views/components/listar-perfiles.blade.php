@@ -39,7 +39,7 @@
                                     <form action="{{ route('users.follow', $user) }}" method="POST" class="inline">
                                         @csrf
                                         <button type="submit"
-                                            class="px-4 py-1.5 text-sm font-medium rounded-lg bg-blue-500 text-white">
+                                            class="bg-[#3B25DD] border-1 border-[#000000] text-[#FFFFFF] px-3 py-1.5 sm:px-6 sm:py-2 rounded-full text-xs sm:text-sm font-medium hover:bg-[#120073]">
                                             SEGUIR
                                         </button>
                                     </form>
@@ -48,7 +48,7 @@
                                         @method('DELETE')
                                         @csrf
                                         <button type="submit"
-                                            class="px-4 py-1.5 text-sm font-medium rounded-lg bg-gray-200 text-gray-700">
+                                            class="bg-[#FFFFFF] border-1 border-[#000000] text-[#000000] px-2 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium hover:bg-gray-50">
                                             NO SEGUIR
                                         </button>
                                     </form>
