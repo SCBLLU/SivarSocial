@@ -74,6 +74,18 @@
       </a>
       </li>
 
+      @elseif(Route::is('users.followers', 'users.following', 'colaboradores.index'))
+      <li class="menu__item">
+      <a class="menu__link btn" href="{{ url('/') }}#home">
+      <i class='bx bx-home-smile'></i>
+      </a>
+      </li>
+      <li class="menu__item">
+      <a class="menu__link btn" href="{{ route('posts.create') }}">
+      <i class='bx bx-plus'></i>
+      </a>
+      </li>
+
       @else
 
         <li class="menu__item">
@@ -163,7 +175,7 @@
 
       <li class="menu__item">
       <a class="menu__link btn" href="{{ route('login') }}">
-        <i class='bx bx-log-in'></i>
+        <i class='bx bx-home-smile'></i>
       </a>
       </li>
       <li class="menu__item">
