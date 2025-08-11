@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="theme-color" content="">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('img/icon.svg') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @stack('styles')
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />

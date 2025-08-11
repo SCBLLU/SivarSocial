@@ -2,7 +2,7 @@
     // Configuración centralizada de todas las insignias
     $badgeConfig = [
         'Colaborador' => [
-            'url' => 'https://res.cloudinary.com/dtmemrt1j/image/upload/v1754851324/28_20250810_121848_0002_gruigg.png',
+            'url' => asset('img/colaboradores.svg'),
             'alt' => 'Colaborador',
             'title' => 'Usuario Colaborador',
             'color' => 'text-blue-600',
@@ -11,7 +11,7 @@
             'linkText' => 'Más información sobre su colaboración'
         ],
         'Docente' => [
-            'url' => 'https://res.cloudinary.com/dtmemrt1j/image/upload/v1754851324/27_20250810_121848_0001_giingp.png',
+            'url' => asset('img/docente.svg'),
             'alt' => 'Docente',
             'title' => 'Docente Verificado',
             'color' => 'text-green-600',
@@ -20,7 +20,7 @@
             'linkText' => null
         ],
         'Comunidad' => [
-            'url' => 'https://res.cloudinary.com/dtmemrt1j/image/upload/v1754851323/26_20250810_121848_0000_ijoshy.png',
+            'url' => asset('img/comunidad.svg'),
             'alt' => 'Comunidad',
             'title' => 'Miembro de la Comunidad',
             'color' => 'text-purple-600',
