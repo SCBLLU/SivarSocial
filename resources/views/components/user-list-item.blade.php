@@ -1,11 +1,11 @@
-<div class="p-3 sm:p-4 lg:p-6 hover:bg-gray-50 transition-colors">
-    <div class="flex items-center justify-between gap-2 sm:gap-3">
+<div class="p-4 sm:p-4 lg:p-6 hover:bg-gray-50 transition-colors">
+    <div class="flex items-center justify-between gap-3 sm:gap-3">
         {{-- Info del usuario --}}
-        <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+        <div class="flex items-center gap-3 sm:gap-3 flex-1 min-w-0">
             {{-- Foto de perfil --}}
             <a href="{{ route('posts.index', $user->username) }}" class="flex-shrink-0">
                 <div
-                    class="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full border-2 border-gray-200 overflow-hidden hover:border-[#3B25DD] transition-colors">
+                    class="w-12 h-12 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full border-2 border-gray-200 overflow-hidden hover:border-[#3B25DD] transition-colors">
                     @if($user->imagen_url)
                         <img src="{{ $user->imagen_url }}" alt="Foto de perfil de {{ $user->name }}"
                             class="w-full h-full object-cover">
@@ -19,10 +19,10 @@
             </a>
 
             {{-- Nombre y estadísticas --}}
-            <div class="flex-1 min-w-0 max-w-[calc(100%-120px)] sm:max-w-none">
+            <div class="flex-1 min-w-0 max-w-[calc(100%-130px)] sm:max-w-none">
                 <a href="{{ route('posts.index', $user->username) }}"
                     class="block hover:text-[#3B25DD] transition-colors">
-                    <div class="flex items-center gap-1 sm:gap-2 min-h-5">
+                    <div class="flex items-center gap-2 sm:gap-2 min-h-5">
                         <h3 class="text-sm sm:text-base font-bold text-black truncate">
                             {{ $user->name }}
                         </h3>
@@ -34,16 +34,19 @@
                 </a>
 
                 {{-- Estadísticas del usuario --}}
-                <div class="flex items-center gap-2 sm:gap-3 mt-1 text-xs text-gray-500">
-                    <span class="hover:text-[#3B25DD] transition-colors">
+                <div class="flex items-center gap-2 sm:gap-2 mt-1 text-xs text-gray-500 flex-wrap">
+                    <span class="hover:text-[#3B25DD] transition-colors flex items-center">
                         <span class="font-medium">{{ number_format($user->followers_count ?? 0) }}</span>
-                        <span class="hidden sm:inline ml-1">seguidores</span>
-                        <span class="sm:hidden ml-1">seg.</span>
+                        <span class="ml-0.5">seguidores</span>
                     </span>
-                    <span class="hover:text-[#3B25DD] transition-colors">
+                    <span class="hover:text-[#3B25DD] transition-colors flex items-center">
+                        <span class="font-medium">{{ number_format($user->following_count ?? 0) }}</span>
+                        <span class="ml-0.5">seguidos</span>
+                    </span>
+                    {{-- <span class="hover:text-[#3B25DD] transition-colors flex items-center">
                         <span class="font-medium">{{ number_format($user->posts_count ?? 0) }}</span>
-                        <span class="ml-1">posts</span>
-                    </span>
+                        <span class="ml-0.5">posts</span>
+                    </span> --}}
                 </div>
 
                 {{-- Profesión si existe --}}

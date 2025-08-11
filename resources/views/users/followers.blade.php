@@ -27,7 +27,7 @@
         <div class="flex items-center gap-3 sm:gap-4">
             {{-- Foto de perfil --}}
             <div
-                class="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full border-2 border-indigo-600 overflow-hidden flex-shrink-0">
+                class="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full border-2 border-[#3B25DD] overflow-hidden flex-shrink-0">
                 @if($user->imagen_url)
                     <img src="{{ $user->imagen_url }}" alt="Foto de perfil" class="w-full h-full object-cover">
                 @else
@@ -40,8 +40,9 @@
 
             {{-- Info del usuario --}}
             <div class="flex-1 min-w-0">
-                <h2 class="text-base sm:text-lg lg:text-xl font-bold text-gray-900 truncate">{{ $user->name }}</h2>
-                <p class="text-gray-600 font-semibold text-sm">{{ '@' . $user->username }}</p>
+                <h2 class="text-base sm:text-lg lg:text-xl font-bold text-black truncate">{{ $user->name }}</h2>
+                <p class="text-gray-500 font-semibold text-sm">{{ '@' . $user->username }}</p>
+                <p class="text-xs text-gray-500 mt-1 truncate hidden sm:block">{{ $user->profession }}</p>
             </div>
         </div>
 
@@ -49,17 +50,15 @@
         <nav class="flex mt-3 sm:mt-4 border-t pt-3 sm:pt-4" aria-label="Navegación de seguidores">
             <a href="{{ route('users.followers', $user->username) }}"
                 class="flex-1 text-center py-2 px-2 sm:px-4 text-sm font-semibold border-b-2 {{ request()->routeIs('users.followers') ? 'border-[#3B25DD] text-[#3B25DD] bg-white' : 'border-transparent text-gray-500 hover:text-[#3B25DD]' }} rounded-t-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3B25DD]">
-                <span>Seguidores</span>
+                <span>Seguidores {{ number_format($user->followers()->count()) }}</span>
             </a>
             <a href="{{ route('users.following', $user->username) }}"
                 class="flex-1 text-center py-2 px-2 sm:px-4 text-sm font-semibold border-b-2 {{ request()->routeIs('users.following') ? 'border-[#3B25DD] text-[#3B25DD] bg-white' : 'border-transparent text-gray-500 hover:text-[#3B25DD]' }} rounded-t-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3B25DD]">
-                <span>Siguiendo</span>
+                <span>Siguiendo {{ number_format($user->following()->count()) }}</span>
             </a>
         </nav>
     </div>
 
     {{-- Lista de seguidores --}}
-    <section class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <livewire:followers-list :user="$user" type="followers" />
-    </section>
+    <livewire:followers-list :user="$user" type="followers" />
 @endsection
