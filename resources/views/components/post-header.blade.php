@@ -12,7 +12,7 @@
             class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-[#3B25DD] transition"
             onerror="this.src='{{ asset('img/img.jpg') }}'">
 
-        <div class="flex flex-col flex-1">
+        <div class="ml-2 flex flex-col flex-1">
             <div class="flex items-center justify-between w-full">
                 <!-- Información del usuario (izquierda) -->
                 <div class="flex items-center gap-1">
