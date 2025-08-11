@@ -144,4 +144,26 @@ class FollowerController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Mostrar la lista de seguidores de un usuario
+     */
+    public function followers(User $user)
+    {
+        return view('users.followers', [
+            'user' => $user,
+            'totalFollowers' => $user->followers()->count(),
+        ]);
+    }
+
+    /**
+     * Mostrar la lista de usuarios seguidos por un usuario
+     */
+    public function following(User $user)
+    {
+        return view('users.following', [
+            'user' => $user,
+            'totalFollowing' => $user->following()->count(),
+        ]);
+    }
 }
