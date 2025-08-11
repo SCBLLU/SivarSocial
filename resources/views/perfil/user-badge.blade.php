@@ -32,7 +32,7 @@
 
     // Configuración de tamaños
     $sizes = [
-        'small' => ['width' => '13', 'height' => '13'],
+        'small' => ['width' => '12', 'height' => '12'],
         'medium' => ['width' => '16', 'height' => '16'],
         'large' => ['width' => '20', 'height' => '20'],
         'xl' => ['width' => '40', 'height' => '40'],
