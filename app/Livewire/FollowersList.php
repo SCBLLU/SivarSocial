@@ -13,14 +13,10 @@ class FollowersList extends Component
 
     public $user;
     public $type; // 'followers' o 'following'
-    public $searchTerm = '';
     
-    protected $queryString = ['searchTerm'];
     protected $paginationTheme = 'tailwind';
 
-    protected $listeners = [
-        'follow-updated' => 'refreshList'
-    ];
+    protected $listeners = [];
 
     public function mount($user, $type = 'followers')
     {
@@ -28,29 +24,11 @@ class FollowersList extends Component
         $this->type = $type;
     }
 
-    public function updatingSearchTerm()
-    {
-        $this->resetPage();
-    }
-
-    public function refreshList()
-    {
-        // Refrescar la página para obtener datos actualizados
-        $this->resetPage();
-    }
-
     public function render()
     {
         $query = $this->type === 'followers' 
             ? $this->user->followers() 
             : $this->user->following();
-
-        if ($this->searchTerm) {
-            $query->where(function($q) {
-                $q->where('name', 'like', '%' . $this->searchTerm . '%')
-                  ->orWhere('username', 'like', '%' . $this->searchTerm . '%');
-            });
-        }
 
         $users = $query->withCount(['followers', 'following', 'posts'])
                       ->orderBy('created_at', 'desc')
