@@ -14,9 +14,7 @@ class FollowUser extends Component
     public $size;
     public $showCount;
 
-    protected $listeners = [
-        'follow-updated' => 'updateFollowStatus'
-    ];
+    protected $listeners = [];
 
     public function mount($user, $size = 'normal', $showCount = false)
     {
@@ -24,6 +22,11 @@ class FollowUser extends Component
         $this->size = $size;
         $this->showCount = $showCount;
 
+        $this->refreshFollowStatus();
+    }
+
+    public function refreshFollowStatus()
+    {
         $currentUser = Auth::user();
         $this->isFollowing = $currentUser ? $currentUser->isFollowing($this->user) : false;
         $this->followersCount = $this->user->followers()->count();
@@ -45,38 +48,26 @@ class FollowUser extends Component
         }
 
         try {
-            if ($this->isFollowing) {
+            $wasFollowing = $this->isFollowing;
+
+            if ($wasFollowing) {
                 // Dejar de seguir
-                $this->user->followers()->detach($currentUser->id);
-                $this->isFollowing = false;
-                $this->followersCount--;
+                $currentUser->following()->detach($this->user->id);
             } else {
                 // Seguir
-                $this->user->followers()->attach($currentUser->id);
-                $this->isFollowing = true;
-                $this->followersCount++;
+                $currentUser->following()->attach($this->user->id);
             }
 
-            // Refrescar la relación para asegurar datos actualizados
-            $this->user->refresh();
-            $this->followersCount = $this->user->followers()->count();
+            // Actualizar el estado inmediatamente
+            $this->isFollowing = !$wasFollowing;
 
-            // Notificar a otros componentes que el estado de seguimiento cambió
-            $this->dispatch('follow-updated', userId: $this->user->id, isFollowing: $this->isFollowing);
-        } catch (\Exception $e) {
-            // Manejar error silenciosamente
-            return;
-        }
-    }
-
-    public function updateFollowStatus($userId, $isFollowing)
-    {
-        // Actualizar solo si es el mismo usuario
-        if ($this->user->id == $userId) {
-            $this->isFollowing = $isFollowing;
             // Refrescar el conteo desde la base de datos
             $this->user->refresh();
             $this->followersCount = $this->user->followers()->count();
+        } catch (\Exception $e) {
+            // Restaurar estado en caso de error
+            $this->refreshFollowStatus();
+            return;
         }
     }
 

@@ -197,6 +197,13 @@ Route::post('/{user:username}/follow', [FollowerController::class, 'store'])->na
 Route::delete('/{user:username}/unfollow', [FollowerController::class, 'destroy'])->name('users.unfollow')->middleware('auth');
 
 /**
+ * LISTAS DE SEGUIDORES Y SEGUIDOS
+ * Muestra la lista de usuarios que siguen o que son seguidos por un usuario específico
+ */
+Route::get('/{user:username}/followers', [FollowerController::class, 'followers'])->name('users.followers');
+Route::get('/{user:username}/following', [FollowerController::class, 'following'])->name('users.following');
+
+/**
  * SEGUIR/DEJAR DE SEGUIR POR ID
  * Para funcionalidades AJAX y llamadas asíncronas
  */
