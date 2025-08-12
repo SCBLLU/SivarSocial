@@ -130,11 +130,8 @@
             document.documentElement.style.cssText = htmlStyles;
             document.body.style.cssText = bodyStyles;
 
-            // Ocultar menú móvil si existe
-            const mobileMenu = document.querySelector('.header2, .header');
-            if (mobileMenu) {
-                mobileMenu.style.display = 'none';
-            }
+            // Ocultar TODOS los elementos de navegación móvil de forma agresiva
+            hideAllNavigationElements();
 
             // Para iOS Safari, múltiples intentos de scroll hacia arriba
             if (isIOSSafari) {
@@ -161,40 +158,129 @@
             if (viewportMeta && originalViewport) {
                 viewportMeta.content = originalViewport;
             }
-
+            
             // Restaurar estilos originales
             document.documentElement.style.cssText = originalHtmlStyle;
             document.body.style.cssText = originalBodyStyle;
-
-            // Remover clase de cámara activa
+            
+            // Remover clase de cámara activa y restaurar navegación
             removeCameraActiveClass();
-
-            // Mostrar menú móvil de nuevo
-            const mobileMenu = document.querySelector('.header2, .header');
-            if (mobileMenu) {
-                mobileMenu.style.display = '';
-            }
-
+            
+            // Asegurar que la navegación sea visible de nuevo
+            setTimeout(() => {
+                showAllNavigationElements();
+            }, 100);
+            
             // Desbloquear orientación
             if (screen && screen.orientation && screen.orientation.unlock) {
                 screen.orientation.unlock().catch(() => {
                     // Ignorar error si no se puede desbloquear
                 });
             }
-        }
-
-        // Funciones para manejar el estado de cámara activa
+        }        // Funciones para manejar el estado de cámara activa
         function addCameraActiveClass() {
-            document.body.classList.add('camera-active');
-            document.documentElement.classList.add('camera-active');
+            document.body.classList.add('camera-active', 'camera-mode-active');
+            document.documentElement.classList.add('camera-active', 'camera-mode-active');
+            
+            // Ocultar navegación inmediatamente
+            hideAllNavigationElements();
         }
-
+        
         function removeCameraActiveClass() {
-            document.body.classList.remove('camera-active');
-            document.documentElement.classList.remove('camera-active');
+            document.body.classList.remove('camera-active', 'camera-mode-active');
+            document.documentElement.classList.remove('camera-active', 'camera-mode-active');
+            
+            // Restaurar navegación
+            showAllNavigationElements();
         }
-
-        // Funciones para mostrar/ocultar loader durante solicitud de permisos
+        
+        // Función para ocultar TODOS los elementos de navegación
+        function hideAllNavigationElements() {
+            // Selectores para encontrar elementos de navegación
+            const navigationSelectors = [
+                '.header',
+                '.header2', 
+                '.menu-mobile',
+                'nav',
+                '.navbar',
+                '.navigation',
+                '[class*="menu"]',
+                '[class*="nav"]',
+                '[id*="menu"]',
+                '[id*="nav"]',
+                '.header__navigation',
+                '.menu__list',
+                '.menu__item'
+            ];
+            
+            navigationSelectors.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(element => {
+                    // Guardar estado original si no existe
+                    if (!element.dataset.originalDisplay) {
+                        element.dataset.originalDisplay = element.style.display || '';
+                        element.dataset.originalVisibility = element.style.visibility || '';
+                        element.dataset.originalOpacity = element.style.opacity || '';
+                    }
+                    
+                    // Aplicar ocultamiento agresivo
+                    element.style.display = 'none';
+                    element.style.visibility = 'hidden';
+                    element.style.opacity = '0';
+                    element.style.zIndex = '-9999';
+                    element.style.pointerEvents = 'none';
+                });
+            });
+            
+            // También ocultar por clases específicas conocidas del proyecto
+            const specificElements = document.querySelectorAll('#header, .header__navground, .menu__list, .menu__item');
+            specificElements.forEach(element => {
+                if (!element.dataset.originalDisplay) {
+                    element.dataset.originalDisplay = element.style.display || '';
+                }
+                element.style.display = 'none';
+                element.style.visibility = 'hidden';
+                element.style.opacity = '0';
+            });
+        }
+        
+        // Función para restaurar elementos de navegación
+        function showAllNavigationElements() {
+            const navigationSelectors = [
+                '.header',
+                '.header2', 
+                '.menu-mobile',
+                'nav',
+                '.navbar',
+                '.navigation',
+                '[class*="menu"]',
+                '[class*="nav"]',
+                '[id*="menu"]',
+                '[id*="nav"]',
+                '.header__navigation',
+                '.menu__list',
+                '.menu__item'
+            ];
+            
+            navigationSelectors.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(element => {
+                    // Restaurar estado original
+                    if (element.dataset.originalDisplay !== undefined) {
+                        element.style.display = element.dataset.originalDisplay;
+                        element.style.visibility = element.dataset.originalVisibility;
+                        element.style.opacity = element.dataset.originalOpacity;
+                        element.style.zIndex = '';
+                        element.style.pointerEvents = '';
+                        
+                        // Limpiar datasets
+                        delete element.dataset.originalDisplay;
+                        delete element.dataset.originalVisibility;
+                        delete element.dataset.originalOpacity;
+                    }
+                });
+            });
+        }        // Funciones para mostrar/ocultar loader durante solicitud de permisos
         function showCameraLoader() {
             // Crear loader si no existe
             let loader = document.getElementById('camera-loader');
@@ -273,6 +359,7 @@
                 setTimeout(() => {
                     if (isMobile && !cameraOverlay.classList.contains('hidden')) {
                         forceMobileFullscreen();
+                        hideAllNavigationElements();
                     }
                 }, 100);
             }
@@ -289,6 +376,7 @@
                     if (isMobile) {
                         forceMobileFullscreen();
                         addCameraActiveClass();
+                        hideAllNavigationElements();
                     }
                 }, 100);
             }
@@ -302,6 +390,7 @@
                     setTimeout(() => {
                         forceMobileFullscreen();
                         addCameraActiveClass();
+                        hideAllNavigationElements();
                     }, 200);
                 }
             });
@@ -318,6 +407,44 @@
             if (!cameraOverlay.classList.contains('hidden')) {
                 e.preventDefault();
             }
+        });
+
+        // Observer para detectar y ocultar inmediatamente cualquier elemento de navegación que aparezca
+        const navigationObserver = new MutationObserver((mutations) => {
+            if (!cameraOverlay.classList.contains('hidden') && isMobile) {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                        const target = mutation.target;
+                        // Si es un elemento de navegación y se está mostrando, ocultarlo
+                        if (target.matches && (
+                            target.matches('.header') ||
+                            target.matches('.header2') ||
+                            target.matches('[class*="menu"]') ||
+                            target.matches('[class*="nav"]')
+                        )) {
+                            if (target.style.display !== 'none') {
+                                target.style.display = 'none';
+                                target.style.visibility = 'hidden';
+                                target.style.opacity = '0';
+                            }
+                        }
+                    }
+                });
+                
+                // Aplicar ocultamiento adicional después de cada mutación
+                setTimeout(() => {
+                    if (!cameraOverlay.classList.contains('hidden')) {
+                        hideAllNavigationElements();
+                    }
+                }, 10);
+            }
+        });
+
+        // Iniciar observer
+        navigationObserver.observe(document.body, {
+            attributes: true,
+            attributeFilter: ['style', 'class'],
+            subtree: true
         });
         // Click en área de subida
         uploadArea.addEventListener('click', () => {
@@ -396,6 +523,10 @@
                 return;
             }
             try {
+                // INMEDIATAMENTE ocultar toda la navegación ANTES de cualquier otra cosa
+                addCameraActiveClass();
+                hideAllNavigationElements();
+                
                 // Preparar UI para fullscreen inmersivo
                 prepareFullscreenMode();
 
@@ -403,6 +534,12 @@
 
                 // Forzar ocultamiento de barras de navegación móvil
                 forceMobileFullscreen();
+
+                // Aplicar ocultamiento adicional después de un momento
+                setTimeout(() => {
+                    hideAllNavigationElements();
+                    addCameraActiveClass();
+                }, 50);
 
                 // Intentar fullscreen nativo
                 if (cameraOverlay.requestFullscreen) {
@@ -492,6 +629,7 @@
                     setTimeout(() => {
                         forceMobileFullscreen();
                         addCameraActiveClass();
+                        hideAllNavigationElements();
                     }, 100);
                 }
 
@@ -509,6 +647,7 @@
                         setTimeout(() => {
                             forceMobileFullscreen();
                             addCameraActiveClass();
+                            hideAllNavigationElements();
                         }, 100);
                     }
 
@@ -529,6 +668,7 @@
                         setTimeout(() => {
                             forceMobileFullscreen();
                             addCameraActiveClass();
+                            hideAllNavigationElements();
                         }, 200);
                     }
                 });

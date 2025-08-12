@@ -153,6 +153,44 @@
             display: none !important;
         }
 
+        /* Ocultar TODOS los elementos de navegación cuando la cámara está activa */
+        body:has(.mobile-camera-overlay:not(.hidden)) .header,
+        body:has(.mobile-camera-overlay:not(.hidden)) .header2,
+        body:has(.mobile-camera-overlay:not(.hidden)) .menu-mobile,
+        body:has(.mobile-camera-overlay:not(.hidden)) nav,
+        body:has(.mobile-camera-overlay:not(.hidden)) .navbar,
+        body:has(.mobile-camera-overlay:not(.hidden)) .navigation,
+        body:has(.mobile-camera-overlay:not(.hidden)) [class*="menu"],
+        body:has(.mobile-camera-overlay:not(.hidden)) [class*="nav"],
+        body:has(.mobile-camera-overlay:not(.hidden)) [id*="menu"],
+        body:has(.mobile-camera-overlay:not(.hidden)) [id*="nav"] {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            z-index: -1 !important;
+        }
+
+        /* Forzar ocultamiento específico del menú móvil */
+        .mobile-camera-overlay:not(.hidden) ~ * .header,
+        .mobile-camera-overlay:not(.hidden) ~ * .header2,
+        .mobile-camera-overlay:not(.hidden) ~ * nav,
+        .mobile-camera-overlay:not(.hidden) ~ * [class*="menu"] {
+            display: none !important;
+        }
+
+        /* Cuando la cámara esté activa, ocultar TODO excepto el overlay */
+        .camera-mode-active * {
+            display: none !important;
+        }
+
+        .camera-mode-active .mobile-camera-overlay {
+            display: flex !important;
+        }
+
+        .camera-mode-active .mobile-camera-overlay * {
+            display: initial !important;
+        }
+
         /* Estilos para el header de la cámara */
         .mobile-camera-overlay .camera-header {
             position: absolute !important;
