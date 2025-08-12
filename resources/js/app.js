@@ -223,7 +223,7 @@ function toggleAudioPreview(previewUrl, trackId, source) {
     currentAudio.addEventListener('canplay', () => {
         updatePlayButton(trackId, true);
         currentAudio.play().catch(error => {
-            showNotification('Error al reproducir el preview', 'error');
+            // Error de reproducción manejado silenciosamente
         }).then(() => {
             // Guardar estado cuando empiece a reproducir
             if (source !== 'restore') {
