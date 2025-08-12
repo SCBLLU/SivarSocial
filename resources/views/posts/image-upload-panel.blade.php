@@ -61,9 +61,195 @@
         const mobileControls = document.querySelector('.mobile-only-controls');
         let currentStream = null;
         let currentFacingMode = 'environment'; // 'user' para frontal, 'environment' para trasera
+
+        // Variables para almacenar estados originales
+        let originalBodyStyle = '';
+        let originalHtmlStyle = '';
+        let originalViewport = '';
+
         // Detectar si es móvil
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
             (window.innerWidth <= 768);
+
+        // Función para preparar modo fullscreen inmersivo
+        function prepareFullscreenMode() {
+            // Guardar estados originales
+            originalBodyStyle = document.body.style.cssText;
+            originalHtmlStyle = document.documentElement.style.cssText;
+
+            // Obtener viewport original
+            const viewportMeta = document.querySelector('meta[name="viewport"]');
+            if (viewportMeta) {
+                originalViewport = viewportMeta.content;
+            }
+        }
+
+        // Función para forzar fullscreen en móvil
+        function forceMobileFullscreen() {
+            // Detectar iOS Safari
+            const isIOSSafari = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+            // Configurar viewport para fullscreen inmersivo
+            const viewportMeta = document.querySelector('meta[name="viewport"]');
+            if (viewportMeta) {
+                if (isIOSSafari) {
+                    // Para iOS Safari, usar configuración especial
+                    viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui, viewport-fit=cover';
+                } else {
+                    viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+                }
+            }
+
+            // Aplicar estilos para ocultar barras del navegador
+            const htmlStyles = `
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                overflow: hidden !important;
+                -webkit-overflow-scrolling: touch !important;
+                ${isIOSSafari ? '-webkit-transform: translate3d(0,0,0) !important;' : ''}
+            `;
+
+            const bodyStyles = `
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                -webkit-overflow-scrolling: touch !important;
+                overscroll-behavior: none !important;
+                ${isIOSSafari ? '-webkit-transform: translate3d(0,0,0) !important;' : ''}
+                ${isIOSSafari ? '-webkit-backface-visibility: hidden !important;' : ''}
+            `;
+
+            document.documentElement.style.cssText = htmlStyles;
+            document.body.style.cssText = bodyStyles;
+
+            // Ocultar menú móvil si existe
+            const mobileMenu = document.querySelector('.header2, .header');
+            if (mobileMenu) {
+                mobileMenu.style.display = 'none';
+            }
+
+            // Para iOS Safari, múltiples intentos de scroll hacia arriba
+            if (isIOSSafari) {
+                window.scrollTo(0, 0);
+                setTimeout(() => window.scrollTo(0, 0), 50);
+                setTimeout(() => window.scrollTo(0, 0), 100);
+                setTimeout(() => window.scrollTo(0, 0), 200);
+            } else {
+                window.scrollTo(0, 0);
+            }
+
+            // Intentar bloquear orientación en landscape si es posible
+            if (screen && screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('portrait').catch(() => {
+                    // Ignorar error si no se puede bloquear
+                });
+            }
+        }
+
+        // Función para restaurar modo normal
+        function restoreNormalMode() {
+            // Restaurar viewport original
+            const viewportMeta = document.querySelector('meta[name="viewport"]');
+            if (viewportMeta && originalViewport) {
+                viewportMeta.content = originalViewport;
+            }
+
+            // Restaurar estilos originales
+            document.documentElement.style.cssText = originalHtmlStyle;
+            document.body.style.cssText = originalBodyStyle;
+
+            // Remover clase de cámara activa
+            removeCameraActiveClass();
+
+            // Mostrar menú móvil de nuevo
+            const mobileMenu = document.querySelector('.header2, .header');
+            if (mobileMenu) {
+                mobileMenu.style.display = '';
+            }
+
+            // Desbloquear orientación
+            if (screen && screen.orientation && screen.orientation.unlock) {
+                screen.orientation.unlock().catch(() => {
+                    // Ignorar error si no se puede desbloquear
+                });
+            }
+        }
+
+        // Funciones para manejar el estado de cámara activa
+        function addCameraActiveClass() {
+            document.body.classList.add('camera-active');
+            document.documentElement.classList.add('camera-active');
+        }
+
+        function removeCameraActiveClass() {
+            document.body.classList.remove('camera-active');
+            document.documentElement.classList.remove('camera-active');
+        }
+
+        // Funciones para mostrar/ocultar loader durante solicitud de permisos
+        function showCameraLoader() {
+            // Crear loader si no existe
+            let loader = document.getElementById('camera-loader');
+            if (!loader) {
+                loader = document.createElement('div');
+                loader.id = 'camera-loader';
+                loader.innerHTML = `
+                    <div style="
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0, 0, 0, 0.9);
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        z-index: 10000;
+                        color: white;
+                        font-family: system-ui, -apple-system, sans-serif;
+                    ">
+                        <div style="
+                            width: 60px;
+                            height: 60px;
+                            border: 3px solid #333;
+                            border-top: 3px solid #fff;
+                            border-radius: 50%;
+                            animation: spin 1s linear infinite;
+                            margin-bottom: 20px;
+                        "></div>
+                        <p style="font-size: 16px; text-align: center; margin: 0;">
+                            Solicitando permisos de cámara...
+                        </p>
+                        <p style="font-size: 14px; text-align: center; margin: 10px 0 0 0; opacity: 0.7;">
+                            Por favor, permite el acceso cuando se te solicite
+                        </p>
+                    </div>
+                    <style>
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    </style>
+                `;
+                document.body.appendChild(loader);
+            }
+        }
+
+        function hideCameraLoader() {
+            const loader = document.getElementById('camera-loader');
+            if (loader) {
+                loader.remove();
+            }
+        }
         // Mostrar controles móviles solo en móvil
         if (isMobile && mobileControls) {
             mobileControls.classList.remove('hidden');
@@ -77,6 +263,62 @@
             cameraOverlay.style.opacity = '0';
             cameraOverlay.style.zIndex = '-1';
         }
+
+        // Event listeners para manejar cambios de estado
+
+        // Listener para cambios en fullscreen
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement && cameraOverlay && !cameraOverlay.classList.contains('hidden')) {
+                // Si se sale de fullscreen pero la cámara sigue activa, intentar mantener el fullscreen
+                setTimeout(() => {
+                    if (isMobile && !cameraOverlay.classList.contains('hidden')) {
+                        forceMobileFullscreen();
+                    }
+                }, 100);
+            }
+        });
+
+        // Listener para cambios de visibilidad de la página
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && currentStream) {
+                // Si la página se oculta mientras la cámara está activa, mantener el stream
+                console.log('Page hidden, keeping camera stream');
+            } else if (!document.hidden && !cameraOverlay.classList.contains('hidden')) {
+                // Si la página vuelve a ser visible con la cámara activa, restaurar fullscreen
+                setTimeout(() => {
+                    if (isMobile) {
+                        forceMobileFullscreen();
+                        addCameraActiveClass();
+                    }
+                }, 100);
+            }
+        });
+
+        // Listener para cambios de orientación
+        if (screen && screen.orientation) {
+            screen.orientation.addEventListener('change', () => {
+                if (!cameraOverlay.classList.contains('hidden') && isMobile) {
+                    // Reajustar fullscreen después de cambio de orientación
+                    setTimeout(() => {
+                        forceMobileFullscreen();
+                        addCameraActiveClass();
+                    }, 200);
+                }
+            });
+        }
+
+        // Prevenir zoom accidental mientras la cámara está activa
+        document.addEventListener('touchstart', (e) => {
+            if (!cameraOverlay.classList.contains('hidden') && e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        document.addEventListener('gesturestart', (e) => {
+            if (!cameraOverlay.classList.contains('hidden')) {
+                e.preventDefault();
+            }
+        });
         // Click en área de subida
         uploadArea.addEventListener('click', () => {
             fileInput.click();
@@ -154,13 +396,21 @@
                 return;
             }
             try {
+                // Preparar UI para fullscreen inmersivo
+                prepareFullscreenMode();
+
                 cameraOverlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-                // En móvil, usar fullscreen
+
+                // Forzar ocultamiento de barras de navegación móvil
+                forceMobileFullscreen();
+
+                // Intentar fullscreen nativo
                 if (cameraOverlay.requestFullscreen) {
                     cameraOverlay.requestFullscreen().catch(err => {
+                        console.log('Fullscreen fallback:', err);
                     });
                 }
+
                 await startCamera();
             } catch (error) {
                 let errorMessage = 'No se pudo acceder a la cámara. ';
@@ -179,23 +429,47 @@
         }
         // Función para cerrar cámara
         function closeCameraModal() {
+            // Ocultar loader si está visible
+            hideCameraLoader();
+
             cameraOverlay.classList.add('hidden');
-            document.body.style.overflow = '';
+
+            // Restaurar configuración normal
+            restoreNormalMode();
+
             // Salir de fullscreen si está activo
             if (document.fullscreenElement) {
                 document.exitFullscreen().catch(err => {
+                    console.log('Exit fullscreen error:', err);
                 });
             }
+
+            // Detener stream de cámara
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
                 currentStream = null;
             }
+
+            // Limpiar srcObject del video
+            if (cameraPreview) {
+                cameraPreview.srcObject = null;
+            }
+
+            // Pequeña pausa para asegurar que todo se restaure correctamente
+            setTimeout(() => {
+                // Forzar un reflow para asegurar que los estilos se apliquen
+                document.body.offsetHeight;
+
+                // Scroll hacia arriba para asegurar posición correcta
+                window.scrollTo(0, 0);
+            }, 100);
         }
         // Iniciar cámara
         async function startCamera() {
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
             }
+
             // Configuraciones optimizadas para diferentes dispositivos
             const baseConstraints = {
                 video: {
@@ -204,9 +478,23 @@
                     height: { ideal: 1080, max: 1920 }
                 }
             };
+
             try {
+                // Mostrar indicador de carga mientras se solicitan permisos
+                showCameraLoader();
+
                 // Intentar con configuración ideal primero
                 currentStream = await navigator.mediaDevices.getUserMedia(baseConstraints);
+
+                // Una vez que tenemos acceso, aplicar fullscreen inmediatamente
+                if (isMobile) {
+                    // Pequeña pausa para asegurar que el stream esté listo
+                    setTimeout(() => {
+                        forceMobileFullscreen();
+                        addCameraActiveClass();
+                    }, 100);
+                }
+
             } catch (error) {
                 // Fallback a configuración básica
                 try {
@@ -216,14 +504,35 @@
                         }
                     };
                     currentStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+
+                    if (isMobile) {
+                        setTimeout(() => {
+                            forceMobileFullscreen();
+                            addCameraActiveClass();
+                        }, 100);
+                    }
+
                 } catch (fallbackError) {
                     throw fallbackError;
                 }
+            } finally {
+                hideCameraLoader();
             }
-            cameraPreview.srcObject = currentStream;
-            // Esperar a que el video cargue para ajustar dimensiones
-            cameraPreview.addEventListener('loadedmetadata', () => {
-            });
+
+            if (currentStream) {
+                cameraPreview.srcObject = currentStream;
+
+                // Esperar a que el video cargue para ajustar dimensiones
+                cameraPreview.addEventListener('loadedmetadata', () => {
+                    // Asegurar que el fullscreen se mantenga después de cargar el video
+                    if (isMobile) {
+                        setTimeout(() => {
+                            forceMobileFullscreen();
+                            addCameraActiveClass();
+                        }, 200);
+                    }
+                });
+            }
         }
         // Cambiar cámara frontal/trasera
         async function switchCameraFacing() {
