@@ -68,6 +68,7 @@
         const mobileControls = document.querySelector('.mobile-only-controls');
         let currentStream = null;
         let currentFacingMode = 'environment'; // 'user' para frontal, 'environment' para trasera
+        let cameraPermissionStatus = 'unknown'; // 'granted', 'denied', 'prompt', 'unknown'
         // Detectar si es móvil
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
             (window.innerWidth <= 768);
@@ -163,10 +164,11 @@
         }
         // Reintentar permisos
         if (retryPermission) {
-            retryPermission.addEventListener('click', () => {
+            retryPermission.addEventListener('click', async () => {
                 hideErrorScreen();
-                showPermissionScreen();
-                startCamera();
+                // Verificar estado antes de reintentar
+                cameraPermissionStatus = await checkCameraPermissionStatus();
+                await startCamera();
             });
         }
         // Cerrar error
@@ -180,6 +182,20 @@
             removeImage.addEventListener('click', () => {
                 clearImage();
             });
+        }
+
+        // Función para verificar el estado actual de los permisos
+        async function checkCameraPermissionStatus() {
+            if (!navigator.permissions) {
+                return 'unknown';
+            }
+            
+            try {
+                const permissionStatus = await navigator.permissions.query({ name: 'camera' });
+                return permissionStatus.state; // 'granted', 'denied', 'prompt'
+            } catch (e) {
+                return 'unknown';
+            }
         }
 
         // Funciones helper para las pantallas
@@ -231,8 +247,8 @@
                 // Ocultar menú de navegación móvil
                 document.body.classList.add('camera-active');
 
-                // Mostrar pantalla de permisos
-                showPermissionScreen();
+                // Verificar el estado de los permisos antes de mostrar cualquier pantalla
+                cameraPermissionStatus = await checkCameraPermissionStatus();
 
                 // Manejar cambios en la altura del viewport (para barras de navegación)
                 let initialHeight = window.innerHeight;
@@ -334,6 +350,7 @@
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
             }
+            
             // Configuraciones optimizadas para diferentes dispositivos
             const baseConstraints = {
                 video: {
@@ -342,11 +359,30 @@
                     height: { ideal: 1080, max: 1920 }
                 }
             };
+            
             try {
+                // Solo mostrar pantalla de permisos si el estado indica que se solicitarán
+                if (cameraPermissionStatus === 'prompt') {
+                    showPermissionScreen();
+                }
+                
                 // Intentar con configuración ideal primero
                 currentStream = await navigator.mediaDevices.getUserMedia(baseConstraints);
+                
+                // Actualizar el estado de permisos ya que se obtuvo acceso exitoso
+                cameraPermissionStatus = 'granted';
+                
             } catch (error) {
-                // Fallback a configuración básica
+                // Ocultar pantalla de permisos en caso de error
+                hidePermissionScreen();
+                
+                // Actualizar estado según el tipo de error
+                if (error.name === 'NotAllowedError') {
+                    cameraPermissionStatus = 'denied';
+                    throw error;
+                }
+                
+                // Fallback a configuración básica para otros errores
                 try {
                     const fallbackConstraints = {
                         video: {
@@ -354,10 +390,15 @@
                         }
                     };
                     currentStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+                    cameraPermissionStatus = 'granted';
                 } catch (fallbackError) {
+                    if (fallbackError.name === 'NotAllowedError') {
+                        cameraPermissionStatus = 'denied';
+                    }
                     throw fallbackError;
                 }
             }
+            
             cameraPreview.srcObject = currentStream;
 
             // Ocultar pantalla de permisos cuando se obtenga acceso exitoso
