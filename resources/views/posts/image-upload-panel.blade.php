@@ -179,16 +179,16 @@
             }
         }        // Funciones para manejar el estado de cámara activa
         function addCameraActiveClass() {
-            document.body.classList.add('camera-active', 'camera-mode-active');
-            document.documentElement.classList.add('camera-active', 'camera-mode-active');
+            document.body.classList.add('camera-active');
+            document.documentElement.classList.add('camera-active');
             
             // Ocultar navegación inmediatamente
             hideAllNavigationElements();
         }
         
         function removeCameraActiveClass() {
-            document.body.classList.remove('camera-active', 'camera-mode-active');
-            document.documentElement.classList.remove('camera-active', 'camera-mode-active');
+            document.body.classList.remove('camera-active');
+            document.documentElement.classList.remove('camera-active');
             
             // Restaurar navegación
             showAllNavigationElements();
@@ -201,84 +201,79 @@
                 '.header',
                 '.header2', 
                 '.menu-mobile',
-                'nav',
+                'nav:not(.camera-controls)',
                 '.navbar',
-                '.navigation',
-                '[class*="menu"]',
-                '[class*="nav"]',
-                '[id*="menu"]',
-                '[id*="nav"]',
-                '.header__navigation',
-                '.menu__list',
-                '.menu__item'
+                '.navigation'
             ];
             
+            // Selectores más específicos que no deben afectar la cámara
+            const specificSelectors = [
+                '.header__navigation',
+                '.menu__list',
+                '.menu__item',
+                '#header'
+            ];
+            
+            // Ocultar elementos de navegación principales
             navigationSelectors.forEach(selector => {
                 const elements = document.querySelectorAll(selector);
                 elements.forEach(element => {
-                    // Guardar estado original si no existe
-                    if (!element.dataset.originalDisplay) {
-                        element.dataset.originalDisplay = element.style.display || '';
-                        element.dataset.originalVisibility = element.style.visibility || '';
-                        element.dataset.originalOpacity = element.style.opacity || '';
+                    // Verificar que no sea parte del overlay de la cámara
+                    if (!element.closest('.mobile-camera-overlay')) {
+                        // Guardar estado original si no existe
+                        if (!element.dataset.originalDisplay) {
+                            element.dataset.originalDisplay = element.style.display || '';
+                            element.dataset.originalVisibility = element.style.visibility || '';
+                            element.dataset.originalOpacity = element.style.opacity || '';
+                        }
+                        
+                        // Aplicar ocultamiento agresivo
+                        element.style.display = 'none';
+                        element.style.visibility = 'hidden';
+                        element.style.opacity = '0';
+                        element.style.zIndex = '-9999';
+                        element.style.pointerEvents = 'none';
                     }
-                    
-                    // Aplicar ocultamiento agresivo
-                    element.style.display = 'none';
-                    element.style.visibility = 'hidden';
-                    element.style.opacity = '0';
-                    element.style.zIndex = '-9999';
-                    element.style.pointerEvents = 'none';
                 });
             });
             
-            // También ocultar por clases específicas conocidas del proyecto
-            const specificElements = document.querySelectorAll('#header, .header__navground, .menu__list, .menu__item');
-            specificElements.forEach(element => {
-                if (!element.dataset.originalDisplay) {
-                    element.dataset.originalDisplay = element.style.display || '';
-                }
-                element.style.display = 'none';
-                element.style.visibility = 'hidden';
-                element.style.opacity = '0';
+            // Ocultar elementos específicos del proyecto
+            specificSelectors.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(element => {
+                    if (!element.closest('.mobile-camera-overlay')) {
+                        if (!element.dataset.originalDisplay) {
+                            element.dataset.originalDisplay = element.style.display || '';
+                            element.dataset.originalVisibility = element.style.visibility || '';
+                            element.dataset.originalOpacity = element.style.opacity || '';
+                        }
+                        element.style.display = 'none';
+                        element.style.visibility = 'hidden';
+                        element.style.opacity = '0';
+                    }
+                });
             });
         }
         
         // Función para restaurar elementos de navegación
         function showAllNavigationElements() {
-            const navigationSelectors = [
-                '.header',
-                '.header2', 
-                '.menu-mobile',
-                'nav',
-                '.navbar',
-                '.navigation',
-                '[class*="menu"]',
-                '[class*="nav"]',
-                '[id*="menu"]',
-                '[id*="nav"]',
-                '.header__navigation',
-                '.menu__list',
-                '.menu__item'
-            ];
+            // Buscar todos los elementos que fueron ocultados
+            const allElements = document.querySelectorAll('[data-original-display]');
             
-            navigationSelectors.forEach(selector => {
-                const elements = document.querySelectorAll(selector);
-                elements.forEach(element => {
-                    // Restaurar estado original
-                    if (element.dataset.originalDisplay !== undefined) {
-                        element.style.display = element.dataset.originalDisplay;
-                        element.style.visibility = element.dataset.originalVisibility;
-                        element.style.opacity = element.dataset.originalOpacity;
-                        element.style.zIndex = '';
-                        element.style.pointerEvents = '';
-                        
-                        // Limpiar datasets
-                        delete element.dataset.originalDisplay;
-                        delete element.dataset.originalVisibility;
-                        delete element.dataset.originalOpacity;
-                    }
-                });
+            allElements.forEach(element => {
+                // Restaurar estado original
+                if (element.dataset.originalDisplay !== undefined) {
+                    element.style.display = element.dataset.originalDisplay;
+                    element.style.visibility = element.dataset.originalVisibility || '';
+                    element.style.opacity = element.dataset.originalOpacity || '';
+                    element.style.zIndex = '';
+                    element.style.pointerEvents = '';
+                    
+                    // Limpiar datasets
+                    delete element.dataset.originalDisplay;
+                    delete element.dataset.originalVisibility;
+                    delete element.dataset.originalOpacity;
+                }
             });
         }        // Funciones para mostrar/ocultar loader durante solicitud de permisos
         function showCameraLoader() {

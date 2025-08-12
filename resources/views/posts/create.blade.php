@@ -178,17 +178,38 @@
             display: none !important;
         }
 
-        /* Cuando la cámara esté activa, ocultar TODO excepto el overlay */
-        .camera-mode-active * {
-            display: none !important;
-        }
-
-        .camera-mode-active .mobile-camera-overlay {
+        /* Asegurar que el overlay de la cámara siempre sea visible */
+        .mobile-camera-overlay {
             display: flex !important;
         }
 
-        .camera-mode-active .mobile-camera-overlay * {
-            display: initial !important;
+        .mobile-camera-overlay.hidden {
+            display: none !important;
+        }
+
+        /* Elementos específicos del overlay de cámara - siempre visibles */
+        .mobile-camera-overlay,
+        .mobile-camera-overlay .camera-header,
+        .mobile-camera-overlay #camera-preview,
+        .mobile-camera-overlay .camera-controls,
+        .mobile-camera-overlay .capture-btn,
+        .mobile-camera-overlay .switch-camera-btn {
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        /* Elementos flex del overlay */
+        .mobile-camera-overlay .camera-header {
+            display: flex !important;
+        }
+
+        .mobile-camera-overlay .camera-controls {
+            display: flex !important;
+        }
+
+        .mobile-camera-overlay .capture-btn,
+        .mobile-camera-overlay .switch-camera-btn {
+            display: flex !important;
         }
 
         /* Estilos para el header de la cámara */
