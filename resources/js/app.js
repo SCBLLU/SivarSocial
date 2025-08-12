@@ -323,7 +323,7 @@ function itunesSelectTrack(track) {
     // Limpiar búsqueda
     itunesClearSearch();
     // Disparar evento personalizado inmediatamente
-    document.dispatchEvent(new CustomEvent('itunes:trackSelected', { detail: track }));
+    document.dispatchEvent(new CustomEvent('itunes:trackSelected', { detail: { track: track } }));
     showNotification(`${track.trackName} seleccionada`, 'success');
     // Actualizar botón submit de forma inmediata
     if (typeof updateSubmitButton === 'function') {
