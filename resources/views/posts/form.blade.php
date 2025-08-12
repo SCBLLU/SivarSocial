@@ -35,25 +35,60 @@
             ¿Quién puede ver esta publicación?
         </label>
         <div class="space-y-2">
-            <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer transition-colors visibility-option bg-white">
-                <input type="radio" name="visibility" value="public"
-                       class="text-gray-600 focus:ring-gray-400"
-                       {{ old('visibility', 'public') === 'public' ? 'checked' : '' }}>
-                <div class="ml-3">
-                    <span class="font-medium text-gray-800">Público</span>
-                    <p class="text-xs text-gray-500 mt-1">Cualquier persona puede ver esta publicación</p>
-                </div>
+            <label class="flex items-center p-3 border rounded-lg cursor-pointer transition-colors visibility-option bg-white border-gray-200">
+            <input type="radio" name="visibility" value="public"
+                   class="text-gray-600 focus:ring-gray-400 peer"
+                   {{ old('visibility', 'public') === 'public' ? 'checked' : '' }}>
+            <div class="ml-3 flex flex-col">
+                <span class="font-medium text-gray-800 flex items-center gap-1">
+                <i class="fas fa-globe text-gray-400 text-xs"></i>
+                Público
+                </span>
+                <p class="text-xs text-gray-500 mt-1">Cualquier persona puede ver esta publicación</p>
+            </div>
             </label>
-            <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer transition-colors visibility-option bg-white">
-                <input type="radio" name="visibility" value="followers"
-                       class="text-gray-600 focus:ring-gray-400"
-                       {{ old('visibility') === 'followers' ? 'checked' : '' }}>
-                <div class="ml-3">
-                    <span class="font-medium text-gray-800">Solo seguidores</span>
-                    <p class="text-xs text-gray-500 mt-1">Solo tus seguidores pueden ver esta publicación</p>
-                </div>
+            <label class="flex items-center p-3 border rounded-lg cursor-pointer transition-colors visibility-option bg-white border-gray-200">
+            <input type="radio" name="visibility" value="followers"
+                   class="text-gray-600 focus:ring-gray-400 peer"
+                   {{ old('visibility') === 'followers' ? 'checked' : '' }}>
+            <div class="ml-3 flex flex-col">
+                <span class="font-medium text-gray-800 flex items-center gap-1">
+                <i class="fas fa-users text-gray-400 text-xs"></i>
+                Solo seguidores
+                </span>
+                <p class="text-xs text-gray-500 mt-1">Solo tus seguidores pueden ver esta publicación</p>
+            </div>
             </label>
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+            const visibilityOptions = document.querySelectorAll('.visibility-option');
+            const radioInputs = document.querySelectorAll('input[name="visibility"]');
+            
+            function updateVisibilityStyles() {
+                visibilityOptions.forEach((option, index) => {
+                const radio = radioInputs[index];
+                if (radio.checked) {
+                    option.classList.add('border-blue-500', 'bg-blue-50');
+                    option.classList.remove('border-gray-200');
+                } else {
+                    option.classList.remove('border-blue-500', 'bg-blue-50');
+                    option.classList.add('border-gray-200');
+                }
+                });
+            }
+            
+            // Inicializa estilos al cargar
+            updateVisibilityStyles();
+            
+            // Escucha cambios en los radio buttons
+            radioInputs.forEach(radio => {
+                radio.addEventListener('change', updateVisibilityStyles);
+            });
+            });
+        </script>
+        
         @error('visibility')
             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
         @enderror
@@ -84,8 +119,7 @@
     <!-- Botón de envío -->
     <div class="flex gap-3">
         <button type="submit" id="btn-submit" disabled
-            class="flex-1 bg-blue-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-600 disabled:hover:bg-gray-300 flex items-center justify-center gap-2">
-            <i class="fas fa-paper-plane"></i>
+            class="flex-1 bg-[#3B25DD] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-[#2a1a9c] disabled:hover:bg-gray-300 flex items-center justify-center gap-2">
             <span id="submit-text">Publicar</span>
         </button>
     </div>

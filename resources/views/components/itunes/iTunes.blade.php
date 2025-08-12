@@ -3,7 +3,7 @@
     <!-- Header estilo Apple Music -->
     <div class="bg-black rounded-t-xl p-4 sm:p-6 border-b border-gray-800">
         <h2 class="text-white text-lg sm:text-xl font-bold text-center mb-2">Buscar música</h2>
-        <p class="text-gray-400 text-center text-xs sm:text-sm">Encuentra y comparte tu canción favorita</p>
+        <p class="text-gray-400 text-center text-xs sm:text-sm">Encuentra y comparte una canción</p>
     </div>
 
     <!-- Panel de búsqueda -->
@@ -54,29 +54,64 @@
         <!-- Panel de canción seleccionada -->
         <div id="selected-track" class="mt-4">
             <div x-show="selectedTrack" x-transition>
-                <div class="bg-black border border-gray-600 rounded-lg p-4">
+                <!-- Canción seleccionada con diseño similar a Lista.blade.php -->
+                <div class="itunes-track-card relative bg-gray-800/60 rounded-xl p-3">
                     <div class="flex items-center gap-3">
                         <!-- Imagen del álbum -->
-                        <div class="flex-shrink-0">
+                        <div class="flex-shrink-0 relative">
                             <img :src="selectedTrack?.artworkUrlHigh || selectedTrack?.artworkUrl100 || '/img/img.jpg'"
-                                :alt="selectedTrack?.collectionName || 'Álbum'" class="w-16 h-16 rounded object-cover">
+                                :alt="selectedTrack?.collectionName || 'Álbum'"
+                                class="w-14 h-14 rounded-lg object-cover shadow-lg">
+
+                            <!-- Icono de play para preview -->
+                            <div x-show="selectedTrack?.previewUrl"
+                                @click.stop="togglePreview(selectedTrack?.previewUrl, selectedTrack?.trackId)"
+                                class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
+                                <div x-show="!(isPlaying && currentTrackId === selectedTrack?.trackId)"
+                                    class="text-white">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18c.62-.39.62-1.29 0-1.68L9.54 5.98C8.87 5.55 8 6.03 8 6.82z" />
+                                    </svg>
+                                </div>
+                                <div x-show="isPlaying && currentTrackId === selectedTrack?.trackId" class="text-white">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            d="M8 19c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2v10c0 1.1.9 2 2 2zm6-12v10c0 1.1.9 2 2 2s2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2z" />
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Información de la canción -->
                         <div class="flex-1 min-w-0">
-                            <h4 class="text-white font-medium text-sm mb-1" x-text="selectedTrack?.trackName"></h4>
-                            <p class="text-gray-400 text-xs mb-1" x-text="selectedTrack?.artistName"></p>
-                            <p class="text-gray-500 text-xs" x-text="selectedTrack?.collectionName"></p>
+                            <div class="flex items-center gap-1.5">
+                                <!-- Icono de música estilo Instagram -->
+                                <div x-show="isPlaying && currentTrackId === selectedTrack?.trackId"
+                                    class="flex items-end space-x-px flex-shrink-0">
+                                    <div class="bg-[#6366f1] w-1 h-2 rounded-full animate-wave1"></div>
+                                    <div class="bg-[#6366f1] w-1 h-2.5 rounded-full animate-wave2"></div>
+                                    <div class="bg-[#6366f1] w-1 h-1.5 rounded-full animate-wave3"></div>
+                                </div>
+
+                                <h4 class="font-semibold text-base truncate transition-colors duration-300"
+                                    :class="isPlaying && currentTrackId === selectedTrack?.trackId ? 'text-[#6366f1]' : 'text-white'"
+                                    x-text="selectedTrack?.trackName">
+                                </h4>
+                            </div>
+                            <p class="text-gray-400 text-sm truncate" x-text="selectedTrack?.artistName"></p>
                         </div>
 
                         <!-- Botón para eliminar selección -->
                         <div class="flex-shrink-0">
                             <button type="button" @click="clearSelection()"
-                                class="text-red-400 hover:text-red-300 p-2 rounded-full hover:bg-red-400/10 transition-colors">
+                                class="bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-sm font-medium"
+                                title="Eliminar selección">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
+                                <span class="hidden sm:inline">Eliminar</span>
                             </button>
                         </div>
                     </div>
@@ -119,7 +154,7 @@
                 });
 
                 document.addEventListener('itunes:trackSelected', (event) => {
-                    this.selectedTrack = event.detail.track;
+                    this.selectedTrack = event.detail.track || event.detail;
                     this.currentState = 'suggestions'; // Volver a sugerencias después de seleccionar
                 });
 
@@ -174,3 +209,53 @@
         }
     }
 </script>
+
+<style>
+    @keyframes w1 {
+
+        0%,
+        100% {
+            height: 0.5rem
+        }
+
+        50% {
+            height: 0.75rem
+        }
+    }
+
+    @keyframes w2 {
+
+        0%,
+        100% {
+            height: 0.625rem
+        }
+
+        50% {
+            height: 1rem
+        }
+    }
+
+    @keyframes w3 {
+
+        0%,
+        100% {
+            height: 0.375rem
+        }
+
+        50% {
+            height: 0.625rem
+        }
+    }
+
+    .animate-wave1 {
+        animation: w1 0.8s infinite ease-in-out
+    }
+
+    .animate-wave2 {
+        animation: w2 0.8s 0.1s infinite ease-in-out
+    }
+
+    .animate-wave3 {
+        animation: w3 0.8s 0.2s infinite ease-in-out
+    }
+</style>
