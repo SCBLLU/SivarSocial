@@ -175,7 +175,7 @@
 
       <li class="menu__item">
       <a class="menu__link btn" href="{{ route('login') }}">
-        <i class='bx bx-home-smile'></i>
+        <i class='bx bx-user'></i>
       </a>
       </li>
       <li class="menu__item">
