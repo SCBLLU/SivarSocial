@@ -1,7 +1,6 @@
 <!-- Template para cada canción en los resultados de búsqueda de iTunes -->
 <div class="itunes-track-card relative bg-gray-800/60 rounded-xl p-3 cursor-pointer hover:bg-gray-700/60 transition-all duration-200"
-    @click="selectTrack(track)"
-    :class="selectedTrack?.trackId === track.trackId ? 'ring-2 ring-blue-500 bg-blue-500/20' : ''">
+    @click="selectTrack(track)" :class="selectedTrack?.trackId === track.trackId ?: ''">
 
     <div class="flex items-center gap-3">
         <!-- Imagen del álbum -->
@@ -26,23 +25,74 @@
                 </div>
             </div>
 
-            <!-- Icono de onda -->
-            <div x-show="isPlaying && currentTrackId === track.trackId"
-                class="absolute -bottom-1 -right-1 bg-[#6366f1] rounded-full p-1.5 shadow-lg">
-                <div class="flex items-end space-x-0.5">
-                    <div class="bg-white w-0.5 h-2 rounded-full wave-animation-1"></div>
-                    <div class="bg-white w-0.5 h-3 rounded-full wave-animation-2"></div>
-                    <div class="bg-white w-0.5 h-1.5 rounded-full wave-animation-3"></div>
-                    <div class="bg-white w-0.5 h-2.5 rounded-full wave-animation-1"></div>
-                </div>
-            </div>
+
+            <style>
+                @keyframes w1 {
+
+                    0%,
+                    100% {
+                        height: 0.5rem
+                    }
+
+                    50% {
+                        height: 0.75rem
+                    }
+                }
+
+                @keyframes w2 {
+
+                    0%,
+                    100% {
+                        height: 0.625rem
+                    }
+
+                    50% {
+                        height: 1rem
+                    }
+                }
+
+                @keyframes w3 {
+
+                    0%,
+                    100% {
+                        height: 0.375rem
+                    }
+
+                    50% {
+                        height: 0.625rem
+                    }
+                }
+
+                .animate-wave1 {
+                    animation: w1 0.8s infinite ease-in-out
+                }
+
+                .animate-wave2 {
+                    animation: w2 0.8s 0.1s infinite ease-in-out
+                }
+
+                .animate-wave3 {
+                    animation: w3 0.8s 0.2s infinite ease-in-out
+                }
+            </style>
         </div>
 
         <!-- Información de la canción -->
         <div class="flex-1 min-w-0">
-            <h4 class=" font-semibold text-base truncate transition-colors duration-300"
-                :class="isPlaying && currentTrackId === track.trackId ? 'text-[#6366f1]' : ''" x-text="track.trackName">
-            </h4>
+            <div class="flex items-center gap-1.5">
+                <!-- Icono de música estilo Instagram -->
+                <div x-show="isPlaying && currentTrackId === track.trackId"
+                    class="flex items-end space-x-px flex-shrink-0">
+                    <div class="bg-[#6366f1] w-1 h-2 rounded-full animate-wave1"></div>
+                    <div class="bg-[#6366f1] w-1 h-2.5 rounded-full animate-wave2"></div>
+                    <div class="bg-[#6366f1] w-1 h-1.5 rounded-full animate-wave3"></div>
+                </div>
+
+                <h4 class="font-semibold text-base truncate transition-colors duration-300"
+                    :class="isPlaying && currentTrackId === track.trackId ? 'text-[#6366f1]' : 'text-white'"
+                    x-text="track.trackName">
+                </h4>
+            </div>
             <p class="text-gray-400 text-sm truncate" x-text="track.artistName"></p>
         </div>
     </div>
