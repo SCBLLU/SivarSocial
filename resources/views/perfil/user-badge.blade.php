@@ -10,6 +10,17 @@
             'link' => 'colaboradores',
             'linkText' => 'Más información sobre su colaboración'
         ],
+        'Creador' => [
+            'url' => asset('img/creador.svg'),
+            'alt' => 'Creador',
+            'title' => 'Usuario Creador',
+            'color' => 'text-blue-600',
+            'description' => isset($user) && $user->username 
+            ? 'Sivar Social, reconoce @' . $user->username . ' como el creador por impulsar esta plataforma, por su visión y esfuerzo a la creación de esta red social.'
+            : 'Sivar Social, reconoce al "creador" por impulsar esta plataforma, por su visión y esfuerzo a la creación de esta red social.',
+            'link' => null,
+            'linkText' => null
+        ],
         'Docente' => [
             'url' => asset('img/docente.svg'),
             'alt' => 'Docente',
