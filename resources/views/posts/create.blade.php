@@ -27,7 +27,7 @@
 
         .camera-controls {
             position: absolute;
-            bottom: 20px;
+            bottom: 80px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
@@ -67,57 +67,53 @@
 
         @media (max-width: 768px) {
             .mobile-camera-overlay {
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                bottom: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                background: #000 !important;
-                z-index: 9999 !important;
-                display: flex !important;
-                flex-direction: column !important;
-                overflow: hidden !important;
-                /* Propiedades para fullscreen inmersivo */
-                -webkit-transform: translate3d(0, 0, 0) !important;
-                transform: translate3d(0, 0, 0) !important;
-                /* Ocultar barras de navegación en móvil */
-                -webkit-appearance: none !important;
-                -webkit-user-select: none !important;
-                -webkit-touch-callout: none !important;
-                -webkit-tap-highlight-color: transparent !important;
-            }
-
-            .mobile-camera-overlay.hidden {
-                display: none !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #000;
+                z-index: 50;
+                display: flex;
+                flex-direction: column;
+                /* Usar altura de ventana disponible */
+                height: 100vh;
+                height: 100dvh;
+                /* Altura dinámica en móviles modernos */
             }
 
             #camera-preview {
-                flex: 1 !important;
-                max-width: none !important;
-                width: 100% !important;
-                height: 100% !important;
-                object-fit: cover !important;
-                border-radius: 0 !important;
-                background: #000 !important;
+                flex: 1;
+                max-width: none;
+                height: auto;
+                border-radius: 0;
             }
 
-            /* Ocultar elementos de la página cuando la cámara está activa */
-            body:has(.mobile-camera-overlay:not(.hidden)) {
-                overflow: hidden !important;
-                position: fixed !important;
-                width: 100% !important;
-                height: 100% !important;
-            }
-
-            /* Asegurar que los controles de la cámara estén en el frente */
             .camera-controls {
-                position: absolute !important;
-                bottom: 40px !important;
-                left: 50% !important;
-                transform: translateX(-50%) !important;
-                z-index: 10000 !important;
+                /* En móvil, posicionar más arriba para evitar conflictos con UI del navegador */
+                bottom: 100px;
+                min-height: 70px;
+                /* Para devices con notch o barra de navegación segura */
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+            }
+
+            /* Para pantallas con altura limitada */
+            @media (max-height: 600px) {
+                .camera-controls {
+                    bottom: 60px;
+                }
+            }
+
+            /* Para pantallas muy pequeñas */
+            @media (max-height: 500px) {
+                .camera-controls {
+                    bottom: 40px;
+                }
+
+                .capture-btn {
+                    width: 60px;
+                    height: 60px;
+                }
             }
         }
 
@@ -125,154 +121,75 @@
         @media (min-width: 769px) {
             .mobile-camera-overlay {
                 display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                z-index: -1 !important;
+                pointer-events: none !important;
             }
-        }
-
-        /* Estilos adicionales para fullscreen inmersivo */
-        .mobile-camera-overlay {
-            /* Evitar zoom al hacer doble tap */
-            touch-action: manipulation !important;
-            /* Optimización de rendimiento */
-            will-change: transform !important;
-            /* Asegurar que cubra toda la pantalla */
-            position: fixed !important;
-            inset: 0 !important;
-        }
-
-        /* Ocultar elementos de UI cuando la cámara está activa */
-        .camera-active {
-            overflow: hidden !important;
-            position: fixed !important;
-            width: 100% !important;
-            height: 100% !important;
-        }
-
-        .camera-active .header,
-        .camera-active .header2,
-        .camera-active .menu-mobile {
-            display: none !important;
-        }
-
-        /* Ocultar TODOS los elementos de navegación cuando la cámara está activa */
-        body:has(.mobile-camera-overlay:not(.hidden)) .header,
-        body:has(.mobile-camera-overlay:not(.hidden)) .header2,
-        body:has(.mobile-camera-overlay:not(.hidden)) .menu-mobile,
-        body:has(.mobile-camera-overlay:not(.hidden)) nav,
-        body:has(.mobile-camera-overlay:not(.hidden)) .navbar,
-        body:has(.mobile-camera-overlay:not(.hidden)) .navigation,
-        body:has(.mobile-camera-overlay:not(.hidden)) [class*="menu"],
-        body:has(.mobile-camera-overlay:not(.hidden)) [class*="nav"],
-        body:has(.mobile-camera-overlay:not(.hidden)) [id*="menu"],
-        body:has(.mobile-camera-overlay:not(.hidden)) [id*="nav"] {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            z-index: -1 !important;
-        }
-
-        /* Forzar ocultamiento específico del menú móvil */
-        .mobile-camera-overlay:not(.hidden) ~ * .header,
-        .mobile-camera-overlay:not(.hidden) ~ * .header2,
-        .mobile-camera-overlay:not(.hidden) ~ * nav,
-        .mobile-camera-overlay:not(.hidden) ~ * [class*="menu"] {
-            display: none !important;
-        }
-
-        /* Asegurar que el overlay de la cámara siempre sea visible */
-        .mobile-camera-overlay {
-            display: flex !important;
-        }
-
-        .mobile-camera-overlay.hidden {
-            display: none !important;
-        }
-
-        /* Elementos específicos del overlay de cámara - siempre visibles */
-        .mobile-camera-overlay,
-        .mobile-camera-overlay .camera-header,
-        .mobile-camera-overlay #camera-preview,
-        .mobile-camera-overlay .camera-controls,
-        .mobile-camera-overlay .capture-btn,
-        .mobile-camera-overlay .switch-camera-btn {
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-
-        /* Elementos flex del overlay */
-        .mobile-camera-overlay .camera-header {
-            display: flex !important;
-        }
-
-        .mobile-camera-overlay .camera-controls {
-            display: flex !important;
-        }
-
-        .mobile-camera-overlay .capture-btn,
-        .mobile-camera-overlay .switch-camera-btn {
-            display: flex !important;
-        }
-
-        /* Estilos para el header de la cámara */
-        .mobile-camera-overlay .camera-header {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            z-index: 10001 !important;
-            background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 50%, transparent 100%) !important;
-            padding: env(safe-area-inset-top, 20px) 20px 20px 20px !important;
-        }
-
-        /* Ajustes específicos para dispositivos móviles */
-        .mobile-camera-overlay {
-            /* iOS Safari y Android Chrome específico */
-            -webkit-user-select: none !important;
-            -webkit-touch-callout: none !important;
-            -webkit-tap-highlight-color: transparent !important;
-            -webkit-backface-visibility: hidden !important;
-            -webkit-perspective: 1000 !important;
-            -webkit-transform: translate3d(0, 0, 0) !important;
-            transform: translate3d(0, 0, 0) !important;
-        }
-
-        /* Para iOS con notch */
-        .mobile-camera-overlay .camera-header {
-            padding-top: max(env(safe-area-inset-top), 44px) !important;
-        }
-
-        /* Ajustes para Android Chrome */
-        @media screen and (-webkit-min-device-pixel-ratio: 1) and (min-device-width: 320px) and (max-device-width: 1024px) {
-            .mobile-camera-overlay {
-                /* Asegurar que cubra la barra de navegación en Android */
-                height: 100dvh !important;
-                min-height: 100vh !important;
-            }
-        }
-
-        /* Prevenir selección de texto y zoom en controles */
-        .mobile-camera-overlay * {
-            -webkit-user-select: none !important;
-            -moz-user-select: none !important;
-            user-select: none !important;
-            -webkit-touch-callout: none !important;
-            -webkit-tap-highlight-color: transparent !important;
-        }
-
-        /* Optimización para el botón de captura */
-        .capture-btn {
-            -webkit-transform: translateZ(0) !important;
-            transform: translateZ(0) !important;
-            will-change: transform !important;
-        }
-
-        .capture-btn:active {
-            transform: scale(0.95) translateZ(0) !important;
-            -webkit-transform: scale(0.95) translateZ(0) !important;
         }
 
         /* Asegurar que hidden funcione correctamente */
         .hidden {
             display: none !important;
+        }
+
+        /* Estilos adicionales para mejorar la experiencia móvil */
+        @media (max-width: 768px) {
+
+            /* Manejar mejor el overlay cuando cambia la altura del viewport */
+            .mobile-camera-overlay.viewport-adjusted {
+                height: calc(100vh - 60px);
+                /* Ajuste para barras de navegación */
+            }
+
+            /* Botón más visible con sombra */
+            .capture-btn {
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                border: 3px solid #ffffff;
+            }
+
+            /* Header de la cámara más compacto en pantallas pequeñas */
+            .mobile-camera-overlay .flex.justify-between {
+                padding: 12px 16px;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(10px);
+            }
+        }
+
+        /* Ocultar menú de navegación móvil cuando la cámara esté activa */
+        .camera-active .header,
+        .camera-active .header2,
+        .camera-active #header {
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            z-index: -1 !important;
+        }
+
+        /* Pantalla de permisos de cámara */
+        .permission-screen-hidden {
+            display: none;
+        }
+
+        .permission-screen-visible {
+            display: flex;
+        }
+
+        /* Animaciones para la pantalla de permisos */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .permission-screen-visible {
+            animation: fadeIn 0.3s ease-out;
         }
 
         /* Mejoras adicionales para móvil en el componente iTunes */
@@ -338,20 +255,93 @@
 
     <!-- Overlay para cámara en móvil -->
     <div id="camera-overlay" class="mobile-camera-overlay hidden">
-        <div class="camera-header flex justify-between items-center">
-            <button id="close-camera" class="text-white text-xl p-2 rounded-full bg-black/30 backdrop-blur-sm">
+        <!-- Pantalla de permisos -->
+        <div id="camera-permission-screen"
+            class="permission-screen-hidden absolute inset-0 bg-black flex-col items-center justify-center z-20">
+            <div class="text-center px-6">
+                <!-- Ícono animado de cámara -->
+                <div class="mb-6">
+                    <div class="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full animate-pulse">
+                        <i class="fas fa-camera text-4xl text-gray-700"></i>
+                    </div>
+                </div>
+
+                <!-- Mensaje principal -->
+                <h3 class="text-white text-xl font-semibold mb-4">
+                    Solicitando permisos de cámara
+                </h3>
+
+                <!-- Instrucciones -->
+                <p class="text-gray-300 text-base mb-6 max-w-sm">
+                    Tu navegador te pedirá permiso para acceder a la cámara.
+                    <span class="text-white font-medium">Presiona "Permitir"</span> para continuar.
+                </p>
+
+                <!-- Indicador de carga -->
+                <div class="flex items-center justify-center space-x-2">
+                    <div class="w-2 h-2 bg-white rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                </div>
+
+                <!-- Botón cancelar -->
+                <button id="cancel-permission"
+                    class="mt-8 px-6 py-2 border border-gray-400 text-gray-300 rounded-full hover:bg-white hover:text-black transition-colors">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+
+        <!-- Pantalla de error de permisos -->
+        <div id="camera-error-screen"
+            class="permission-screen-hidden absolute inset-0 bg-black flex-col items-center justify-center z-20">
+            <div class="text-center px-6">
+                <!-- Ícono de error -->
+                <div class="mb-6">
+                    <div class="inline-flex items-center justify-center w-24 h-24 bg-red-500 rounded-full">
+                        <i class="fas fa-exclamation-triangle text-4xl text-white"></i>
+                    </div>
+                </div>
+
+                <!-- Mensaje de error -->
+                <h3 id="error-title" class="text-white text-xl font-semibold mb-4">
+                    Error de permisos
+                </h3>
+
+                <!-- Descripción del error -->
+                <p id="error-description" class="text-gray-300 text-base mb-6 max-w-sm">
+                    No se pudo acceder a la cámara. Verifica los permisos en tu navegador.
+                </p>
+
+                <!-- Botones -->
+                <div class="flex flex-col space-y-3">
+                    <button id="retry-permission"
+                        class="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">
+                        Intentar de nuevo
+                    </button>
+                    <button id="close-error"
+                        class="px-6 py-2 border border-gray-400 text-gray-300 rounded-full hover:bg-white hover:text-black transition-colors">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-between items-center p-4 bg-black/70 backdrop-blur-sm">
+            <button id="close-camera" class="text-white text-xl p-2 rounded-full hover:bg-white/20 transition-colors">
                 <i class="fas fa-times"></i>
             </button>
             <span class="text-white font-medium text-lg">Tomar Foto</span>
-            <button id="switch-camera" class="switch-camera-btn bg-black/30 backdrop-blur-sm">
+            <button id="switch-camera"
+                class="switch-camera-btn text-white p-2 rounded-full hover:bg-white/20 transition-colors">
                 <i class="fas fa-sync-alt"></i>
             </button>
         </div>
 
-        <video id="camera-preview" autoplay playsinline muted></video>
+        <video id="camera-preview" autoplay playsinline></video>
 
         <div class="camera-controls">
-            <button id="capture-photo" class="capture-btn shadow-2xl">
+            <button id="capture-photo" class="capture-btn">
                 <i class="fas fa-camera text-gray-600 text-xl"></i>
             </button>
         </div>
