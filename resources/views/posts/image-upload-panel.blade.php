@@ -58,12 +58,32 @@
         const capturePhoto = document.getElementById('capture-photo');
         const cameraPreview = document.getElementById('camera-preview');
         const photoCanvas = document.getElementById('photo-canvas');
+        const permissionScreen = document.getElementById('camera-permission-screen');
+        const errorScreen = document.getElementById('camera-error-screen');
+        const cancelPermission = document.getElementById('cancel-permission');
+        const retryPermission = document.getElementById('retry-permission');
+        const closeError = document.getElementById('close-error');
+        const errorTitle = document.getElementById('error-title');
+        const errorDescription = document.getElementById('error-description');
         const mobileControls = document.querySelector('.mobile-only-controls');
         let currentStream = null;
         let currentFacingMode = 'environment'; // 'user' para frontal, 'environment' para trasera
+        let cameraPermissionStatus = 'unknown'; // 'granted', 'denied', 'prompt', 'unknown'
         // Detectar si es móvil
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
             (window.innerWidth <= 768);
+
+        // Limpiar estado de cámara si el usuario sale de la página
+        window.addEventListener('beforeunload', function () {
+            document.body.classList.remove('camera-active');
+        });
+
+        // Limpiar estado si el usuario navega hacia atrás
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                document.body.classList.remove('camera-active');
+            }
+        });
         // Mostrar controles móviles solo en móvil
         if (isMobile && mobileControls) {
             mobileControls.classList.remove('hidden');
@@ -136,12 +156,79 @@
                 capturePhotoFromCamera();
             });
         }
+        // Cancelar permisos
+        if (cancelPermission) {
+            cancelPermission.addEventListener('click', () => {
+                closeCameraModal();
+            });
+        }
+        // Reintentar permisos
+        if (retryPermission) {
+            retryPermission.addEventListener('click', async () => {
+                hideErrorScreen();
+                // Verificar estado antes de reintentar
+                cameraPermissionStatus = await checkCameraPermissionStatus();
+                await startCamera();
+            });
+        }
+        // Cerrar error
+        if (closeError) {
+            closeError.addEventListener('click', () => {
+                closeCameraModal();
+            });
+        }
         // Remover imagen
         if (removeImage) {
             removeImage.addEventListener('click', () => {
                 clearImage();
             });
         }
+
+        // Función para verificar el estado actual de los permisos
+        async function checkCameraPermissionStatus() {
+            if (!navigator.permissions) {
+                return 'unknown';
+            }
+            
+            try {
+                const permissionStatus = await navigator.permissions.query({ name: 'camera' });
+                return permissionStatus.state; // 'granted', 'denied', 'prompt'
+            } catch (e) {
+                return 'unknown';
+            }
+        }
+
+        // Funciones helper para las pantallas
+        function showPermissionScreen() {
+            if (permissionScreen) {
+                permissionScreen.classList.remove('permission-screen-hidden');
+                permissionScreen.classList.add('permission-screen-visible');
+            }
+        }
+
+        function hidePermissionScreen() {
+            if (permissionScreen) {
+                permissionScreen.classList.remove('permission-screen-visible');
+                permissionScreen.classList.add('permission-screen-hidden');
+            }
+        }
+
+        function showErrorScreen(title, description) {
+            if (errorScreen && errorTitle && errorDescription) {
+                errorTitle.textContent = title;
+                errorDescription.textContent = description;
+                errorScreen.classList.remove('permission-screen-hidden');
+                errorScreen.classList.add('permission-screen-visible');
+            }
+        }
+
+        function hideErrorScreen() {
+            if (errorScreen) {
+                errorScreen.classList.remove('permission-screen-visible');
+                errorScreen.classList.add('permission-screen-hidden');
+            }
+        }
+
         // Función para abrir cámara
         async function openCameraModal() {
             // Solo permitir cámara en móvil
@@ -156,6 +243,43 @@
             try {
                 cameraOverlay.classList.remove('hidden');
                 document.body.style.overflow = 'hidden';
+
+                // Ocultar menú de navegación móvil
+                document.body.classList.add('camera-active');
+
+                // Verificar el estado de los permisos antes de mostrar cualquier pantalla
+                cameraPermissionStatus = await checkCameraPermissionStatus();
+
+                // Manejar cambios en la altura del viewport (para barras de navegación)
+                let initialHeight = window.innerHeight;
+                const handleViewportChange = () => {
+                    const currentHeight = window.innerHeight;
+                    const heightDifference = initialHeight - currentHeight;
+
+                    // Si la altura se reduce significativamente (apareció barra de navegación)
+                    if (heightDifference > 50) {
+                        cameraOverlay.classList.add('viewport-adjusted');
+                        // Ajustar posición del botón dinámicamente
+                        const controls = document.querySelector('.camera-controls');
+                        if (controls) {
+                            controls.style.bottom = '60px';
+                        }
+                    } else {
+                        cameraOverlay.classList.remove('viewport-adjusted');
+                        const controls = document.querySelector('.camera-controls');
+                        if (controls) {
+                            controls.style.bottom = '100px';
+                        }
+                    }
+                };
+
+                // Escuchar cambios en el viewport
+                window.addEventListener('resize', handleViewportChange);
+                window.addEventListener('orientationchange', handleViewportChange);
+
+                // Guardar la función para poder removerla después
+                cameraOverlay.handleViewportChange = handleViewportChange;
+
                 // En móvil, usar fullscreen
                 if (cameraOverlay.requestFullscreen) {
                     cameraOverlay.requestFullscreen().catch(err => {
@@ -163,24 +287,54 @@
                 }
                 await startCamera();
             } catch (error) {
-                let errorMessage = 'No se pudo acceder a la cámara. ';
+                hidePermissionScreen();
+
+                let errorTitle = 'Error de cámara';
+                let errorMessage = '';
+
                 if (error.name === 'NotAllowedError') {
-                    errorMessage += 'Permisos denegados. Verifica la configuración de tu navegador.';
+                    errorTitle = 'Permisos denegados';
+                    errorMessage = 'Necesitas permitir el acceso a la cámara para tomar fotos. Revisa la configuración de tu navegador.';
                 } else if (error.name === 'NotFoundError') {
-                    errorMessage += 'No se encontró cámara en el dispositivo.';
+                    errorTitle = 'Cámara no encontrada';
+                    errorMessage = 'No se encontró ninguna cámara en tu dispositivo.';
                 } else if (error.name === 'NotSupportedError') {
-                    errorMessage += 'Tu navegador no soporta esta función.';
+                    errorTitle = 'No compatible';
+                    errorMessage = 'Tu navegador no soporta esta función de cámara.';
                 } else {
-                    errorMessage += 'Error desconocido.';
+                    errorTitle = 'Error desconocido';
+                    errorMessage = 'Ocurrió un error inesperado al acceder a la cámara.';
                 }
-                alert(errorMessage);
-                closeCameraModal();
+
+                showErrorScreen(errorTitle, errorMessage);
             }
         }
         // Función para cerrar cámara
         function closeCameraModal() {
             cameraOverlay.classList.add('hidden');
             document.body.style.overflow = '';
+
+            // Mostrar menú de navegación móvil nuevamente
+            document.body.classList.remove('camera-active');
+
+            // Ocultar pantallas de permisos y error
+            hidePermissionScreen();
+            hideErrorScreen();
+
+            // Limpiar event listeners del viewport
+            if (cameraOverlay.handleViewportChange) {
+                window.removeEventListener('resize', cameraOverlay.handleViewportChange);
+                window.removeEventListener('orientationchange', cameraOverlay.handleViewportChange);
+                delete cameraOverlay.handleViewportChange;
+            }
+
+            // Restablecer estilos del botón de controles
+            const controls = document.querySelector('.camera-controls');
+            if (controls) {
+                controls.style.bottom = '';
+            }
+            cameraOverlay.classList.remove('viewport-adjusted');
+
             // Salir de fullscreen si está activo
             if (document.fullscreenElement) {
                 document.exitFullscreen().catch(err => {
@@ -196,6 +350,7 @@
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
             }
+            
             // Configuraciones optimizadas para diferentes dispositivos
             const baseConstraints = {
                 video: {
@@ -204,11 +359,30 @@
                     height: { ideal: 1080, max: 1920 }
                 }
             };
+            
             try {
+                // Solo mostrar pantalla de permisos si el estado indica que se solicitarán
+                if (cameraPermissionStatus === 'prompt') {
+                    showPermissionScreen();
+                }
+                
                 // Intentar con configuración ideal primero
                 currentStream = await navigator.mediaDevices.getUserMedia(baseConstraints);
+                
+                // Actualizar el estado de permisos ya que se obtuvo acceso exitoso
+                cameraPermissionStatus = 'granted';
+                
             } catch (error) {
-                // Fallback a configuración básica
+                // Ocultar pantalla de permisos en caso de error
+                hidePermissionScreen();
+                
+                // Actualizar estado según el tipo de error
+                if (error.name === 'NotAllowedError') {
+                    cameraPermissionStatus = 'denied';
+                    throw error;
+                }
+                
+                // Fallback a configuración básica para otros errores
                 try {
                     const fallbackConstraints = {
                         video: {
@@ -216,11 +390,20 @@
                         }
                     };
                     currentStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+                    cameraPermissionStatus = 'granted';
                 } catch (fallbackError) {
+                    if (fallbackError.name === 'NotAllowedError') {
+                        cameraPermissionStatus = 'denied';
+                    }
                     throw fallbackError;
                 }
             }
+            
             cameraPreview.srcObject = currentStream;
+
+            // Ocultar pantalla de permisos cuando se obtenga acceso exitoso
+            hidePermissionScreen();
+
             // Esperar a que el video cargue para ajustar dimensiones
             cameraPreview.addEventListener('loadedmetadata', () => {
             });
