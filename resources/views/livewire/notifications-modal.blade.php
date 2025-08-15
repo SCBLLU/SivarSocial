@@ -27,7 +27,7 @@
                     <!-- Botón de cierre móvil -->
                     <div class="absolute top-4 right-4 z-10">
                         <button wire:click="closeModal" @click.stop @touchstart.stop @touchend.stop
-                            class="p-1 hover:bg-gray-100 rounded-full transition-colors bg-white shadow-sm">
+                            class="p-1 rounded-full transition-colors">
                             <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M6 18L18 6M6 6l12 12" />
