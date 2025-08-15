@@ -19,7 +19,7 @@
                 x-transition:leave="transition ease-in duration-200 transform"
                 x-transition:leave-start="translate-y-0 sm:translate-y-0 sm:scale-100 sm:opacity-100"
                 x-transition:leave-end="translate-y-full sm:translate-y-0 sm:scale-95 sm:opacity-0"
-                x-data="dragToCloseNotifications()" x-ref="modalContainer">>
+                x-data="dragToCloseNotifications()" x-ref="modalContainer">
 
                 <!-- Drag handle mobile -->
                 <div class="p-4 border-b border-gray-200 text-center text-lg font-semibold cursor-grab touch-none sm:hidden"
