@@ -19,15 +19,16 @@
                 x-transition:leave="transition ease-in duration-200 transform"
                 x-transition:leave-start="translate-y-0 sm:translate-y-0 sm:scale-100 sm:opacity-100"
                 x-transition:leave-end="translate-y-full sm:translate-y-0 sm:scale-95 sm:opacity-0"
-                x-data="dragToCloseNotifications()" x-ref="modalContainer">
+                x-data="dragToCloseNotifications()" x-on:touchstart="startDrag($event)" x-on:touchmove="onDrag($event)"
+                x-on:touchend="endDrag($event)">
 
                 <!-- Drag handle mobile -->
                 <div class="p-4 border-b border-gray-200 text-center text-lg font-semibold cursor-grab touch-none sm:hidden"
-                    x-ref="dragHandle" @touchstart="startDrag($event)" @touchmove="onDrag($event)" @touchend="endDrag()">
+                    x-ref="dragHandle">
                     <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-2"></div>
                     <div class="flex items-center justify-between px-2">
                         <span class="text-base font-bold text-gray-900">Notificaciones</span>
-                        <button wire:click="closeModal" class="p-1 hover:bg-gray-100 rounded-full transition-colors" @touchstart.stop @touchmove.stop @touchend.stop>
+                        <button wire:click="closeModal" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
                             <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M6 18L18 6M6 6l12 12" />
@@ -212,9 +213,14 @@
                 // Solo en móvil
                 if (window.innerWidth >= 640) return;
 
+                // Solo activar drag desde el header/handle area
+                const dragHandle = this.$refs.dragHandle;
+                if (!dragHandle || !dragHandle.contains(event.target)) return;
+
                 this.isDragging = true;
                 this.startY = event.touches[0].clientY;
                 this.currentY = this.startY;
+                event.preventDefault();
             },
 
             onDrag(event) {
@@ -226,7 +232,7 @@
                 const deltaY = this.currentY - this.startY;
 
                 if (deltaY > 0) {
-                    const modal = this.$refs.modalContainer;
+                    const modal = this.$el;
                     modal.style.transform = `translateY(${deltaY}px)`;
                     modal.style.transition = 'none';
                 }
