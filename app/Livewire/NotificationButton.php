@@ -3,18 +3,12 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\Attributes\On;
 use Illuminate\Support\Facades\Auth;
 
 class NotificationButton extends Component
 {
     public $unreadCount = 0;
-    public $showDropdown = false;
-
-    protected $listeners = [
-        'notification-created' => 'updateUnreadCount',
-        'notifications-read' => 'updateUnreadCount',
-        'refreshNotifications' => 'updateUnreadCount',
-    ];
 
     public function mount()
     {
@@ -28,31 +22,24 @@ class NotificationButton extends Component
         }
     }
 
-    public function toggleDropdown()
+    public function openNotificationsModal()
     {
-        $this->showDropdown = !$this->showDropdown;
-
-        if ($this->showDropdown) {
-            $this->dispatch('open-notifications-dropdown');
-            // Marcar como leídas cuando se abre
-            $this->markNotificationsAsRead();
-        }
+        $this->dispatch('open-notifications-modal');
     }
 
-    public function closeDropdown()
+    #[On('notifications-opened')]
+    public function onNotificationsOpened()
     {
-        $this->showDropdown = false;
+        $this->updateUnreadCount();
     }
 
-    private function markNotificationsAsRead()
+    #[On('follower-updated')]
+    #[On('notification-created')]
+    #[On('notifications-read')]
+    #[On('refreshNotifications')]
+    public function onUpdateTrigger()
     {
-        if (Auth::check()) {
-            // Marcar todas las notificaciones como leídas
-            Auth::user()->notifications()->whereNull('read_at')->update(['read_at' => now()]);
-
-            // Actualizar el contador
-            $this->updateUnreadCount();
-        }
+        $this->updateUnreadCount();
     }
 
     public function render()

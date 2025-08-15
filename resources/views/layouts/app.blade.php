@@ -268,6 +268,9 @@
 
     @livewireScripts()
 
+    <!-- Alpine.js -->
+    <script src="//unpkg.com/alpinejs" defer></script>
+
     <style>
         @media (max-width: 768px) {
             .navbar-logo-responsive {
@@ -419,6 +422,9 @@
             });
         }
     </script>
+
+    <!-- Modal de Notificaciones -->
+    @livewire('notifications-modal')
 </body>
 
 </html>
