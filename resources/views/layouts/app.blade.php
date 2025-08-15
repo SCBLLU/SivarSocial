@@ -177,6 +177,11 @@
                                     }
                                 @endphp
 
+                                <!-- Botón de notificaciones -->
+                                <div class="mr-4">
+                                    @livewire('notification-button')
+                                </div>
+
                                 @if ($isProfile)
                                     {{-- Solo mostrar PUBLICACIONES cuando estás en tu propio perfil --}}
                                     <a href="{{ route('home') }}"
@@ -204,7 +209,7 @@
                                         INICIAR SESIÓN
                                     </a>
                                 @elseif (request()->routeIs('code.verific'))
-                                    <a onclick="openModal(1)" 
+                                    <a onclick="openModal(1)"
                                         class="cursor-pointer block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
                                         INFORMACIÓN
                                     </a>
