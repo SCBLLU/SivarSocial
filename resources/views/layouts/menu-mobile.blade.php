@@ -44,7 +44,11 @@
         </a>
         </li>
         <!-- Notificaciones -->
-
+        <li class="menu__item">
+        <div class="menu__link btn notification-btn-mobile">
+        @livewire('notification-button')
+        </div>
+        </li>
         <!--                 <li class="menu__item">
       <a class="menu__link btn" href="#contact">
       <i class='bx bx-heart' ></i>
@@ -73,6 +77,12 @@
         <i class='bx bx-plus'></i>
       </a>
       </li>
+      <!-- Notificaciones -->
+      <li class="menu__item">
+      <div class="menu__link btn notification-btn-mobile">
+      @livewire('notification-button')
+      </div>
+      </li>
 
       @elseif(Route::is('users.followers', 'users.following', 'colaboradores.index'))
       <li class="menu__item">
@@ -84,6 +94,12 @@
       <a class="menu__link btn" href="{{ route('posts.create') }}">
       <i class='bx bx-plus'></i>
       </a>
+      </li>
+      <!-- Notificaciones -->
+      <li class="menu__item">
+      <div class="menu__link btn notification-btn-mobile">
+      @livewire('notification-button')
+      </div>
       </li>
 
       @else
@@ -104,7 +120,11 @@
         </a>
         </li>
         <!-- Notificaciones -->
-
+        <li class="menu__item">
+        <div class="menu__link btn notification-btn-mobile">
+        @livewire('notification-button')
+        </div>
+        </li>
         <!--                 <li class="menu__item">
       <a class="menu__link btn" href="#contact">
       <i class='bx bx-heart' ></i>

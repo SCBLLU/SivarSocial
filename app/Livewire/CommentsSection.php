@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Post;
 use App\Models\Comentario;
+use App\Services\NotificationService;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
@@ -84,6 +85,14 @@ class CommentsSection extends Component
                 'post_id' => $this->post->id,
                 'comentario' => trim($this->comentario),
             ]);
+
+            // Crear notificación de comentario
+            $notificationService = new NotificationService();
+            $notificationService->createCommentNotification(Auth::user(), $this->post, trim($this->comentario));
+
+            // Emitir eventos para actualizar notificaciones
+            $this->dispatch('notification-created');
+            $this->dispatch('refreshNotifications');
 
             // Limpiar el campo de comentario
             $this->comentario = '';

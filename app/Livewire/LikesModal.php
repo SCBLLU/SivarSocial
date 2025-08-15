@@ -155,8 +155,18 @@ class LikesModal extends Component
         }
     }
 
-    public function updateFollowStatus($userId, $isFollowing)
+    public function updateFollowStatus($userId, $isFollowing = null)
     {
+        // Si no se proporciona isFollowing, calcular el estado actual
+        if ($isFollowing === null) {
+            $user = User::find($userId);
+            if ($user) {
+                $isFollowing = Auth::user() && Auth::user()->isFollowing($user);
+            } else {
+                return;
+            }
+        }
+
         // Actualizar el estado de seguimiento en los likes locales
         foreach ($this->likes as &$like) {
             if ($like['user']->id == $userId) {
