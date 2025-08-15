@@ -58,9 +58,9 @@ class User extends Authenticatable
         if ($this->imagen) {
             return asset('perfiles/' . $this->imagen);
         }
-        return asset('img/default-avatar.png'); // imagen por defecto
+        return asset('img/img.jpg'); // imagen por defecto
     }
-    
+
     public function getRouteKeyName()
     {
         return 'username'; // indica a laravel usar este campo para el binding
@@ -94,5 +94,21 @@ class User extends Authenticatable
     {
         // Verifica si el usuario autenticado sigue a $user
         return $this->following->contains($user->id);
+    }
+
+    // Relación con notificaciones
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class)->recent();
+    }
+
+    public function unreadNotifications()
+    {
+        return $this->hasMany(Notification::class)->unread()->recent();
+    }
+
+    public function getUnreadNotificationsCountAttribute()
+    {
+        return $this->unreadNotifications()->count();
     }
 }

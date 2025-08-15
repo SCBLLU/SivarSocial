@@ -218,10 +218,6 @@ i.bx.bx-search-alt-2 {
   align-items: center;
 }
 
-#resultados-busqueda {
-
-}
-
 .pb-0 {
   padding-bottom: 0;
 }
@@ -853,5 +849,112 @@ img, video, iframe {
    -webkit-overflow-scrolling: touch;
   scrollbar-color: var(--color-white) var(--color-white);
   scrollbar-width: thin;
+}
+
+/* Estilos para el botón de notificaciones en móvil */
+.notification-btn-mobile {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    position: relative !important;
+}
+
+.notification-btn-mobile > div {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.notification-btn-mobile button {
+    background: none !important;
+    border: none !important;
+    color: inherit !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+}
+
+/* Forzar la visibilidad del badge en el menú móvil */
+.notification-btn-mobile span[class*="absolute"],
+.notification-btn-mobile span[class*="bg-red-500"],
+.notification-btn-mobile button .absolute {
+    position: absolute !important;
+    top: -4px !important;
+    right: -4px !important;
+    background-color: #ef4444 !important;
+    color: white !important;
+    border-radius: 50% !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    z-index: 100 !important;
+    border: 2px solid white !important;
+}
+
+/* Estilos para las notificaciones */
+.notification-item {
+    transition: background-color 0.15s ease;
+}
+
+.notification-item:hover {
+    background-color: #f9fafb;
+}
+
+.notification-unread {
+    background-color: #eff6ff;
+}
+
+.notification-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #e5e7eb;
+}
+
+.notification-post-image {
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid #e5e7eb;
+}
+
+/* Botón de seguir en notificaciones */
+.follow-btn {
+    transition: all 0.2s ease;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 6px 16px;
+    font-size: 14px;
+}
+
+.follow-btn-following {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.follow-btn-following:hover {
+    background-color: #e5e7eb;
+}
+
+.follow-btn-follow {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.follow-btn-follow:hover {
+    background-color: #2563eb;
 }
     

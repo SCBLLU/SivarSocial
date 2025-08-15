@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Services\NotificationService;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 
@@ -41,6 +42,8 @@ class LikePost extends Component
         }
 
         try {
+            $notificationService = new NotificationService();
+
             if ($this->post->checkLike($user)) {
                 // Quitar like
                 $this->post->likes()->where('user_id', $user->id)->delete();
@@ -51,6 +54,13 @@ class LikePost extends Component
                 $this->post->likes()->create(['user_id' => $user->id]);
                 $this->isLiked = true;
                 $this->likes++;
+
+                // Crear notificación de like
+                $notificationService->createLikeNotification($user, $this->post);
+
+                // Emitir eventos para actualizar notificaciones
+                $this->dispatch('notification-created');
+                $this->dispatch('refreshNotifications');
             }
 
             // Refrescar conteo

@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\User;
+use App\Services\NotificationService;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 
@@ -49,6 +50,7 @@ class FollowUser extends Component
 
         try {
             $wasFollowing = $this->isFollowing;
+            $notificationService = new NotificationService();
 
             if ($wasFollowing) {
                 // Dejar de seguir
@@ -56,6 +58,13 @@ class FollowUser extends Component
             } else {
                 // Seguir
                 $currentUser->following()->attach($this->user->id);
+
+                // Crear notificación de follow
+                $notificationService->createFollowNotification($currentUser, $this->user);
+
+                // Emitir eventos para actualizar notificaciones
+                $this->dispatch('notification-created');
+                $this->dispatch('refreshNotifications');
             }
 
             // Actualizar el estado inmediatamente
@@ -64,6 +73,9 @@ class FollowUser extends Component
             // Refrescar el conteo desde la base de datos
             $this->user->refresh();
             $this->followersCount = $this->user->followers()->count();
+
+            // Emitir evento para actualizar otros componentes
+            $this->dispatch('follow-updated', userId: $this->user->id, isFollowing: $this->isFollowing);
         } catch (\Exception $e) {
             // Restaurar estado en caso de error
             $this->refreshFollowStatus();
