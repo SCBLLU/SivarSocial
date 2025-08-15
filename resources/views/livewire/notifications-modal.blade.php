@@ -2,34 +2,26 @@
 <div>
     @if($showModal)
         <div class="fixed inset-0 flex items-end sm:items-center justify-center transition-all duration-300 ease-out"
-            style="background-color: rgba(0, 0, 0, 0.6); z-index: 9999;" 
-            x-data="{ show: false }" 
-            x-init="$nextTick(() => show = true)" 
-            x-show="show" 
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0" 
-            x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-200" 
-            x-transition:leave-start="opacity-100"
+            style="background-color: rgba(0, 0, 0, 0.6); z-index: 9999;" x-data="{ show: false }"
+            x-init="$nextTick(() => show = true)" x-show="show" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0">
-            
+
             <!-- Backdrop para cerrar modal -->
             <div class="absolute inset-0 cursor-pointer" wire:click="closeModal"></div>
 
             <!-- Contenedor del modal -->
             <div class="fixed bottom-0 left-0 right-0 bg-white text-black rounded-t-2xl shadow-lg z-50 flex flex-col max-h-[80vh] w-full mx-auto sm:relative sm:w-96 sm:h-96 sm:rounded-xl overflow-hidden transform transition-all duration-300 ease-out"
-                x-show="show" 
-                x-transition:enter="transition ease-out duration-300 transform"
+                x-show="show" x-transition:enter="transition ease-out duration-300 transform"
                 x-transition:enter-start="translate-y-full sm:translate-y-0 sm:scale-95 sm:opacity-0"
                 x-transition:enter-end="translate-y-0 sm:translate-y-0 sm:scale-100 sm:opacity-100"
                 x-transition:leave="transition ease-in duration-200 transform"
                 x-transition:leave-start="translate-y-0 sm:translate-y-0 sm:scale-100 sm:opacity-100"
-                x-transition:leave-end="translate-y-full sm:translate-y-0 sm:scale-95 sm:opacity-0" 
-                x-data="dragToCloseNotifications()"
-                x-on:touchstart="startDrag($event)" 
-                x-on:touchmove="onDrag($event)" 
+                x-transition:leave-end="translate-y-full sm:translate-y-0 sm:scale-95 sm:opacity-0"
+                x-data="dragToCloseNotifications()" x-on:touchstart="startDrag($event)" x-on:touchmove="onDrag($event)"
                 x-on:touchend="endDrag($event)">
-                
+
                 <!-- Drag handle mobile -->
                 <div class="p-4 border-b border-gray-200 text-center text-lg font-semibold cursor-grab touch-none sm:hidden"
                     x-ref="dragHandle">
@@ -59,40 +51,37 @@
                 </div>
 
                 <!-- Lista scrolleable -->
-                <div class="p-4 space-y-3 overflow-y-auto flex-1 pb-0 bg-white" 
-                    x-data="{ 
-                        scrollHandler() {
-                            if (this.$el.scrollTop + this.$el.clientHeight >= this.$el.scrollHeight - 100) {
-                                @this.loadMore();
-                            }
-                        }
-                    }" 
-                    x-on:scroll="scrollHandler()">
+                <div class="p-4 space-y-3 overflow-y-auto flex-1 pb-0 bg-white" x-data="{ 
+                                            scrollHandler() {
+                                                if (this.$el.scrollTop + this.$el.clientHeight >= this.$el.scrollHeight - 100) {
+                                                    @this.loadMore();
+                                                }
+                                            }
+                                        }" x-on:scroll="scrollHandler()">
 
                     @if(count($notifications) > 0)
                         @foreach($notifications as $notification)
-                            <div class="py-3 border-b border-gray-100 last:border-b-0 {{ !$notification['isRead'] ? 'bg-blue-50 rounded-lg px-3' : '' }}">
+                            <div
+                                class="py-3 border-b border-gray-100 last:border-b-0 relative {{ !$notification['isRead'] ? 'bg-blue-50 rounded-lg px-3' : '' }}">
                                 @if($notification['fromUser'])
                                     <div class="flex items-start space-x-3">
                                         <!-- Avatar del usuario -->
                                         <div class="flex-shrink-0">
                                             <a href="{{ route('posts.index', $notification['fromUser']->username) }}">
-                                                <img 
-                                                    src="{{ $notification['fromUser']->imagen_url }}" 
+                                                <img src="{{ $notification['fromUser']->imagen_url }}"
                                                     alt="{{ $notification['fromUser']->name }}"
-                                                    class="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
-                                                >
+                                                    class="w-10 h-10 rounded-full object-cover border-2 border-gray-200">
                                             </a>
                                         </div>
 
                                         <!-- Contenido de la notificación -->
                                         <div class="flex-1 min-w-0">
                                             <div class="flex items-start justify-between">
-                                                <div class="flex-1">
+                                                <div class="flex-1 pr-3">
                                                     <!-- Mensaje de la notificación -->
                                                     <p class="text-sm text-gray-900">
-                                                        <a href="{{ route('posts.index', $notification['fromUser']->username) }}" 
-                                                           class="font-semibold hover:text-blue-600 transition-colors">
+                                                        <a href="{{ route('posts.index', $notification['fromUser']->username) }}"
+                                                            class="font-semibold hover:text-blue-600 transition-colors">
                                                             {{ $notification['fromUser']->username }}
                                                         </a>
                                                         <span class="text-gray-600"> {{ $notification['message'] }}</span>
@@ -106,26 +95,50 @@
 
                                                 <!-- Imagen del post para likes y comentarios -->
                                                 @if($notification['post'] && ($notification['type'] === 'like' || $notification['type'] === 'comment'))
-                                                    <div class="flex-shrink-0 ml-3">
-                                                        <a href="{{ route('posts.show', ['user' => $notification['post']->user->username, 'post' => $notification['post']->id]) }}">
-                                                            @if($notification['post']->imagen)
-                                                                <img 
-                                                                    src="{{ asset('uploads/' . $notification['post']->imagen) }}" 
-                                                                    alt="Post"
-                                                                    class="w-11 h-11 rounded-md object-cover border border-gray-200"
-                                                                >
-                                                            @else
-                                                                <div class="w-11 h-11 bg-gray-200 rounded-md flex items-center justify-center border border-gray-200">
-                                                                    <i class="bx bx-image text-gray-400 text-lg"></i>
-                                                                </div>
-                                                            @endif
-                                                        </a>
+                                                    <div class="flex-shrink-0">
+                                                        @if($notification['post']->user)
+                                                            <a href="{{ route('posts.show', ['user' => $notification['post']->user->username, 'post' => $notification['post']->id]) }}"
+                                                                class="block hover:opacity-80 transition-opacity">
+                                                                @if($notification['post']->tipo === 'musica' && $notification['post']->itunes_artwork_url)
+                                                                    <!-- Portada de música -->
+                                                                    <div
+                                                                        class="relative w-12 h-12 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                                                                        <img src="{{ str_replace(['100x100', '60x60', '30x30'], '300x300', $notification['post']->itunes_artwork_url) }}"
+                                                                            alt="Portada del álbum" class="w-full h-full object-cover"
+                                                                            onerror="this.parentElement.innerHTML='<div class=\'w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center\'><i class=\'bx bx-music text-white text-lg\'></i></div>'">
+                                                                        <!-- Overlay de música -->
+                                                                        <div
+                                                                            class="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                                                            <i class="bx bx-play text-white text-sm drop-shadow"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                @elseif($notification['post']->imagen)
+                                                                    <!-- Imagen de post normal -->
+                                                                    <img src="{{ asset('uploads/' . $notification['post']->imagen) }}"
+                                                                        alt="Publicación"
+                                                                        class="w-12 h-12 rounded-lg object-cover border border-gray-200 shadow-sm"
+                                                                        onerror="this.parentElement.innerHTML='<div class=\'w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center border border-gray-200\'><i class=\'bx bx-image text-gray-400 text-lg\'></i></div>'">
+                                                                @elseif($notification['post']->tipo === 'musica')
+                                                                    <!-- Placeholder para música sin portada -->
+                                                                    <div
+                                                                        class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center border border-gray-200 shadow-sm">
+                                                                        <i class="bx bx-music text-white text-lg"></i>
+                                                                    </div>
+                                                                @else
+                                                                    <!-- Placeholder para imagen -->
+                                                                    <div
+                                                                        class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center border border-gray-200 shadow-sm">
+                                                                        <i class="bx bx-image text-gray-400 text-lg"></i>
+                                                                    </div>
+                                                                @endif
+                                                            </a>
+                                                        @endif
                                                     </div>
                                                 @endif
 
                                                 <!-- Indicador de no leída -->
                                                 @if(!$notification['isRead'])
-                                                    <div class="w-2 h-2 bg-blue-500 rounded-full mt-2 {{ $notification['post'] && ($notification['type'] === 'like' || $notification['type'] === 'comment') ? 'mr-3' : '' }}"></div>
+                                                    <div class="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full"></div>
                                                 @endif
                                             </div>
 
@@ -133,21 +146,17 @@
                                             <div class="mt-3 flex items-center space-x-2">
                                                 @if($notification['type'] === 'follow')
                                                     <!-- Botón de seguir/no seguir -->
-                                                    <button 
-                                                        wire:click="followUser({{ $notification['fromUser']->id }})"
+                                                    <button wire:click="followUser({{ $notification['fromUser']->id }})"
                                                         class="px-3 py-1 text-xs font-medium rounded-full transition-all duration-200
-                                                            {{ $this->isFollowingUser($notification['fromUser']->id) ? 'bg-white border border-black text-black hover:bg-gray-50' : 'bg-[#3B25DD] border border-black text-white hover:bg-[#120073]' }}"
-                                                    >
+                                                                                                                                                                {{ $this->isFollowingUser($notification['fromUser']->id) ? 'bg-white border border-black text-black hover:bg-gray-50' : 'bg-[#3B25DD] border border-black text-white hover:bg-[#120073]' }}">
                                                         {{ $this->isFollowingUser($notification['fromUser']->id) ? 'NO SEGUIR' : 'SEGUIR' }}
                                                     </button>
 
                                                 @elseif($notification['type'] === 'like' && $notification['post'])
                                                     @if($notification['post']->user)
                                                         <!-- Ver post -->
-                                                        <a 
-                                                            href="{{ route('posts.show', ['user' => $notification['post']->user->username, 'post' => $notification['post']->id]) }}"
-                                                            class="px-3 py-1 text-xs font-medium text-blue-600 hover:text-blue-800 border border-blue-300 rounded-full hover:bg-blue-50 transition-colors duration-200"
-                                                        >
+                                                        <a href="{{ route('posts.show', ['user' => $notification['post']->user->username, 'post' => $notification['post']->id]) }}"
+                                                            class="px-3 py-1 text-xs font-medium text-blue-600 hover:text-blue-800 border border-blue-300 rounded-full hover:bg-blue-50 transition-colors duration-200">
                                                             Ver publicación
                                                         </a>
                                                     @endif
@@ -155,10 +164,8 @@
                                                 @elseif($notification['type'] === 'comment' && $notification['post'])
                                                     @if($notification['post']->user)
                                                         <!-- Ver comentarios -->
-                                                        <a 
-                                                            href="{{ route('posts.show', ['user' => $notification['post']->user->username, 'post' => $notification['post']->id]) }}#comments"
-                                                            class="px-3 py-1 text-xs font-medium text-green-600 hover:text-green-800 border border-green-300 rounded-full hover:bg-green-50 transition-colors duration-200"
-                                                        >
+                                                        <a href="{{ route('posts.show', ['user' => $notification['post']->user->username, 'post' => $notification['post']->id]) }}#comments"
+                                                            class="px-3 py-1 text-xs font-medium text-green-600 hover:text-green-800 border border-green-300 rounded-full hover:bg-green-50 transition-colors duration-200">
                                                             Ver comentario
                                                         </a>
                                                     @endif
