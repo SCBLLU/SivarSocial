@@ -4,32 +4,38 @@ Documentación técnica del repositorio del proyecto.
 Instalación y Ejecución
 
 ### Paso 1: Clonar el Proyecto
+
 ```bash
 git clone <Link del repositorio>
 cd SivarSocial
 ```
 
 ### Paso 2: Instalar Dependencias
+
 ```bash
 composer install
 npm install
 ```
 
 ### Paso 3: Configurar Entorno
+
 ```bash
 copy .env.example .env
 php artisan key:generate
 ```
 
 ### Paso 4: Configurar Base de Datos
+
 1. Crear base de datos `sivarsocial` en MySQL
 2. Configurar credenciales en `.env`
 3. Ejecutar migraciones:
+
 ```bash
 php artisan migrate
 ```
 
 ### Paso 5: Iniciar el Proyecto
+
 ```bash
 composer run dev
 ```
@@ -121,10 +127,12 @@ php artisan view:clear
 php artisan cache:clear
 php artisan clear-compiled
 ```
-### Ver logs en tiempo real
-```bash
-php artisan pail
-```
+## Herramienta Interna para desarrollo
+
+>**Nota:** Esta herramienta aún se encuentra en desarrollo.
+
+Ejecuta el archivo `manage-seeders.bat` para automatizar la ejecución de los comandos de desarrollo.
+
 
 ## Tecnológias
 
