@@ -32,6 +32,8 @@ class NotificationsModal extends Component
     public function closeModal()
     {
         $this->showModal = false;
+
+        $this->dispatch('modal-closed');
     }
 
     public function loadNotifications()

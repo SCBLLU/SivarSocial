@@ -47,6 +47,8 @@ class LikesModal extends Component
         $this->likes = [];
         $this->currentPage = 1;
         $this->hasMore = true;
+
+        $this->dispatch('modal-closed');
     }
 
     public function loadLikes($reset = false)
