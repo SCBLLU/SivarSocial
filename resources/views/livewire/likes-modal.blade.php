@@ -3,10 +3,16 @@
     @if($showModal)
         <div class="fixed inset-0 flex items-end sm:items-center justify-center transition-all duration-300 ease-out"
             style="background-color: rgba(0, 0, 0, 0.6); z-index: 1100;" x-data="{ show: false }"
-            x-init="$nextTick(() => show = true)" x-show="show" x-transition:enter="transition ease-out duration-300"
+            x-init="
+                $nextTick(() => show = true);
+                document.documentElement.style.overflowY = 'hidden';
+            "
+            x-show="show" x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
             x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0">
+            x-transition:leave-end="opacity-0"
+            @click.away="$wire.closeModal()"
+            x-on:destroy="document.documentElement.style.overflowY = ''">
             <!-- Backdrop para cerrar modal -->
             <div class="absolute inset-0 cursor-pointer" wire:click="closeModal"></div>
 
@@ -153,9 +159,10 @@
                 modal.style.transition = 'transform 0.3s ease-out';
 
                 if (deltaY > this.threshold) {
-                    // Cerrar modal
+                   // Cerrar modal y restaurar overflow
                     modal.style.transform = 'translateY(100%)';
                     setTimeout(() => {
+                        document.documentElement.style.overflowY = '';
                         @this.closeModal();
                     }, 300);
                 } else {
@@ -165,4 +172,11 @@
             }
         }
     }
+
+    // Escuchar eventos de Livewire para restaurar el overflow
+    document.addEventListener('livewire:init', function() {
+        Livewire.on('modal-closed', function() {
+            document.documentElement.style.overflowY = '';
+        });
+    });
 </script>
