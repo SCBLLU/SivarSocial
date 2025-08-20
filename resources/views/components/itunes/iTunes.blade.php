@@ -94,12 +94,26 @@
                                     <div class="bg-[#6366f1] w-1 h-1.5 rounded-full animate-wave3"></div>
                                 </div>
 
-                                <h4 class="font-semibold text-base truncate transition-colors duration-300"
-                                    :class="isPlaying && currentTrackId === selectedTrack?.trackId ? 'text-[#6366f1]' : 'text-white'"
-                                    x-text="selectedTrack?.trackName">
-                                </h4>
+                                <!-- this -->
+                                <div class="track-title-container">
+                                    <div class="scrollable-title-wrapper">
+                                        <span class="track-title font-semibold text-base transition-colors duration-300 scrollable-title"
+                                            :class="isPlaying && currentTrackId === selectedTrack?.trackId ? 'text-[#6366f1]' : 'text-white'"
+                                            x-text="selectedTrack?.trackName">
+                                        </span>
+                                        <span class="track-title font-semibold text-base transition-colors duration-300 scrollable-title clone"
+                                            :class="isPlaying && currentTrackId === selectedTrack?.trackId ? 'text-[#6366f1]' : 'text-white'"
+                                            x-text="selectedTrack?.trackName">
+                                        </span>
+                                   </div>
+                                </div>
                             </div>
-                            <p class="text-gray-400 text-sm truncate" x-text="selectedTrack?.artistName"></p>
+                            <div class="track-title-container">
+                                <div class="scrollable-title-wrapper">
+                                    <span class="track-title text-gray-400 text-sm scrollable-title" x-text="selectedTrack?.artistName"></span>
+                                    <span class="track-title text-gray-400 text-sm scrollable-title clone" x-text="selectedTrack?.artistName"></span>
+                               </div>
+                            </div>
                         </div>
 
                         <!-- Botón para eliminar selección -->
