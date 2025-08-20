@@ -130,18 +130,42 @@
 
                                         <!-- Detalles de la canción -->
                                         <div class="flex-1 min-w-0">
-                                            <h3 class="text-white font-bold text-lg sm:text-xl truncate mb-1">
-                                                {{ $trackName ?: 'Canción desconocida' }}
-                                            </h3>
-                                            <p class="text-gray-300 text-sm sm:text-base truncate mb-2">
-                                                {{ $artistName ?: 'Artista desconocido' }}
-                                            </p>
+                                            <div class="track-title-container">
+                                                <div class="scrollable-title-wrapper">
+                                                    <span class="track-title text-white font-bold text-lg sm:text-xl mb-1 scrollable-title">
+                                                        {{ $trackName ?: 'Canción desconocida' }}
+                                                    </span>
+                                                    <span class="track-title text-white font-bold text-lg sm:text-xl mb-1 scrollable-title clone">
+                                                        {{ $trackName ?: 'Canción desconocida' }}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="track-title-container">
+                                                <div class="scrollable-title-wrapper">
+                                                    <span class="track-title text-gray-300 text-sm sm:text-base mb-2 scrollable-title">
+                                                        {{ $artistName ?: 'Artista desconocido' }}
+                                                    </span>
+                                                    <span class="track-title text-gray-300 text-sm sm:text-base mb-2 scrollable-title clone">
+                                                        {{ $artistName ?: 'Artista desconocido' }}
+                                                    </span>
+                                                </div>
+                                            </div>
+
                                             @if($albumName)
-                                                <p class="text-gray-400 text-xs sm:text-sm truncate">
-                                                    {{ $albumName }}
-                                                </p>
+                                            <div class="track-title-container">
+                                                <div class="scrollable-title-wrapper">
+                                                    <span class="track-title text-gray-400 text-xs sm:text-sm scrollable-title">
+                                                        {{ $albumName }}
+                                                    </span>
+                                                    <span class="track-title text-gray-400 text-xs sm:text-sm scrollable-title clone">
+                                                        {{ $albumName }}
+                                                    </span>
+                                                </div>
+                                            </div>
                                             @endif
                                         </div>
+
                                     </div>
 
                                     @if($previewUrl)
