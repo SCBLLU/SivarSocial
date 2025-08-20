@@ -84,6 +84,24 @@
       </div>
       </li>
 
+      @elseif(Route::is('posts.create'))
+      <li class="menu__item">
+      <a class="menu__link btn" href="{{ url('/') }}#home">
+        <i class='bx bx-home-smile'></i>
+      </a>
+      </li>
+      <li class="menu__item">
+      <a class="menu__link btn" onclick="openModal(0)">
+        <i class='bx bx-group'></i>
+      </a>
+      </li>
+      <!-- Notificaciones -->
+      <li class="menu__item">
+      <div class="menu__link btn notification-btn-mobile">
+      @livewire('notification-button')
+      </div>
+      </li>
+
       @elseif(Route::is('users.followers', 'users.following', 'colaboradores.index'))
       <li class="menu__item">
       <a class="menu__link btn" href="{{ url('/') }}#home">

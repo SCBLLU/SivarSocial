@@ -661,3 +661,68 @@ window.searchiTunes = searchiTunes;
 window.toggleMusicPreview = function (previewUrl, trackId, source) {
     itunesTogglePreview(previewUrl, trackId);
 };
+
+//Titulo de canción largo
+document.addEventListener("DOMContentLoaded", function() {
+    const wrappers = document.querySelectorAll(".scrollable-title-wrapper");
+
+    let waiting = new Set(); 
+
+    wrappers.forEach((wrapper, index) => {
+        const original = wrapper.querySelector(".track-title:not(.clone)");
+
+        function checkScroll() {
+            const clone = wrapper.querySelector(".clone");
+
+            if (original.scrollWidth <= wrapper.parentElement.clientWidth) {
+                wrapper.classList.add("no-scroll");
+                wrapper.classList.remove("scroll");
+
+                if (clone) clone.style.display = "none";
+
+                // si no hace falta scroll, asegurarse que no quede en sincronización
+                waiting.delete(index);
+                wrapper.style.animationPlayState = "running"; // evitar pausa innecesaria
+            } else {
+                wrapper.classList.add("scroll");
+                wrapper.classList.remove("no-scroll");
+
+                if (clone) {
+                    clone.style.display = "inline-block";
+                } else {
+                    const newClone = original.cloneNode(true);
+                    newClone.classList.add("clone");
+                    wrapper.appendChild(newClone);
+                }
+            }
+        }
+
+        checkScroll();
+
+        const resizeObserver = new ResizeObserver(checkScroll);
+        resizeObserver.observe(wrapper.parentElement);
+
+        wrapper.addEventListener("animationiteration", () => {
+            // ⚡ solo sincronizar si este realmente necesita scroll
+            if (!wrapper.classList.contains("scroll")) return;
+
+            waiting.add(index);
+
+            // si todos los que sí scrolleaban llegaron al 0%
+            const scrollingWrappers = Array.from(wrappers)
+                .map((w, i) => w.classList.contains("scroll") ? i : null)
+                .filter(i => i !== null);
+
+            if (scrollingWrappers.every(i => waiting.has(i))) {
+                waiting.clear();
+                wrappers.forEach(w => {
+                    if (w.classList.contains("scroll")) {
+                        w.style.animationPlayState = "running";
+                    }
+                });
+            } else {
+                wrapper.style.animationPlayState = "paused";
+            }
+        });
+    });
+});

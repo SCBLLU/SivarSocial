@@ -55,13 +55,29 @@
 
                                     <!-- Información de la canción estilo Spotify -->
                                     <div class="flex-1 min-w-0 flex flex-col justify-center">
-                                        <h4 class="font-semibold text-base sm:text-lg truncate text-white leading-tight">
-                                            {{ $trackName ?: 'Canción desconocida' }}
-                                        </h4>
-                                        <p class="text-gray-300 text-xs sm:text-sm truncate mt-1">
-                                            {{ $artistName ?: 'Artista desconocido' }}
-                                        </p>
+                                        <div class="track-title-container">
+                                            <div class="scrollable-title-wrapper">
+                                                <span class="track-title font-semibold text-base sm:text-lg text-white leading-tight scrollable-title">
+                                                    {{ $trackName ?: 'Canción desconocida' }}
+                                                </span>
+                                                <span class="track-title font-semibold text-base sm:text-lg text-white leading-tight scrollable-title clone">
+                                                    {{ $trackName ?: 'Canción desconocida' }}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="track-title-container">
+                                            <div class="scrollable-title-wrapper">
+                                                <span class="track-title text-gray-300 text-xs sm:text-sm truncate mt-1 scrollable-title">
+                                                    {{ $artistName ?: 'Artista desconocido' }}
+                                                </span>
+                                                <span class="track-title text-gray-300 text-xs sm:text-sm truncate mt-1 scrollable-title clone">
+                                                    {{ $artistName ?: 'Artista desconocido' }}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
+
                                 </a>
 
                                 <!-- Botón de reproducir vista previa - SEPARADO del enlace -->

@@ -296,3 +296,47 @@ input[type="password"] {
         border-color: #4b5563;
     }
 } */
+
+/*animación del titulo*/
+.track-title-container {
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    width: auto;
+}
+
+.scrollable-title-wrapper {
+    display: inline-flex;
+    gap: 2rem; /* separación entre original y clon */
+}
+
+.track-title {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.scrollable-title-wrapper.scroll {
+    animation: marquee 12s linear infinite;
+    animation-play-state: running; /* controlada por JS */
+}
+
+.clone {
+    display: none; /* siempre ocultos inicialmente */
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0); /* Posición inicial */
+    }
+    20% {
+        transform: translateX(0); /* Pausa en el inicio */
+    }
+    100% {
+        transform: translateX(-52%); /* Desplazamiento hasta que el clon lo reemplace */
+    }
+}
+/* si no hace falta scroll */
+.no-scroll {
+    animation: none !important;
+    transform: translateX(0);
+}
