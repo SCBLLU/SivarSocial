@@ -16,6 +16,8 @@ class CommentsSection extends Component
 
     public $post;
     public $comentario = '';
+    public $selectedGif = null;
+    public $showGifModal = false;
     public $successMessage = '';
     public $showLoadMore = false;
     public $commentsPerPage = 10;
@@ -54,6 +56,30 @@ class CommentsSection extends Component
         $this->dispatch('comments-loaded');
     }
 
+    public function toggleGifModal()
+    {
+        $this->showGifModal = !$this->showGifModal;
+        if (!$this->showGifModal) {
+            $this->selectedGif = null;
+        }
+    }
+
+    public function selectGif($gifUrl)
+    {
+        $this->selectedGif = $gifUrl;
+        $this->showGifModal = false;
+    }
+
+    public function removeSelectedGif()
+    {
+        $this->selectedGif = null;
+    }
+
+    public function getGiphyApiKeyProperty()
+    {
+        return config('services.giphy.api_key');
+    }
+
     public function store()
     {
         // Solo usuarios autenticados pueden comentar
@@ -63,39 +89,45 @@ class CommentsSection extends Component
             return;
         }
 
-        // Validación
-        $this->validate([
-            'comentario' => 'required|string|max:500|min:1',
-        ], [
-            'comentario.required' => 'El comentario es obligatorio.',
-            'comentario.max' => 'El comentario no puede exceder los 500 caracteres.',
-            'comentario.min' => 'El comentario debe tener al menos 1 caracter.',
-        ]);
-
-        // Verificar que el comentario no esté vacío o solo contenga espacios
-        if (trim($this->comentario) === '') {
-            $this->addError('comentario', 'El comentario no puede estar vacío.');
+        // Validación - al menos uno debe estar presente
+        if (empty(trim($this->comentario)) && empty($this->selectedGif)) {
+            $this->addError('comentario', 'Debes escribir un comentario o seleccionar un GIF.');
             return;
+        }
+
+        // Validación del texto si está presente
+        if (!empty(trim($this->comentario))) {
+            $this->validate([
+                'comentario' => 'string|max:500|min:1',
+            ], [
+                'comentario.max' => 'El comentario no puede exceder los 500 caracteres.',
+                'comentario.min' => 'El comentario debe tener al menos 1 caracter.',
+            ]);
         }
 
         try {
             // Crear el comentario
+            $comentarioText = !empty(trim($this->comentario)) ? trim($this->comentario) : null;
+            
             $nuevoComentario = Comentario::create([
                 'user_id' => Auth::id(),
                 'post_id' => $this->post->id,
-                'comentario' => trim($this->comentario),
+                'comentario' => $comentarioText,
+                'gif_url' => $this->selectedGif,
             ]);
 
             // Crear notificación de comentario
             $notificationService = new NotificationService();
-            $notificationService->createCommentNotification(Auth::user(), $this->post, trim($this->comentario));
+            $commentContent = $comentarioText ?: 'envió un GIF';
+            $notificationService->createCommentNotification(Auth::user(), $this->post, $commentContent);
 
             // Emitir eventos para actualizar notificaciones
             $this->dispatch('notification-created');
             $this->dispatch('refreshNotifications');
 
-            // Limpiar el campo de comentario
+            // Limpiar los campos
             $this->comentario = '';
+            $this->selectedGif = null;
 
             // Recalcular contadores desde la base de datos para asegurar consistencia
             $this->totalComments = $this->post->comentarios()->count();
