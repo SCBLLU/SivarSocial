@@ -61,13 +61,16 @@ class CommentsSection extends Component
         $this->showGifModal = !$this->showGifModal;
         if (!$this->showGifModal) {
             $this->selectedGif = null;
+            // Emitir evento para asegurar limpieza de scroll
+            $this->dispatch('modal-closed');
         }
     }
 
     public function selectGif($gifUrl)
     {
         $this->selectedGif = $gifUrl;
-        $this->showGifModal = false;
+        $this->showGifModal = false;        
+        $this->dispatch('gif-selected');
     }
 
     public function removeSelectedGif()
