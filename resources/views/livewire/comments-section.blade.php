@@ -235,7 +235,7 @@
 
                     <!-- Botón GIF  -->
                     <button type="button" wire:click="toggleGifModal"
-                        class="flex items-center justify-center text-xs font-bold text-black bg-gray-200 rounded-lg px-2.5 py-1 transition-all duration-200 transform hover:scale-110 active:scale-95 focus:outline-none {{ $selectedGif ? 'bg-gray-300' : '' }}"
+                        class="flex items-center justify-center text-xs font-bold text-black bg-gray-200 rounded-lg px-2.5 py-1 transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none {{ $selectedGif ? 'bg-gray-300' : '' }}"
                         title="Agregar GIF">
                         GIF
                     </button>
