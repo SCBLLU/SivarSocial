@@ -40,4 +40,8 @@ return [
         'client_secret' => env('SPOTIFY_CLIENT_SECRET'),
     ],
 
+    'giphy' => [
+        'api_key' => env('GIPHY_API_KEY'),
+    ],
+
 ];

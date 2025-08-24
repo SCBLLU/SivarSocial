@@ -13,6 +13,7 @@ class Comentario extends Model
         'user_id',
         'post_id',
         'comentario',
+        'gif_url',
     ];
 
     // para traer los datos del usuario y del post de quien es el comentario
@@ -84,5 +85,29 @@ class Comentario extends Model
             $years = floor($diff / 31556952);
             return $years == 1 ? 'Comentado hace 1 año' : "Comentado hace {$years} años";
         }
+    }
+
+    /**
+     * Verificar si el comentario tiene un GIF
+     */
+    public function hasGif()
+    {
+        return !empty($this->gif_url);
+    }
+
+    /**
+     * Verificar si el comentario tiene solo texto
+     */
+    public function hasOnlyText()
+    {
+        return !empty($this->comentario) && empty($this->gif_url);
+    }
+
+    /**
+     * Verificar si el comentario tiene solo GIF
+     */
+    public function hasOnlyGif()
+    {
+        return empty($this->comentario) && !empty($this->gif_url);
     }
 }

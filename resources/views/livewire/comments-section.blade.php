@@ -107,9 +107,29 @@
 
                         <!-- Contenido del comentario -->
                         <div>
-                            <p class="text-sm text-gray-700 leading-relaxed break-words">
-                                {{ $comentario->comentario }}
-                            </p>
+                            @if($comentario->hasOnlyGif())
+                                <!-- Solo GIF -->
+                                <div class="mt-2">
+                                    <img src="{{ $comentario->gif_url }}" alt="GIF"
+                                        class="max-w-full h-auto rounded-xl shadow-sm max-h-48 object-contain border border-gray-100">
+                                </div>
+                            @elseif($comentario->hasGif())
+                                <!-- Texto + GIF -->
+                                @if(!empty($comentario->comentario))
+                                    <p class="text-sm text-gray-700 leading-relaxed break-words mb-2">
+                                        {{ $comentario->comentario }}
+                                    </p>
+                                @endif
+                                <div class="mt-2">
+                                    <img src="{{ $comentario->gif_url }}" alt="GIF"
+                                        class="max-w-full h-auto rounded-xl shadow-sm max-h-48 object-contain border border-gray-100">
+                                </div>
+                            @else
+                                <!-- Solo texto -->
+                                <p class="text-sm text-gray-700 leading-relaxed break-words">
+                                    {{ $comentario->comentario }}
+                                </p>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -151,7 +171,7 @@
     </div>
 
     <!-- Formulario de comentario fijo -->
-    <div class="px-4 py-3 border-t border-gray-200 flex-shrink-0 bg-white rounded-b-2xl">
+    <div class="px-4 py-4 border-t border-gray-100 flex-shrink-0 bg-white rounded-b-2xl">
         @auth
             @if ($successMessage)
                 <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
@@ -176,20 +196,52 @@
                 </div>
             @endif
 
+            <!-- Preview del GIF seleccionado -->
+            @if($selectedGif)
+                <div class="mb-3 p-2 bg-gray-50 rounded-2xl border border-gray-100">
+                    <div class="flex items-start gap-2">
+                        <img src="{{ $selectedGif }}" alt="GIF seleccionado"
+                            class="w-12 h-12 object-cover rounded-lg shadow-sm">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-medium text-gray-700">GIF seleccionado</p>
+                            <p class="text-xs text-gray-500 truncate">Se enviará con tu comentario</p>
+                        </div>
+                        <button type="button" wire:click="removeSelectedGif"
+                            class="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-red-50">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            @endif
+
             <form wire:submit.prevent="store" autocomplete="off">
-                <div class="bg-gray-100 rounded-full p-2 flex items-center gap-2 sm:gap-3">
+                <div
+                    class="bg-white border border-gray-200 rounded-full p-2 flex items-center gap-2 sm:gap-3 hover:border-gray-300 transition-colors">
                     @if(auth()->user()->imagen)
                         <img src="{{ asset('perfiles/' . auth()->user()->imagen) }}" alt="Tu avatar"
-                            class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover border-2 border-[#3B25DD] flex-shrink-0"
+                            class="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border-2 border-gray-100 flex-shrink-0"
                             onerror="this.src='{{ asset('img/img.jpg') }}'">
                     @else
                         <img src="{{ asset('img/img.jpg') }}" alt="Tu avatar por defecto"
-                            class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover border-2 border-[#3B25DD] flex-shrink-0">
+                            class="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border-2 border-gray-100 flex-shrink-0">
                     @endif
                     <input type="text" wire:model="comentario"
-                        class="flex-1 min-w-0 bg-transparent border-none outline-none text-xs sm:text-sm placeholder-gray-500 text-gray-800 {{ $errors->has('comentario') ? 'text-red-500' : '' }}"
-                        placeholder="Agrega un comentario..." maxlength="500" required wire:loading.attr="disabled"
-                        wire:target="store">
+                        class="flex-1 min-w-0 bg-transparent border-none outline-none text-sm placeholder-gray-400 text-gray-900 {{ $errors->has('comentario') ? 'text-red-500' : '' }}"
+                        placeholder="{{ $selectedGif ? 'Agrega un comentario (opcional)...' : 'Agrega un comentario...' }}"
+                        maxlength="500" wire:loading.attr="disabled" wire:target="store">
+
+                    <!-- Botón GIF  -->
+                    <button type="button" wire:click="toggleGifModal"
+                        class="flex items-center justify-center text-xs font-bold text-black bg-gray-200 rounded-lg px-2.5 py-1 transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none {{ $selectedGif ? 'bg-gray-300' : '' }}"
+                        title="Agregar GIF">
+                        GIF
+                    </button>
+
+
+
                     <button type="submit" wire:loading.attr="disabled" wire:target="store"
                         class="text-gray-800 hover:text-black hover:bg-gray-100 rounded-full p-1 sm:p-2 transition-all duration-200 transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50"
                         title="Enviar comentario">
@@ -201,16 +253,13 @@
                             </svg>
                         </div>
                         <svg wire:loading.remove wire:target="store"
-                            class="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-200 hover:rotate-12"
+                            class="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-200 hover:rotate-50 transform rotate-90"
                             fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.1"
                                 d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                         </svg>
                     </button>
                 </div>
-                @error('comentario')
-                    <p class="text-red-500 text-xs mt-2 ml-8 sm:ml-11">{{ $message }}</p>
-                @enderror
             </form>
         @else
             <div class="bg-gray-50 border border-gray-200 rounded-2xl p-3 sm:p-4 text-center">
@@ -230,9 +279,227 @@
             </div>
         @endauth
     </div>
+
+    <!-- Modal de Selección de GIFs -->
+    @if($showGifModal)
+        <div class="fixed inset-0 flex items-end sm:items-center justify-center transition-all duration-300 ease-out"
+            style="background-color: rgba(0, 0, 0, 0.6); z-index: 9999;" x-data="{ show: false }" x-init="
+                    $nextTick(() => show = true);
+                    document.documentElement.style.overflowY = 'hidden';
+                " x-show="show" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @click.away="$wire.toggleGifModal()"
+            x-on:destroy="document.documentElement.style.overflowY = ''" @keydown.escape.window="$wire.toggleGifModal()">
+
+            <!-- Backdrop para cerrar modal -->
+            <div class="absolute inset-0 cursor-pointer" wire:click="toggleGifModal"></div>
+
+            <!-- Contenedor del modal -->
+            <div class="fixed bottom-0 left-0 right-0 bg-white text-black rounded-t-2xl shadow-lg z-50 flex flex-col max-h-[80vh] w-full mx-auto sm:relative sm:w-96 sm:h-96 sm:rounded-xl overflow-hidden transform transition-all duration-300 ease-out"
+                x-show="show" x-transition:enter="transition ease-out duration-300 transform"
+                x-transition:enter-start="translate-y-full sm:translate-y-0 sm:scale-95 sm:opacity-0"
+                x-transition:enter-end="translate-y-0 sm:translate-y-0 sm:scale-100 sm:opacity-100"
+                x-transition:leave="transition ease-in duration-200 transform"
+                x-transition:leave-start="translate-y-0 sm:translate-y-0 sm:scale-100 sm:opacity-100"
+                x-transition:leave-end="translate-y-full sm:translate-y-0 sm:scale-95 sm:opacity-0"
+                x-data="dragToCloseGifs()" x-on:touchstart="startDrag($event)" x-on:touchmove="onDrag($event)"
+                x-on:touchend="endDrag($event)">
+
+                <!-- Drag handle mobile -->
+                <div class="p-4 border-b border-gray-200 text-center text-lg font-semibold sm:hidden">
+                    <!-- Botón de cierre móvil -->
+                    <div class="absolute top-4 right-4 z-10">
+                        <button wire:click="toggleGifModal" @click.stop @touchstart.stop @touchend.stop
+                            class="p-1 rounded-full transition-colors">
+                            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Área de drag -->
+                    <div class="cursor-grab touch-none" x-ref="dragHandle">
+                        <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-2"></div>
+                        <div class="flex items-center justify-start px-2">
+                            <span class="text-base font-bold text-gray-900">Seleccionar GIF</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Header desktop -->
+                <div class="hidden sm:block flex-none border-b border-gray-200 bg-white sm:rounded-t-xl sticky top-0 z-10">
+                    <div class="flex items-center justify-between px-4 py-3">
+                        <h3 class="text-base font-semibold text-gray-900">Seleccionar GIF</h3>
+                        <button wire:click="toggleGifModal" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
+                            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contenido scrolleable -->
+                <div class="p-4 space-y-3 overflow-y-auto flex-1 pb-0 bg-white"
+                    x-data="giphySelector('{{ $this->giphyApiKey }}')">
+                    <!-- Sección fija: Buscador y categorías -->
+                    <div class="space-y-3 pb-4">
+                        <!-- Buscador -->
+                        <div class="relative">
+                            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <input type="text" x-model="searchTerm" @input="searchGifs" placeholder="Buscar GIFs..."
+                                class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3B25DD] focus:border-transparent text-sm bg-gray-50 hover:bg-white transition-colors">
+                        </div>
+
+                        <!-- Categorías populares -->
+                        <div x-show="searchTerm === ''">
+                            <p class="text-xs font-medium text-gray-700 mb-2">Populares</p>
+                            <div class="flex flex-wrap gap-2">
+                                <template
+                                    x-for="category in ['😀 Feliz', '😂 Divertido', '❤️ Amor', '🎉 Emocionado', '👍 Bien', '👏 Aplausos']">
+                                    <button @click="quickSearch(category.split(' ')[1])"
+                                        class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-xs text-gray-700 transition-all duration-200 hover:scale-105 font-medium">
+                                        <span x-text="category"></span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Área de contenido scrolleable -->
+                    <div class="space-y-4">
+                        <!-- Loading -->
+                        <div x-show="loading" class="text-center py-8">
+                            <div
+                                class="animate-spin w-8 h-8 border-2 border-[#3B25DD] border-t-transparent rounded-full mx-auto">
+                            </div>
+                            <p class="text-gray-500 text-sm mt-2">Cargando GIFs...</p>
+                        </div>
+
+                        <!-- Error -->
+                        <div x-show="error && !loading" class="text-center py-8">
+                            <svg class="w-12 h-12 text-red-400 mx-auto mb-2" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p class="text-red-500 text-sm mb-2">Error al cargar GIFs</p>
+                            <button @click="loadTrendingGifs()"
+                                class="text-[#3B25DD] hover:text-[#120073] text-sm font-medium">
+                                Intentar de nuevo
+                            </button>
+                        </div>
+
+                        <!-- Grid de GIFs -->
+                        <div x-show="!loading && !error && gifs.length > 0" class="grid grid-cols-2 gap-2 pb-4">
+                            <template x-for="gif in gifs" :key="gif.id">
+                                <div class="cursor-pointer rounded-xl overflow-hidden hover:opacity-90 transition-all duration-200 transform shadow-sm hover:shadow-md"
+                                    @click="selectGif(gif.images.fixed_height.url)">
+                                    <img :src="gif.images.fixed_height_small.url" :alt="gif.title"
+                                        class="w-full h-20 sm:h-24 object-cover" loading="lazy">
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Estado vacío -->
+                        <div x-show="!loading && !error && gifs.length === 0 && searchTerm !== ''" class="text-center py-8">
+                            <p class="text-gray-500 text-sm">No se encontraron GIFs</p>
+                        </div>
+
+                        <!-- Estado inicial -->
+                        <div x-show="!loading && !error && gifs.length === 0 && searchTerm === ''" class="text-center py-8">
+                            <svg class="w-12 h-12 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p class="text-gray-500 text-sm">Busca un GIF para agregar a tu comentario</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
 
 <script>
+    // Componente Alpine.js para el selector de GIFs
+    function giphySelector(apiKey) {
+        return {
+            searchTerm: '',
+            gifs: [],
+            loading: false,
+            searchTimeout: null,
+            error: false,
+
+            init() {
+                this.loadTrendingGifs();
+            },
+
+            async loadTrendingGifs() {
+                this.loading = true;
+                this.error = false;
+                try {
+                    const response = await fetch(`https://api.giphy.com/v1/gifs/trending?api_key=${apiKey}&limit=20&rating=pg`);
+                    if (!response.ok) throw new Error('Error en la respuesta de la API');
+                    const data = await response.json();
+                    this.gifs = data.data || [];
+                } catch (error) {
+                    console.error('Error loading trending GIFs:', error);
+                    this.error = true;
+                    this.gifs = [];
+                } finally {
+                    this.loading = false;
+                }
+            },
+
+            searchGifs() {
+                // Debounce la búsqueda
+                clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(() => {
+                    this.performSearch();
+                }, 500);
+            },
+
+            async performSearch() {
+                if (this.searchTerm.trim() === '') {
+                    this.loadTrendingGifs();
+                    return;
+                }
+
+                this.loading = true;
+                this.error = false;
+                try {
+                    const response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${encodeURIComponent(this.searchTerm)}&limit=20&rating=pg`);
+                    if (!response.ok) throw new Error('Error en la búsqueda de GIFs');
+                    const data = await response.json();
+                    this.gifs = data.data || [];
+                } catch (error) {
+                    console.error('Error searching GIFs:', error);
+                    this.error = true;
+                    this.gifs = [];
+                } finally {
+                    this.loading = false;
+                }
+            },
+
+            selectGif(gifUrl) {
+                // Restaurar scroll antes de cerrar modal
+                document.documentElement.style.overflowY = '';
+                @this.selectGif(gifUrl);
+            },
+
+            quickSearch(term) {
+                this.searchTerm = term;
+                this.performSearch();
+            }
+        }
+    }
     document.addEventListener('DOMContentLoaded', function () {
         // Auto-ocultar mensaje de éxito después de 4 segundos
         Livewire.on('auto-hide-message', () => {
@@ -381,4 +648,78 @@
 
     // Exponer función globalmente
     window.focusCommentInput = focusCommentInput;
+
+    // Función para arrastrar y cerrar (exactamente igual que notifications modal)
+    function dragToCloseGifs() {
+        return {
+            isDragging: false,
+            startY: 0,
+            currentY: 0,
+            threshold: 100,
+
+            startDrag(event) {
+                // Solo en móvil
+                if (window.innerWidth >= 640) return;
+
+                // Solo activar drag desde el header/handle area
+                const dragHandle = this.$refs.dragHandle;
+                if (!dragHandle || !dragHandle.contains(event.target)) return;
+
+                this.isDragging = true;
+                this.startY = event.touches[0].clientY;
+                this.currentY = this.startY;
+                event.preventDefault();
+            },
+
+            onDrag(event) {
+                if (!this.isDragging || window.innerWidth >= 640) return;
+
+                event.preventDefault();
+                this.currentY = event.touches[0].clientY;
+
+                const deltaY = this.currentY - this.startY;
+
+                if (deltaY > 0) {
+                    const modal = this.$el;
+                    modal.style.transform = `translateY(${deltaY}px)`;
+                    modal.style.transition = 'none';
+                }
+            },
+
+            endDrag() {
+                if (!this.isDragging || window.innerWidth >= 640) return;
+
+                this.isDragging = false;
+                const deltaY = this.currentY - this.startY;
+                const modal = this.$el;
+
+                modal.style.transition = 'transform 0.3s ease-out';
+
+                if (deltaY > this.threshold) {
+                    // Cerrar modal directamente sin conflictos de transición
+                    modal.style.transform = 'translateY(100%)';
+                    setTimeout(() => {
+                        document.documentElement.style.overflowY = '';
+                        // Llamada directa a Livewire usando el ID del componente
+                        window.Livewire.find('{{ $_instance->getId() }}').toggleGifModal();
+                    }, 300);
+                } else {
+                    // Volver a posición original
+                    modal.style.transform = 'translateY(0)';
+                }
+            }
+        }
+    }
+
+    // Escuchar eventos de Livewire para restaurar el overflow
+    document.addEventListener('livewire:init', function () {
+        Livewire.on('modal-closed', function () {
+            document.documentElement.style.overflowY = '';
+        });
+
+        // Escuchar cuando se selecciona un GIF para asegurar limpieza
+        Livewire.on('gif-selected', function () {
+            document.documentElement.style.overflowY = '';
+        });
+    });
 </script>
