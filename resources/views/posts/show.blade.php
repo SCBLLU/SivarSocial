@@ -21,7 +21,7 @@
                 @if($post->isMusicPost())
                     <!-- Post musical -->
                     <div id="post-container"
-                        class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col min-h-[500px] mt-4 lg:mt-0">
+                        class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col mt-4 lg:mt-0">
                         <!-- Header usando componente reutilizable -->
                         <x-post-header :post="$post" :showMenu="true" :showFollowButton="false">
                             <div class="relative" x-data="{ showMusicMenu: false }" @close-menus.window="showMusicMenu = false">
