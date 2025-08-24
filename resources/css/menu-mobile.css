@@ -958,3 +958,10 @@ img, video, iframe {
     background-color: #2563eb;
 }
     
+
+.before\:-inset-1 {
+  &::before {
+    content: var(--tw-content);
+    inset: calc(var(--spacing) * -0.5);
+  }
+}

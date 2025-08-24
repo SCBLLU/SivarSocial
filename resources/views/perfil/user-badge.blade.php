@@ -6,7 +6,7 @@
             'alt' => 'Colaborador',
             'title' => 'Usuario Colaborador',
             'color' => 'text-blue-600',
-            'description' => 'Sivar Social, reconoce a este usuario como "colaborador", con el propósito de valorar su aporte al desarrollo de la red social.',
+            'description' => 'Sivar Social, reconoce a este usuario como <span class="font-bold relative text-gray-600">colaborador</span>, con el propósito de valorar su aporte al desarrollo de la red social.',
             'link' => 'colaboradores',
             'linkText' => 'Más información sobre su colaboración'
         ],
@@ -16,8 +16,8 @@
             'title' => 'Usuario Creador',
             'color' => 'text-blue-600',
             'description' => isset($user) && $user->username 
-            ? 'Sivar Social, reconoce @' . $user->username . ' como el creador por impulsar esta plataforma, por su visión y esfuerzo a la creación de esta red social.'
-            : 'Sivar Social, reconoce al "creador" por impulsar esta plataforma, por su visión y esfuerzo a la creación de esta red social.',
+            ? 'Sivar Social, reconoce @' . $user->username . ' como el <span class="font-bold relative text-blue-500">creador</span> por impulsar esta plataforma, por su visión y esfuerzo a la creación de esta red social.'
+            : 'Sivar Social, reconoce al <span class="font-bold relative text-blue-500">creador</span> por impulsar esta plataforma, por su visión y esfuerzo a la creación de esta red social.',
             'link' => null,
             'linkText' => null
         ],
@@ -26,7 +26,7 @@
             'alt' => 'Docente',
             'title' => 'Docente Verificado',
             'color' => 'text-green-600',
-            'description' => 'Sivar Social, reconoce a este usuario como "docente", con el propósito de identificar su rol y facilitar su interacción dentro de la red social.',
+            'description' => 'Sivar Social, reconoce a este usuario como <span class="font-bold relative text-yellow-600">docente</span>, con el propósito de identificar su rol y facilitar su interacción dentro de la red social.',
             'link' => null,
             'linkText' => null
         ],
@@ -35,7 +35,7 @@
             'alt' => 'Comunidad',
             'title' => 'Miembro de la Comunidad',
             'color' => 'text-purple-600',
-            'description' => 'Sivar Social, reconoce a este usuario como "comunidad", con el propósito de demostrar las interacciones continuas dentro de la red social.',
+            'description' => 'Sivar Social, reconoce a este usuario como <span class="font-bold relative text-purple-700">comunidad</span>, con el propósito de demostrar las interacciones continuas dentro de la red social.',
             'link' => null,
             'linkText' => null
         ]
@@ -71,7 +71,7 @@
             <h1 class="text-center text-black mb-3 font-medium text-2xl">Insignia</h1>
 
             <p class="text-center text-black text-xs sm:text-sm mb-10">
-                {{ $currentBadge['description'] }}
+                {!! $currentBadge['description'] !!}
             </p>
 
             @if($currentBadge['link'] && $currentBadge['linkText'])
