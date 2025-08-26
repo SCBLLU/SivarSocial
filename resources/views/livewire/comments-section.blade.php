@@ -44,7 +44,7 @@
                                 <div class="flex items-center gap-2 flex-shrink-0">
                                     <!-- Timestamp -->
                                     <span class="text-xs text-gray-500">
-                                        {{ $comentario->created_at->diffForHumans() }}
+                                        {{ $comentario->compact_time }}
                                     </span>
 
                                     <!-- Botón de opciones -->
