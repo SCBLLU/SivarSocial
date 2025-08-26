@@ -55,7 +55,7 @@
 </head>
 
 <body style="background-color: #0f02a4; color: white;">
-
+@include('components.preloader')
     {{-- olas animadas --}}
     <div class="wave-background">
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
