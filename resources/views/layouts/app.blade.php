@@ -173,7 +173,8 @@
                         <!-- Icono de mensajes (inbox) - Visible siempre -->
                         <a href="{{ url('/chatify') }}" aria-label="Abrir mensajes"
                             class="relative flex items-center justify-center w-8 h-8 focus:outline-none">
-                            <i class="text-2xl text-black transition fas fa-inbox hover:text-gray-700"></i>
+                            <i
+                                class="text-2xl text-black transition fas fa-inbox md:text-black hover:text-gray-700 md:hover:text-purple-700"></i>
                             <span id="chatify-unread"
                                 class="absolute hidden px-1 text-xs text-white bg-red-600 rounded-full -top-1 -right-1">0</span>
                         </a>
@@ -187,7 +188,7 @@
                             {{-- Solo mostrar icono de casa cuando estás en tu propio perfil - Solo visible en desktop --}}
                             <a href="{{ route('home') }}"
                                 class="relative items-center justify-center hidden w-8 h-8 md:flex focus:outline-none">
-                                <i class="text-2xl text-black transition fas fa-home hover:text-gray-700"></i>
+                                <i class="text-2xl text-black transition fas fa-home hover:text-purple-700"></i>
                             </a>
                         @endif
                     @endauth
