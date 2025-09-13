@@ -1,3 +1,7 @@
+{{--
+    Vista principal de Chatify: contiene la lista de contactos, la ventana de mensajes y el panel de información.
+    Cada sección está separada y se incluyen los componentes por partes.
+--}}
 @include('Chatify::layouts.headLinks')
 <div class="messenger">
     {{-- ----------------------Users/Groups lists side---------------------- --}}
@@ -5,7 +9,10 @@
         {{-- Header and search bar --}}
         <div class="m-header">
             <nav>
-                <a href="#"><i class="fas fa-inbox"></i> <span class="messenger-headTitle">MESSAGES</span> </a>
+                <a href="/" aria-label="Ir al inicio" style="margin-right: 10px;"><i class="fas fa-home"></i></a>
+                <span class="messenger-headTitle"
+                    style="position: absolute; left: 45%; transform: translateX(-50%); text-align: center; color: white;">SIVAR
+                    CHAT</span>
                 {{-- header buttons --}}
                 <nav class="m-header-right">
                     <a href="#"><i class="fas fa-cog settings-btn"></i></a>
@@ -26,23 +33,102 @@
             {{-- ---------------- [ User Tab ] ---------------- --}}
             <div class="show messenger-tab users-tab app-scroll" data-view="users">
                 {{-- Favorites --}}
-                <div class="favorites-section">
-                    <p class="messenger-title"><span>Favorites</span></p>
+                {{-- Barra de favoritos oculta --}}
+                <div class="favorites-section" style="display:none;">
+                    <p class="messenger-title"><span>Favoritos</span></p>
                     <div class="messenger-favorites app-scroll-hidden"></div>
                 </div>
                 {{-- Saved Messages --}}
-                <p class="messenger-title"><span>Your Space</span></p>
+                <p class="messenger-title"><span>Tu Espacio</span></p>
                 {!! view('Chatify::layouts.listItem', ['get' => 'saved']) !!}
                 {{-- Contact --}}
-                <p class="messenger-title"><span>All Messages</span></p>
-                <div class="listOfContacts" style="width: 100%;height: calc(100% - 272px);position: relative;"></div>
+                <p class="messenger-title"><span>Mi Gente</span></p>
+                @auth
+                    @php
+                        $user = auth()->user();
+                        $mutualFollowers = \App\Models\User::whereIn('id', function ($query) use ($user) {
+                            $query->select('follower_id')->from('followers')->where('user_id', $user->id);
+                        })
+                            ->whereIn('id', function ($query) use ($user) {
+                                $query->select('user_id')->from('followers')->where('follower_id', $user->id);
+                            })
+                            ->get();
+                    @endphp
+                    @if ($mutualFollowers->count())
+                        <div class="mutual-followers-list">
+                            @foreach ($mutualFollowers as $follower)
+                                @php
+                                    $lastMessage = \App\Models\ChMessage::where(function ($q) use ($user, $follower) {
+                                        $q->where('from_id', $user->id)->where('to_id', $follower->id);
+                                    })
+                                        ->orWhere(function ($q) use ($user, $follower) {
+                                            $q->where('from_id', $follower->id)->where('to_id', $user->id);
+                                        })
+                                        ->orderBy('created_at', 'desc')
+                                        ->first();
+
+                                    // CALCULAR MENSAJES NO LEÍDOS
+                                    $unseenCounter = \App\Models\ChMessage::where('from_id', $follower->id)
+                                        ->where('to_id', $user->id)
+                                        ->where('seen', 0)
+                                        ->count();
+                                @endphp
+                                <table class="messenger-list-item" data-contact="{{ $follower->id }}">
+                                    <tbody>
+                                        <tr data-action="1">
+                                            <td style="position: relative">
+                                                <div class="avatar av-m"
+                                                    style="background-image: url('{{ $follower->imagen ? asset('perfiles/' . $follower->imagen) : asset('img/img.jpg') }}');"
+                                                    data-imagen="{{ $follower->imagen ? asset('perfiles/' . $follower->imagen) : asset('img/img.jpg') }}">
+                                                </div>
+                                                {{-- NO mostrar estado activo inicial - se manejará via JavaScript/Pusher --}}
+                                            </td>
+                                            <td>
+                                                <p data-id="{{ $follower->id }}" data-type="user">
+                                                    {{ $follower->name ?? $follower->username }}
+                                                    <span class="contact-item-time"
+                                                        data-time="{{ $lastMessage ? $lastMessage->created_at : '' }}">
+                                                        {{ $lastMessage ? $lastMessage->created_at->diffForHumans() : '' }}
+                                                    </span>
+                                                </p>
+                                                <span class="lastMessageIndicator">
+                                                    @if ($lastMessage)
+                                                        @if ($lastMessage->from_id == $user->id)
+                                                            You :
+                                                        @else
+                                                            {{ $follower->name ?? $follower->username }} :
+                                                        @endif
+                                                        @php
+                                                            $messageBody = $lastMessage->body;
+                                                            $truncatedMessage =
+                                                                strlen($messageBody) > 20
+                                                                    ? mb_substr($messageBody, 0, 20, 'UTF-8') . '...'
+                                                                    : $messageBody;
+                                                        @endphp
+                                                        {{ $truncatedMessage }}
+                                                    @endif
+                                                </span>
+                                                {{-- CONTADOR DE MENSAJES NO LEÍDOS --}}
+                                                @if ($unseenCounter > 0)
+                                                    <b>{{ $unseenCounter }}</b>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="mt-2 text-xs text-center text-gray-400">No tienes seguidores mutuos.</p>
+                    @endif
+                @endauth
             </div>
             {{-- ---------------- [ Search Tab ] ---------------- --}}
             <div class="messenger-tab search-tab app-scroll" data-view="search">
                 {{-- items --}}
-                <p class="messenger-title"><span>Search</span></p>
+                <p class="messenger-title"><span>Buscar</span></p>
                 <div class="search-records">
-                    <p class="message-hint center-el"><span>Type to search..</span></p>
+                    <p class="message-hint center-el"><span>Escribe para buscar..</span></p>
                 </div>
             </div>
         </div>
@@ -64,22 +150,22 @@
                 {{-- header buttons --}}
                 <nav class="m-header-right">
                     <a href="#" class="add-to-favorite"><i class="fas fa-star"></i></a>
-                    <a href="/"><i class="fas fa-home"></i></a>
                     <a href="#" class="show-infoSide"><i class="fas fa-info-circle"></i></a>
                 </nav>
             </nav>
             {{-- Internet connection --}}
             <div class="internet-connection">
-                <span class="ic-connected">Connected</span>
-                <span class="ic-connecting">Connecting...</span>
-                <span class="ic-noInternet">No internet access</span>
+                <span class="ic-connected">Conectado a SIVAR CHAT</span>
+                <span class="ic-connecting">Conectando...</span>
+                <span class="ic-noInternet">Sin acceso a internet</span>
             </div>
         </div>
 
         {{-- Messaging area --}}
         <div class="m-body messages-container app-scroll">
             <div class="messages">
-                <p class="message-hint center-el"><span>Please select a chat to start messaging</span></p>
+                <p class="message-hint center-el"><span>Por favor selecciona un chat para comenzar a enviar
+                        mensajes</span></p>
             </div>
             {{-- Typing indicator --}}
             <div class="typing-indicator">

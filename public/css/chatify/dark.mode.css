@@ -156,3 +156,25 @@
 .message-card .actions .delete-btn {
   color: #fff;
 }
+
+/* Título "SIVAR CHAT" en modo oscuro */
+.messenger-headTitle {
+  color: #fff !important;
+}
+
+/* Asegurar que el texto de búsqueda se vea en modo oscuro */
+.messenger-search[type="text"] {
+  background: var(--dark-secondary-bg-color);
+  color: #fff !important;
+}
+.messenger-search[type="text"]::placeholder {
+  color: #ccc !important;
+}
+
+/* Resultados de búsqueda en modo oscuro */
+.search-records .messenger-list-item td p {
+  color: #fff !important;
+}
+.search-records .messenger-list-item td span {
+  color: #ccc !important;
+}

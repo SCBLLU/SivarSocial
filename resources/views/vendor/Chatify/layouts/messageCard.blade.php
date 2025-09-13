@@ -1,3 +1,7 @@
+{{--
+    Tarjeta de mensaje individual en la conversación.
+    Muestra el mensaje, hora, estado y acciones (eliminar, etc).
+--}}
 <?php
 $seenIcon = !!$seen ? 'check-double' : 'check';
 $timeAndSeen =

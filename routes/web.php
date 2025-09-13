@@ -1,3 +1,5 @@
+
+
 <?php
 
 use App\Models\Comentario;
@@ -230,3 +232,21 @@ Route::get('/itunes/track', [iTunesApiController::class, 'getTrack'])->name('itu
 Route::get('/itunes/genre', [iTunesApiController::class, 'searchByGenre'])->name('itunes.genre');
 Route::get('/itunes/popular', [iTunesApiController::class, 'getPopular'])->name('itunes.popular');
 Route::get('/itunes/more', [iTunesApiController::class, 'getMoreResults'])->name('itunes.more');
+
+// ============================================================================
+// CHATIFY - CUSTOM ROUTES OVERRIDE
+// ============================================================================
+
+use App\Http\Controllers\ChatifyOverrideController;
+
+/**
+ * Custom Chatify endpoints to preserve unread counts and chat order
+ * These routes override the default Chatify behavior
+ */
+Route::middleware(['web', 'auth'])->prefix('chatify')->group(function () {
+    Route::post('/getContactsCustom', [ChatifyOverrideController::class, 'getContacts'])->name('chatify.contacts.get.custom');
+    Route::get('/getContactsCustom', [ChatifyOverrideController::class, 'getContacts'])->name('chatify.contacts.get.custom.fallback');
+    Route::post('/updateContacts', [ChatifyOverrideController::class, 'updateContactItem'])->name('chatify.contacts.update');
+    Route::post('/mutualContactsList', [ChatifyOverrideController::class, 'mutualContactsList'])->name('chatify.mutual.contacts');
+    Route::post('/idInfo', [ChatifyOverrideController::class, 'idInfo'])->name('chatify.idinfo');
+});

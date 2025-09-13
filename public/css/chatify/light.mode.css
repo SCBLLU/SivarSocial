@@ -149,6 +149,24 @@
     color: #000;
 }
 
+/* Título "SIVAR CHAT" en modo claro */
+.messenger-headTitle {
+    color: #333 !important;
+}
+
+/* Campo de búsqueda placeholder en modo claro */
+.messenger-search[type="text"]::placeholder {
+    color: #666 !important;
+}
+
+/* Resultados de búsqueda en modo claro */
+.search-records .messenger-list-item td p {
+    color: #333 !important;
+}
+.search-records .messenger-list-item td span {
+    color: #666 !important;
+}
+
 /*
 *****************************************
 * Responsive Design

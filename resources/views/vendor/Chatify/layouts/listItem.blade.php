@@ -1,3 +1,8 @@
+{{--
+    Vista de los ítems de la lista de contactos, búsqueda y mensajes guardados.
+    Cada bloque muestra el avatar, nombre, último mensaje y contador de mensajes no leídos.
+    El atributo data-imagen permite que el JS fuerce la imagen correcta.
+--}}
 {{-- -------------------- Saved Messages -------------------- --}}
 @if ($get == 'saved')
     <table class="messenger-list-item" data-contact="{{ Auth::user()->id }}">
@@ -10,8 +15,8 @@
             </td>
             {{-- center side --}}
             <td>
-                <p data-id="{{ Auth::user()->id }}" data-type="user">Saved Messages <span>You</span></p>
-                <span>Save messages secretly</span>
+                <p data-id="{{ Auth::user()->id }}" data-type="user">Mensajes Guardados <span>Tú</span></p>
+                <span>Guardar mensajes en secreto</span>
             </td>
         </tr>
     </table>
@@ -21,16 +26,17 @@
 @if ($get == 'users' && !!$lastMessage)
     <?php
     $lastMessageBody = mb_convert_encoding($lastMessage->body, 'UTF-8', 'UTF-8');
-    $lastMessageBody = strlen($lastMessageBody) > 30 ? mb_substr($lastMessageBody, 0, 30, 'UTF-8') . '..' : $lastMessageBody;
+    // Reducir a 20 caracteres para que se vea mejor en la vista previa
+    $lastMessageBody = strlen($lastMessageBody) > 20 ? mb_substr($lastMessageBody, 0, 20, 'UTF-8') . '...' : $lastMessageBody;
     ?>
     <table class="messenger-list-item" data-contact="{{ $user->id }}">
         <tr data-action="0">
             {{-- Avatar side --}}
             <td style="position: relative">
-                @if ($user->active_status)
-                    <span class="activeStatus"></span>
-                @endif
-                <div class="avatar av-m" style="background-image: url('{{ $user->avatar }}');">
+                {{-- NO mostrar estado activo inicial - se manejará 100% via JavaScript/Pusher --}}
+                <div class="avatar av-m"
+                    style="background-image: url('{{ $user->imagen ? asset('perfiles/' . $user->imagen) : asset('img/img.jpg') }}');"
+                    data-imagen="{{ $user->imagen ? asset('perfiles/' . $user->imagen) : asset('img/img.jpg') }}">
                 </div>
             </td>
             {{-- center side --}}
@@ -63,7 +69,8 @@
         <tr data-action="0">
             {{-- Avatar side --}}
             <td>
-                <div class="avatar av-m" style="background-image: url('{{ $user->avatar }}');">
+                <div class="avatar av-m"
+                    style="background-image: url('{{ $user->imagen ? asset('perfiles/' . $user->imagen) : asset('img/img.jpg') }}');">
                 </div>
             </td>
             {{-- center side --}}

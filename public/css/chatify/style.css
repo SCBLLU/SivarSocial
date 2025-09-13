@@ -56,7 +56,27 @@ body {
   border-left-color: var(--primary-color) !important;
 }
 
-/*internet connection*/
+/* New message highlight animation */
+.messenger-list-item.new-message-highlight {
+  animation: newMessageBounce 0.6s ease-out;
+}
+
+@keyframes newMessageBounce {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Notification sounds */
 .internet-connection {
   display: none;
   background: rgba(0, 0, 0, 0.76);
@@ -446,6 +466,28 @@ body {
 .messenger-infoView-btns .delete-conversation {
   display: none;
 }
+.messenger-infoView-btns .view-profile-btn {
+  background: var(--primary-color) !important;
+  color: white !important;
+  margin-bottom: 5px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  width: auto;
+  display: none;
+  margin: 5px auto;
+}
+.messenger-infoView-btns .view-profile-btn.show {
+  display: inline-block !important;
+}
+.messenger-infoView-btns .view-profile-btn:hover {
+  background: var(--secondary-color) !important;
+  color: white !important;
+  transform: scale(1.05);
+  transition: all 0.2s ease;
+}
 .message-card {
   display: flex;
   flex-direction: row;
@@ -736,6 +778,12 @@ body {
   bottom: 12%;
   right: 6%;
   transition: border 0.1s;
+}
+
+/* Ajuste específico para círculos en favoritos */
+.favorite-list-item .activeStatus {
+  bottom: 5%;
+  right: 8%;
 }
 .lastMessageIndicator {
   color: var(--primary-color) !important;

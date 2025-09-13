@@ -1,3 +1,7 @@
+{{--
+    Modales reutilizables para confirmaciones, alertas y configuración en Chatify.
+    Incluye el modal de eliminar conversación/mensaje, el de alerta y el de configuración de usuario.
+--}}
 {{-- ---------------------- Image modal box ---------------------- --}}
 <div id="imageModalBox" class="imageModal">
     <span class="imageModal-close">&times;</span>
@@ -8,11 +12,11 @@
 <div class="app-modal" data-name="delete">
     <div class="app-modal-container">
         <div class="app-modal-card" data-name="delete" data-modal='0'>
-            <div class="app-modal-header">Are you sure you want to delete this?</div>
-            <div class="app-modal-body">You can not undo this action</div>
+            <div class="app-modal-header">¿Estás seguro de eliminar esto?</div>
+            <div class="app-modal-body">No puede deshacer esta acción</div>
             <div class="app-modal-footer">
-                <a href="javascript:void(0)" class="app-btn cancel">Cancel</a>
-                <a href="javascript:void(0)" class="app-btn a-btn-danger delete">Delete</a>
+                <a href="javascript:void(0)" class="app-btn cancel">Cancelar</a>
+                <a href="javascript:void(0)" class="app-btn a-btn-danger delete">Eliminar</a>
             </div>
         </div>
     </div>
@@ -24,7 +28,7 @@
             <div class="app-modal-header"></div>
             <div class="app-modal-body"></div>
             <div class="app-modal-footer">
-                <a href="javascript:void(0)" class="app-btn cancel">Cancel</a>
+                <a href="javascript:void(0)" class="app-btn cancel">Cancelar</a>
             </div>
         </div>
     </div>
@@ -36,19 +40,9 @@
             <form id="update-settings" action="{{ route('avatar.update') }}" enctype="multipart/form-data"
                 method="POST">
                 @csrf
-                {{-- <div class="app-modal-header">Update your profile settings</div> --}}
                 <div class="app-modal-body">
-                    {{-- Udate profile avatar --}}
-                    <div class="avatar av-l upload-avatar-preview chatify-d-flex"
-                        style="background-image: url('{{ Chatify::getUserWithAvatar(Auth::user())->avatar }}');"></div>
-                    <p class="upload-avatar-details"></p>
-                    <label class="app-btn a-btn-primary update" style="background-color:{{ $messengerColor }}">
-                        Upload New
-                        <input class="upload-avatar chatify-d-none" accept="image/*" name="avatar" type="file" />
-                    </label>
                     {{-- Dark/Light Mode  --}}
-                    <p class="divider"></p>
-                    <p class="app-modal-header">Dark Mode <span
+                    <p class="app-modal-header">Modo Oscuro <span
                             class="
                         {{ Auth::user()->dark_mode > 0 ? 'fas' : 'far' }} fa-moon dark-mode-switch"
                             data-mode="{{ Auth::user()->dark_mode > 0 ? 1 : 0 }}"></span></p>
@@ -66,8 +60,8 @@
                     </div>
                 </div>
                 <div class="app-modal-footer">
-                    <a href="javascript:void(0)" class="app-btn cancel">Cancel</a>
-                    <input type="submit" class="app-btn a-btn-success update" value="Save Changes" />
+                    <a href="javascript:void(0)" class="app-btn cancel">Cancelar</a>
+                    <input type="submit" class="app-btn a-btn-success update" value="Guardar Cambios" />
                 </div>
             </form>
         </div>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * -----------------------------------------------------------------
  * NOTE : There is two routes has a name (user & group),
@@ -9,16 +10,18 @@
  */
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ChatifyOverrideController;
 
 /*
 * This is the main app route [Chatify Messenger]
 */
+
 Route::get('/', 'MessagesController@index')->name(config('chatify.routes.prefix'));
 
 /**
  *  Fetch info for specific id [user/group]
  */
-Route::post('/idInfo', 'MessagesController@idFetchData');
+Route::post('/idInfo', [ChatifyOverrideController::class, 'idInfo']);
 
 /**
  * Send message route
@@ -46,14 +49,20 @@ Route::post('/chat/auth', 'MessagesController@pusherAuth')->name('pusher.auth');
 Route::post('/makeSeen', 'MessagesController@seen')->name('messages.seen');
 
 /**
- * Get contacts
+ * Get contacts - Using custom endpoint to avoid conflicts
  */
-Route::get('/getContacts', 'MessagesController@getContacts')->name('contacts.get');
+Route::post('/getContactsCustom', [ChatifyOverrideController::class, 'getContacts'])->name('contacts.get.custom');
+Route::get('/getContactsCustom', [ChatifyOverrideController::class, 'getContacts'])->name('contacts.get.custom.fallback');
 
 /**
  * Update contact item data
  */
-Route::post('/updateContacts', 'MessagesController@updateContactItem')->name('contacts.update');
+Route::post('/updateContacts', [ChatifyOverrideController::class, 'updateContactItem'])->name('contacts.update');
+
+/**
+ * Get mutual followers list with latest messages
+ */
+Route::post('/mutualContactsList', [ChatifyOverrideController::class, 'mutualContactsList'])->name('mutual.contacts');
 
 
 /**
