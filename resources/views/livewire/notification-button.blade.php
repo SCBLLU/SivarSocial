@@ -3,7 +3,7 @@
     <button wire:click="openNotificationsModal"
         class="relative flex items-center justify-center w-8 h-8 focus:outline-none">
         <!-- Icono para móvil (Boxicons) -->
-        <i class='text-2xl text-black transition bx bx-bell hover:text-gray-700' style="display: block;">
+        <i class='text-2xl text-black transition bx bx-bell hover:text-purple-700' style="display: block;">
             <style>
                 @media (min-width: 768px) {
                     .bx-bell {
@@ -13,7 +13,7 @@
             </style>
         </i>
         <!-- Icono para desktop (Font Awesome sólido) -->
-        <i class="text-2xl text-black transition fas fa-bell hover:text-gray-700" style="display: none;">
+        <i class="text-2xl text-black transition fas fa-bell hover:text-purple-700" style="display: none;">
             <style>
                 @media (min-width: 768px) {
                     .fa-bell {
