@@ -55,7 +55,7 @@
 </head>
 
 <body style="background-color: #0f02a4; color: white;">
-@include('components.preloader')
+
     {{-- olas animadas --}}
     <div class="wave-background">
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -151,88 +151,97 @@
                     <img srcset="https://res.cloudinary.com/dj848z4er/image/upload/v1748745136/tokhsr71m0thpsjaduyc.png 4x"
                         alt="LOGO" class="navbar-logo-responsive">
                 </a>
-                <!-- Menú hamburguesa SIEMPRE a la derecha dentro del navbar -->
-                <div class="relative ml-auto">
+                <!-- Icono de mensajes y menú de navegación a la derecha -->
+                <div class="flex items-center gap-10 ml-auto">
+                    @auth
+                        @php
+                            $currentRoute = request()->route();
+                            $isProfile = false;
 
-                    <!-- Menú animado y responsivo -->
-                    <nav
-                        class="absolute right-0 z-50 flex-col items-center hidden w-56 gap-8 transition-all duration-300 ease-in-out bg-white rounded-lg navmax md:static top-12 md:top-0 md:bg-transparent md:rounded-none md:w-auto md:flex md:flex-row">
-                        <div
-                            class="flex flex-col w-full p-4 bg-white rounded-lg profile-account md:flex-row md:gap-8 md:items-center md:p-0 md:bg-transparent md:rounded-none md:w-auto">
-                            @auth
-                                @php
-                                    // Detectar si estás en tu propio perfil
-                                    $currentRoute = request()->route();
-                                    $isProfile = false;
+                            if ($currentRoute && $currentRoute->getName() === 'posts.index') {
+                                $routeUser = $currentRoute->parameter('user');
 
-                                    if ($currentRoute && $currentRoute->getName() === 'posts.index') {
-                                        $routeUser = $currentRoute->parameter('user');
+                                // Manejar tanto cuando $routeUser es un objeto como cuando es un string
+                                $routeUsername = is_object($routeUser) ? $routeUser->username : $routeUser;
 
-                                        // Manejar tanto cuando $routeUser es un objeto como cuando es un string
-                                        $routeUsername = is_object($routeUser) ? $routeUser->username : $routeUser;
+                                if ($routeUsername && $routeUsername === Auth::user()->username) {
+                                    $isProfile = true;
+                                }
+                            }
+                        @endphp
 
-                                        if ($routeUsername && $routeUsername === Auth::user()->username) {
-                                            $isProfile = true;
-                                        }
-                                    }
-                                @endphp
+                        <!-- Icono de mensajes (inbox) - Visible siempre -->
+                        <a href="{{ url('/chatify') }}" aria-label="Abrir mensajes"
+                            class="relative flex items-center justify-center w-8 h-8 focus:outline-none">
+                            <i class="text-2xl text-black transition fas fa-inbox hover:text-gray-700"></i>
+                            <span id="chatify-unread"
+                                class="absolute hidden px-1 text-xs text-white bg-red-600 rounded-full -top-1 -right-1">0</span>
+                        </a>
 
-                                <!-- Botón de notificaciones -->
-                                <div class="mr-4">
-                                    @livewire('notification-button')
-                                </div>
-
-                                @if ($isProfile)
-                                    {{-- Solo mostrar PUBLICACIONES cuando estás en tu propio perfil --}}
-                                    <a href="{{ route('home') }}"
-                                        class="flex items-center justify-center gap-2 my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
-                                        PUBLICACIONES
-                                    </a>
-                                @else
-                                    <x-profile-link :user="Auth::user()" />
-                                @endif
-
-                            @endauth
-                            @guest
-                                @if (request()->routeIs('login'))
-                                    <a href="{{ route('home') }}"
-                                        class="block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
-                                        PUBLICACIONES
-                                    </a>
-                                @elseif (request()->routeIs('register'))
-                                    <a href="{{ route('home') }}"
-                                        class="block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
-                                        PUBLICACIONES
-                                    </a>
-                                    <a href="{{ route('login') }}"
-                                        class="block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
-                                        INICIAR SESIÓN
-                                    </a>
-                                @elseif (request()->routeIs('code.verific'))
-                                    <a onclick="openModal(1)"
-                                        class="cursor-pointer block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
-                                        INFORMACIÓN
-                                    </a>
-                                @elseif (request()->routeIs('restablecer'))
-                                    <a onclick="openModal(1)"
-                                        class="cursor-pointer block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
-                                        INFORMACIÓN
-                                    </a>
-                                @else
-                                    <a href="{{ route('login') }}"
-                                        class="block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
-                                        INICIAR SESIÓN
-                                    </a>
-                                    <a href="{{ url('/register') }}"
-                                        class="block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
-                                        CREAR CUENTA
-                                    </a>
-                                @endif
-                            @endguest
+                        <!-- Botón de notificaciones - Solo visible en desktop -->
+                        <div class="hidden md:block">
+                            @livewire('notification-button')
                         </div>
-                    </nav>
+
+                        @if ($isProfile)
+                            {{-- Solo mostrar icono de casa cuando estás en tu propio perfil - Solo visible en desktop --}}
+                            <a href="{{ route('home') }}"
+                                class="relative items-center justify-center hidden w-8 h-8 md:flex focus:outline-none">
+                                <i class="text-2xl text-black transition fas fa-home hover:text-gray-700"></i>
+                            </a>
+                        @endif
+                    @endauth
+                    <!-- Menú de navegación responsivo -->
+                    <div class="relative">
+                        <!-- Menú animado y responsivo (se muestra en mobile y desktop) -->
+                        <nav
+                            class="absolute right-0 z-50 flex-col items-center hidden w-56 gap-8 transition-all duration-300 ease-in-out bg-white rounded-lg navmax md:static top-12 md:top-0 md:bg-transparent md:rounded-none md:w-auto md:flex md:flex-row">
+                            <div
+                                class="flex flex-col w-full p-4 bg-white rounded-lg profile-account md:flex-row md:gap-8 md:items-center md:p-0 md:bg-transparent md:rounded-none md:w-auto">
+                                @auth
+                                    @if (!$isProfile)
+                                        <x-profile-link :user="Auth::user()" />
+                                    @endif
+
+                                @endauth
+                                @guest
+                                    @if (request()->routeIs('login'))
+                                        <a href="{{ route('home') }}" class="relative focus:outline-none">
+                                            <i class="text-2xl text-black transition fas fa-home hover:text-gray-700"></i>
+                                        </a>
+                                    @elseif (request()->routeIs('register'))
+                                        <a href="{{ route('home') }}" class="relative focus:outline-none">
+                                            <i class="text-2xl text-black transition fas fa-home hover:text-gray-700"></i>
+                                        </a>
+                                        <a href="{{ route('login') }}"
+                                            class="block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
+                                            INICIAR SESIÓN
+                                        </a>
+                                    @elseif (request()->routeIs('code.verific'))
+                                        <a onclick="openModal(1)"
+                                            class="block my-2 text-base font-bold text-center text-blue-700 uppercase cursor-pointer md:my-0 md:text-left hover:underline">
+                                            INFORMACIÓN
+                                        </a>
+                                    @elseif (request()->routeIs('restablecer'))
+                                        <a onclick="openModal(1)"
+                                            class="block my-2 text-base font-bold text-center text-blue-700 uppercase cursor-pointer md:my-0 md:text-left hover:underline">
+                                            INFORMACIÓN
+                                        </a>
+                                    @else
+                                        <a href="{{ route('login') }}"
+                                            class="block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
+                                            INICIAR SESIÓN
+                                        </a>
+                                        <a href="{{ url('/register') }}"
+                                            class="block my-2 text-base font-bold text-center text-blue-700 uppercase md:my-0 md:text-left hover:underline">
+                                            CREAR CUENTA
+                                        </a>
+                                    @endif
+                                @endguest
+                            </div>
+                        </nav>
+                    </div>
                 </div>
-            </div>
         </header>
 
         <!-- menu para mobile -->
@@ -241,7 +250,7 @@
         <!-- fin menu para mobile -->
 
         <div class="contenido">
-            @if(Route::is('recuperar', 'code.verific', 'restablecer'))
+            @if (Route::is('recuperar', 'code.verific', 'restablecer'))
                 @yield('contenido-recover')
             @else
                 <main class="container p-5 mx-auto mt-10 mb-5">
@@ -266,6 +275,8 @@
 
     </div>
 
+
+
     @livewireScripts()
 
     <!-- Alpine.js -->
@@ -277,6 +288,11 @@
                 max-width: 110px !important;
                 height: auto !important;
             }
+
+            /* Mover el icono de Chatify completamente a la derecha en móvil */
+            .flex.items-center.gap-10>a[href*="chatify"] {
+                margin-right: -1.5rem;
+            }
         }
     </style>
     <script>
@@ -285,21 +301,21 @@
             document.getElementById("buscar2").focus();
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const camposBusqueda = [{
-                inputId: 'buscar',
-                resultIds: ['resultados-busqueda']
-            },
-            {
-                inputId: 'buscar2',
-                resultIds: ['resultados-busqueda2']
-            }
+                    inputId: 'buscar',
+                    resultIds: ['resultados-busqueda']
+                },
+                {
+                    inputId: 'buscar2',
+                    resultIds: ['resultados-busqueda2']
+                }
             ];
 
             camposBusqueda.forEach(campo => {
                 const input = document.getElementById(campo.inputId);
                 if (input) {
-                    input.addEventListener('keyup', function () {
+                    input.addEventListener('keyup', function() {
                         const query = this.value;
 
                         fetch(`/buscar-usuarios?buscar=${encodeURIComponent(query)}`)
@@ -319,9 +335,16 @@
     </script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const modalConfigs = [
-                { overlay: "overlay0", content: "modalmenu0", drag: "dragHandle0" },
-                { overlay: "overlay1", content: "modalmenu1", drag: "dragHandle1" },
+            const modalConfigs = [{
+                    overlay: "overlay0",
+                    content: "modalmenu0",
+                    drag: "dragHandle0"
+                },
+                {
+                    overlay: "overlay1",
+                    content: "modalmenu1",
+                    drag: "dragHandle1"
+                },
                 // Agrega más aquí
             ];
 
@@ -369,7 +392,7 @@
                 }
             });
 
-            window.addEventListener('resize', function () {
+            window.addEventListener('resize', function() {
                 if (window.innerWidth > 768) {
                     closeModal(0);
                 }
@@ -425,6 +448,36 @@
 
     <!-- Modal de Notificaciones -->
     @livewire('notifications-modal')
+
+    {{-- Configuración de Pusher para estado activo global - Después de que se carga jQuery --}}
+    @auth
+        <script src="https://js.pusher.com/8.0.1/pusher.min.js"></script>
+        <script src="{{ asset('js/global-status.js') }}"></script>
+        <script>
+            // Configuración global para el sistema de estado activo
+            window.authUserId = {{ auth()->id() }};
+            window.chatify = {
+                pusher: {
+                    debug: {{ config('chatify.pusher.debug') ? 'true' : 'false' }},
+                    key: "{{ config('chatify.pusher.key') }}",
+                    options: {
+                        encrypted: {{ config('chatify.pusher.options.encrypted') ? 'true' : 'false' }},
+                        cluster: "{{ config('chatify.pusher.options.cluster') }}",
+                        host: "{{ config('chatify.pusher.options.host') }}",
+                        port: {{ config('chatify.pusher.options.port') }},
+                        useTLS: {{ config('chatify.pusher.options.useTLS') ? 'true' : 'false' }}
+                    }
+                },
+                pusherAuthEndpoint: "{{ route('pusher.auth') }}",
+                csrfToken: "{{ csrf_token() }}"
+            };
+
+            console.log('=== LAYOUT DEBUG ===');
+            console.log('jQuery available:', typeof $ !== 'undefined');
+            console.log('authUserId set:', window.authUserId);
+            console.log('chatify config set:', window.chatify);
+        </script>
+    @endauth
 </body>
 
 </html>

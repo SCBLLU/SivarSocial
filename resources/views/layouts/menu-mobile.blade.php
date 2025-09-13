@@ -2,7 +2,7 @@
   <!-- Header Start -->
   <div id="header" class="header2">
 
-    <header class="header__navground header  d-flex justify-content-between">
+    <header class="header__navground header d-flex justify-content-between">
 
     <!-- Navigation Menu Start -->
     <div class="header__navigation">
@@ -274,7 +274,7 @@
 @section("lista-perfiles-mobile")
 
   <!-- Modal - Estilo Instagram hoja deslizante para móvil -->
-  <div id="overlay0" class="fixed inset-0 hidden items-end sm:items-center justify-center"
+  <div id="overlay0" class="fixed inset-0 items-end justify-center hidden sm:items-center"
     style="background-color: rgba(0, 0, 0, 0.6); z-index: 1100;">
     <!-- Backdrop para cerrar modal -->
     <div class="absolute inset-0 cursor-pointer" onclick="closeModal(0)"></div>
@@ -284,12 +284,12 @@
     class="fixed bottom-0 left-0 right-0 bg-white text-black rounded-t-2xl shadow-lg z-50 flex flex-col max-h-[80vh] w-full mx-auto sm:relative sm:w-96 sm:h-96 sm:rounded-xl overflow-hidden">
     <!-- Drag handle -->
     <div id="dragHandle0"
-      class="p-4 border-b border-gray-200 text-center text-lg font-semibold cursor-grab touch-none sm:hidden">
-      <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-2"></div>
+      class="p-4 text-lg font-semibold text-center border-b border-gray-200 cursor-grab touch-none sm:hidden">
+      <div class="w-12 h-1 mx-auto mb-2 bg-gray-300 rounded-full"></div>
       <div class="flex items-center justify-between px-2">
       <span class="text-lg font-bold text-purple-700" style="display: flex; align-items: center;">Perfiles <i
         class="ml-1 fa-solid fa-user-group" aria-hidden="true" style="font-size: 12px;"></i></span>
-      <button onclick="closeModal(0)" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
+      <button onclick="closeModal(0)" class="p-1 transition-colors rounded-full hover:bg-gray-100">
         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
@@ -297,11 +297,11 @@
       </div>
     </div>
     <!-- Header solo en desktop -->
-    <div class="hidden sm:block flex-none border-b border-gray-200 bg-white sm:rounded-t-xl sticky top-0 z-10">
+    <div class="sticky top-0 z-10 flex-none hidden bg-white border-b border-gray-200 sm:block sm:rounded-t-xl">
       <div class="flex items-center justify-between px-4 py-3">
       <h3 class="text-lg font-semibold text-purple-700" style="display: flex; align-items: center;">Perfiles <i
         class="ml-1 fa-solid fa-user-group" aria-hidden="true" style="font-size: 12px;"></i></h3>
-      <button onclick="closeModal(0)" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
+      <button onclick="closeModal(0)" class="p-1 transition-colors rounded-full hover:bg-gray-100">
         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
@@ -310,18 +310,18 @@
     </div>
     <!-- Lista scrolleable -->
     <div>
-      <div class="p-4 space-y-3 flex-1 pb-0 bg-white">
-      <div class="bg-white rounded-full shadow-sm mb-3 sm:mb-4 w-full mx-auto">
+      <div class="flex-1 p-4 pb-0 space-y-3 bg-white">
+      <div class="w-full mx-auto mb-3 bg-white rounded-full shadow-sm sm:mb-4">
         <div class="flex items-center p-2" onclick="activarInput()" style="padding-left: 15px; height: 40px;">
         <i class="bx bx-search-alt-2"></i>
         <div class="flex-shrink-0 buscar-input">
-          <input type="text" id="buscar" name="buscaru" placeholder="Buscar" class="rounded-full px-3 py-1">
+          <input type="text" id="buscar" name="buscaru" placeholder="Buscar" class="px-3 py-1 rounded-full">
         </div>
         </div>
       </div>
       </div>
       <div>
-      <div id="resultados-busqueda" class="p-4 space-y-3 scrollable-list flex-1 pb-0 bg-white">
+      <div id="resultados-busqueda" class="flex-1 p-4 pb-0 space-y-3 bg-white scrollable-list">
         @if (isset($users) && $users->count())
       @component('components.listar-perfiles', ['users' => $users]) @endcomponent
       @else
@@ -337,7 +337,7 @@
 @endsection
 
 @section("aviso-recuperacion-mobile")
-  <div id="overlay1" class="fixed inset-0 hidden items-end sm:items-center justify-center"
+  <div id="overlay1" class="fixed inset-0 items-end justify-center hidden sm:items-center"
     style="background-color: rgba(0, 0, 0, 0.6); z-index: 1100;">
     <!-- Backdrop para cerrar modal -->
     <div class="absolute inset-0 cursor-pointer" onclick="closeModal(1)"></div>
@@ -346,11 +346,11 @@
     <div id="modalmenu1"
     class="fixed bottom-0 left-0 right-0 bg-white text-black rounded-t-2xl shadow-lg z-50 flex flex-col max-h-[80vh] w-full mx-auto sm:relative sm:w-96 sm:h-96 sm:rounded-xl overflow-hidden">
     <!-- Drag handle -->
-    <div id="dragHandle1" class="p-4 text-center text-lg font-semibold cursor-grab touch-none sm:hidden">
-      <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-2"></div>
+    <div id="dragHandle1" class="p-4 text-lg font-semibold text-center cursor-grab touch-none sm:hidden">
+      <div class="w-12 h-1 mx-auto mb-2 bg-gray-300 rounded-full"></div>
       <div class="flex items-center justify-between px-2">
       <span class="text-base font-bold text-gray-900"></span>
-      <button onclick="closeModal(1)" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
+      <button onclick="closeModal(1)" class="p-1 transition-colors rounded-full hover:bg-gray-100">
         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
@@ -358,10 +358,10 @@
       </div>
     </div>
     <!-- Header solo en desktop -->
-    <div class="hidden sm:block flex-none bg-white sm:rounded-t-xl sticky top-0 z-10">
+    <div class="sticky top-0 z-10 flex-none hidden bg-white sm:block sm:rounded-t-xl">
       <div class="flex items-center justify-between px-4 py-3">
       <h3 class="text-base font-semibold text-gray-900"></h3>
-      <button onclick="closeModal(1)" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
+      <button onclick="closeModal(1)" class="p-1 transition-colors rounded-full hover:bg-gray-100">
         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
@@ -385,21 +385,21 @@
 
     @guest
       @if (request()->routeIs('code.verific'))
-      <div class="flex flex-col items-center justify-center p-4 space-y-3 flex-1 bg-white">
+      <div class="flex flex-col items-center justify-center flex-1 p-4 space-y-3 bg-white">
       <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754752332/Dise%C3%B1o_sin_t%C3%ADtulo_mxsofs.png"
       alt="" width="60" height="60">
-      <h1 class="text-center text-black mb-3 font-medium text-2xl">Aviso</h1>
-      <p class="text-center text-black text-xs sm:text-sm mb-10">
+      <h1 class="mb-3 text-2xl font-medium text-center text-black">Aviso</h1>
+      <p class="mb-10 text-xs text-center text-black sm:text-sm">
       Estas en una zona de recuperación de contraseña, Sivar Social te enviará un código a tu correo, si no recibiste
       un código, revisa tu bandeja de spam.
       </p>
       </div>
       @elseif (request()->routeIs('restablecer'))
-      <div class="flex flex-col items-center justify-center p-4 space-y-3 flex-1 bg-white">
+      <div class="flex flex-col items-center justify-center flex-1 p-4 space-y-3 bg-white">
       <img src="https://res.cloudinary.com/dtmemrt1j/image/upload/v1754752332/Dise%C3%B1o_sin_t%C3%ADtulo_mxsofs.png"
       alt="" width="60" height="60">
-      <h1 class="text-center text-black mb-3 font-medium text-2xl">Aviso</h1>
-      <p class="text-center text-black text-xs sm:text-sm mb-10">
+      <h1 class="mb-3 text-2xl font-medium text-center text-black">Aviso</h1>
+      <p class="mb-10 text-xs text-center text-black sm:text-sm">
       recuerda usar un contraseña fuerte y guardarlo en un lugar donde no puedas olvidar, no compartas tu contraseña.
       </p>
       </div>
