@@ -56,6 +56,8 @@
 
 <body style="background-color: #0f02a4; color: white;">
 
+    <x-preloader />
+
     {{-- olas animadas --}}
     <div class="wave-background">
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -477,11 +479,6 @@
                 pusherAuthEndpoint: "{{ route('pusher.auth') }}",
                 csrfToken: "{{ csrf_token() }}"
             };
-
-            console.log('=== LAYOUT DEBUG ===');
-            console.log('jQuery available:', typeof $ !== 'undefined');
-            console.log('authUserId set:', window.authUserId);
-            console.log('chatify config set:', window.chatify);
         </script>
     @endauth
 </body>
