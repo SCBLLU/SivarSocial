@@ -250,24 +250,3 @@ Route::middleware(['web', 'auth'])->prefix('chatify')->group(function () {
     Route::post('/mutualContactsList', [ChatifyOverrideController::class, 'mutualContactsList'])->name('chatify.mutual.contacts');
     Route::post('/idInfo', [ChatifyOverrideController::class, 'idInfo'])->name('chatify.idinfo');
 });
-
-// Ruta de prueba para verificar URLs en Chatify
-Route::get('/test-chatify-urls', function () {
-    $testResults = [
-        'app_url' => config('app.url'),
-        'asset_test' => asset('img/img.jpg'),
-        'url_test' => url(''),
-        'chatify_config' => [
-            'storage_disk' => config('chatify.storage_disk_name'),
-            'attachments_folder' => config('chatify.attachments.folder'),
-        ]
-    ];
-
-    if (class_exists('Chatify\\ChatifyMessenger')) {
-        $chatify = new \Chatify\ChatifyMessenger();
-        $testResults['chatify_attachment_url'] = $chatify->getAttachmentUrl('test-image.jpg');
-        $testResults['chatify_avatar_url'] = $chatify->getUserAvatarUrl('test-avatar.jpg');
-    }
-
-    return response()->json($testResults, 200, [], JSON_PRETTY_PRINT);
-})->name('test.chatify.urls');
