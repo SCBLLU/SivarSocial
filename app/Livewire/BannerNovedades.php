@@ -96,6 +96,9 @@ class BannerNovedades extends Component
     {
         $this->isVisible = false;
         $this->banner = null;
+        
+        // Enviar evento para restaurar scroll
+        $this->dispatch('banner-closed');
     }
 
     public function render()
