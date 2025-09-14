@@ -218,6 +218,55 @@ class PostController extends Controller
             ->with('success', 'Post eliminado correctamente');
     }
 
+    public function edit(Post $post)
+    {
+        // Verificar que el usuario autenticado sea el propietario del post
+        $this->authorize('update', $post);
+
+        return view('posts.edit', [
+            'post' => $post,
+        ]);
+    }
+
+    public function update(Request $request, Post $post)
+    {
+        // Verificar que el usuario puede editar este post
+        $this->authorize('update', $post);
+
+        // Determinar las reglas de validación según el tipo de post
+        $rules = [];
+        
+        if ($post->tipo === 'imagen') {
+            // Para posts de imagen, el título es obligatorio
+            $rules['titulo'] = 'required|string|max:255';
+            $rules['descripcion'] = 'nullable|string|max:500';
+        } else {
+            // Para posts de música, ambos campos son opcionales
+            $rules['titulo'] = 'nullable|string|max:255';
+            $rules['descripcion'] = 'nullable|string|max:500';
+        }
+
+        // Validar los datos
+        $validatedData = $request->validate($rules);
+
+        try {
+            // Actualizar el post
+            $post->update([
+                'titulo' => $validatedData['titulo'] ?? '',
+                'descripcion' => $validatedData['descripcion'] ?? ''
+            ]);
+
+            return redirect()
+                ->route('posts.show', ['user' => $post->user->username, 'post' => $post->id])
+                ->with('success', 'Post actualizado correctamente.');
+                
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->with('error', 'Error al actualizar el post: ' . $e->getMessage());
+        }
+    }
+
     public function getLikes(Request $request, Post $post)
     {
         try {

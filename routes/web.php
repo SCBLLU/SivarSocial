@@ -126,6 +126,13 @@ Route::get('/posts/create', [PostController::class, 'create'])->name('posts.crea
 Route::post('/posts', [PostController::class, 'store'])->name('posts.store')->middleware('auth');
 
 /**
+ * EDICIÓN DE POSTS
+ * Formulario para editar publicaciones existentes
+ */
+Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit')->middleware('auth');
+Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update')->middleware('auth');
+
+/**
  * VISUALIZACIÓN Y GESTIÓN DE POSTS
  * Ver post individual y eliminar posts propios
  */

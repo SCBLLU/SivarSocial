@@ -37,8 +37,8 @@
                                 <div x-show="showMusicMenu" x-cloak @click.away="showMusicMenu = false" x-transition
                                     class="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1">
 
-                                    <!-- Opción Editar (preparada para futura implementación) -->
-                                    <button onclick="alert('Función de editar en desarrollo')"
+                                    <!-- Opción Editar -->
+                                    <a href="{{ route('posts.edit', $post) }}"
                                         class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                                         <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
@@ -47,7 +47,7 @@
                                             </path>
                                         </svg>
                                         Editar
-                                    </button>
+                                    </a>
 
                                     <!-- Separador -->
                                     <hr class="my-1">
@@ -298,8 +298,8 @@
                                 <div x-show="showImageMenu" x-cloak @click.away="showImageMenu = false" x-transition
                                     class="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1">
 
-                                    <!-- Opción Editar (preparada para futura implementación) -->
-                                    <button onclick="alert('Función de editar en desarrollo')"
+                                    <!-- Opción Editar -->
+                                    <a href="{{ route('posts.edit', $post) }}"
                                         class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                                         <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
@@ -308,7 +308,7 @@
                                             </path>
                                         </svg>
                                         Editar
-                                    </button>
+                                    </a>
 
                                     <!-- Separador -->
                                     <hr class="my-1">
