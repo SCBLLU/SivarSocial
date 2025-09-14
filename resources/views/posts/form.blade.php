@@ -145,26 +145,23 @@
             let requiredFields = [];
             let completedFields = [];
             if (currentType === 'imagen') {
-                // Para imágenes: TODOS los campos son obligatorios
+                // Para imágenes: imagen y título son obligatorios, descripción es opcional
                 const imagenInput = document.querySelector('input[name="imagen"]');
                 const tituloInput = document.querySelector('input[name="titulo"]');
                 const descripcionInput = document.querySelector('textarea[name="descripcion"]');
                 const hasImage = imagenInput && imagenInput.value.trim() !== '';
                 const hasTitle = tituloInput && tituloInput.value.trim() !== '';
                 const hasDescription = descripcionInput && descripcionInput.value.trim() !== '';
-                requiredFields = ['imagen', 'título', 'descripción'];
+                requiredFields = ['imagen', 'título'];
                 if (hasImage) completedFields.push('imagen');
                 if (hasTitle) completedFields.push('título');
-                if (hasDescription) completedFields.push('descripción');
-                progress = (completedFields.length / requiredFields.length) * 100;
-                canSubmit = hasImage && hasTitle && hasDescription;
+                if (hasDescription) completedFields.push('descripción (opcional)');
+                progress = (completedFields.filter(field => !field.includes('opcional')).length / requiredFields.length) * 100;
+                canSubmit = hasImage && hasTitle;
                 // Mensajes dinámicos según progreso
                 if (completedFields.length === 0) {
-                    message = 'Selecciona una imagen, agrega título y descripción';
+                    message = 'Selecciona una imagen y agrega título';
                 } else if (completedFields.length === 1) {
-                    const missing = requiredFields.filter(field => !completedFields.includes(field));
-                    message = `Faltan: ${missing.join(' y ')}`;
-                } else if (completedFields.length === 2) {
                     const missing = requiredFields.filter(field => !completedFields.includes(field));
                     message = `Solo falta: ${missing[0]}`;
                 } else {
@@ -264,11 +261,10 @@
                 const hasImage = imagenInput && imagenInput.value.trim() !== '';
                 const hasTitle = tituloInput && tituloInput.value.trim() !== '';
                 const hasDescription = descripcionInput && descripcionInput.value.trim() !== '';
-                if (!hasImage || !hasTitle || !hasDescription) {
+                if (!hasImage || !hasTitle) {
                     shouldPrevent = true;
                     if (!hasImage) errorMessage = 'Debes seleccionar una imagen';
                     else if (!hasTitle) errorMessage = 'Debes agregar un título';
-                    else if (!hasDescription) errorMessage = 'Debes agregar una descripción';
                 }
             } else if (currentType === 'musica') {
                 const trackIdInput = document.querySelector('input[name="itunes_track_id"]');
@@ -321,11 +317,15 @@
             if (!field) return;
             const currentType = document.getElementById('post-tipo').value;
             const isEmpty = !field.value.trim();
-            const isRequired = currentType === 'imagen';
+            const isDescripcionField = field.name === 'descripcion';
+            const isRequired = currentType === 'imagen' && !isDescripcionField;
             // Solo mostrar verde cuando esté completo, sino mantener gris
             field.classList.remove('border-red-500', 'border-green-500', 'border-gray-300');
             if (isRequired && !isEmpty) {
-                // Solo mostrar verde si tiene contenido
+                // Solo mostrar verde si tiene contenido y es campo requerido
+                field.classList.add('border-green-500');
+            } else if (!isRequired && !isEmpty) {
+                // Verde también para campos opcionales que tienen contenido
                 field.classList.add('border-green-500');
             } else {
                 // Mantener borde normal (gris) en todos los demás casos

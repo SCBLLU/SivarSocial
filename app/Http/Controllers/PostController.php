@@ -80,7 +80,7 @@ class PostController extends Controller
         if ($request->tipo === 'imagen') {
             $request->validate([
                 'titulo' => 'required|max:255',
-                'descripcion' => 'required',
+                'descripcion' => 'nullable',
                 'tipo' => 'required|in:imagen,musica',
                 'visibility' => 'required|in:public,followers',
                 'imagen' => 'required|string',
