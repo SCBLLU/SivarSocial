@@ -43,11 +43,11 @@ function switchTab(type) {
         if (imagenFields) imagenFields.classList.remove('hidden');
         if (musicaFields) musicaFields.classList.add('hidden');
         if (tituloOptional) tituloOptional.classList.add('hidden');
-        if (descripcionOptional) descripcionOptional.classList.add('hidden');
+        if (descripcionOptional) descripcionOptional.classList.remove('hidden');
 
         // Cambiar placeholders para imagen
         if (tituloInput) tituloInput.placeholder = 'Título de la publicación';
-        if (descripcionInput) descripcionInput.placeholder = 'Describe tu publicación...';
+        if (descripcionInput) descripcionInput.placeholder = 'Describe tu publicación (opcional)';
     } else {
         const imagenFields = document.getElementById('imagen-fields');
         const musicaFields = document.getElementById('musica-fields');
@@ -63,7 +63,7 @@ function switchTab(type) {
 
         // Cambiar placeholders para música
         if (tituloInput) tituloInput.placeholder = 'Título de la canción (opcional)';
-        if (descripcionInput) descripcionInput.placeholder = 'Describe la música (opcional)...';
+        if (descripcionInput) descripcionInput.placeholder = 'Describe la música (opcional)';
     }
 
     // Resetear validación del botón submit
@@ -81,11 +81,11 @@ function updateSubmitButton() {
         const imagenInput = document.querySelector('[name="imagen"]');
         const tituloInput = document.querySelector('[name="titulo"]');
         const descripcionInput = document.querySelector('[name="descripcion"]');
-        // Para imagen: requiere imagen, título y descripción
+        // Para imagen: requiere imagen y título, descripción es opcional
         const hasImage = imagenInput && imagenInput.value.trim() !== '';
         const hasTitle = tituloInput && tituloInput.value.trim() !== '';
         const hasDescription = descripcionInput && descripcionInput.value.trim() !== '';
-        canSubmit = hasImage && hasTitle && hasDescription;
+        canSubmit = hasImage && hasTitle; // Descripción ya no es requerida
     } else if (currentPostType === 'musica') {
         const trackIdInput = document.querySelector('[name="itunes_track_id"]');
         const hasTrack = trackIdInput && trackIdInput.value.trim() !== '';
