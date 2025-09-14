@@ -126,6 +126,7 @@ php artisan route:clear
 php artisan view:clear
 php artisan cache:clear
 php artisan clear-compiled
+php artisan storage:link
 ```
 ## Herramienta Interna para desarrollo
 
