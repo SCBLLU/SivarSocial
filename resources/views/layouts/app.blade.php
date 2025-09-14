@@ -143,6 +143,11 @@
     </style>
     {{-- termina olas animadas --}}
 
+        <!-- Modal de Banners de Novedades -->
+    @auth
+        @livewire('banner-novedades')
+    @endauth
+
     {{-- Contenedor principal --}}
     <div class="content-wrapper">
         <header class="bg-white shadow-violet-700/100 rounded-b-xl">
