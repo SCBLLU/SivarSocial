@@ -9,6 +9,14 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    /**
+     * Mutator para asegurar que el campo imagen siempre tenga un valor válido.
+     */
+    public function setImagenAttribute($value)
+    {
+        // Si no se proporciona imagen, usa la imagen por defecto
+        $this->attributes['imagen'] = $value ?: 'img.jpg';
+    }
     use HasFactory, Notifiable;
 
     /**
@@ -25,6 +33,9 @@ class User extends Authenticatable
         'gender',
         'profession',
         'insignia',
+        'last_activity',
+        'is_online',
+        'last_seen',
     ];
 
     /**
@@ -47,6 +58,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_activity' => 'datetime',
+            'last_seen' => 'datetime',
+            'is_online' => 'boolean',
         ];
     }
 
@@ -55,10 +69,8 @@ class User extends Authenticatable
      */
     public function getImagenUrlAttribute()
     {
-        if ($this->imagen) {
-            return asset('perfiles/' . $this->imagen);
-        }
-        return asset('img/img.jpg'); // imagen por defecto
+        // Siempre retorna la imagen real o la por defecto
+        return asset('perfiles/' . ($this->imagen ?: 'img.jpg'));
     }
 
     public function getRouteKeyName()
@@ -110,5 +122,53 @@ class User extends Authenticatable
     public function getUnreadNotificationsCountAttribute()
     {
         return $this->unreadNotifications()->count();
+    }
+
+    /**
+     * Métodos para manejar estado activo global
+     */
+    public function updateActivity()
+    {
+        $this->forceFill([
+            'last_activity' => now(),
+            'is_online' => true,
+        ])->save();
+
+        return $this;
+    }
+
+    public function setOffline()
+    {
+        $this->forceFill([
+            'is_online' => false,
+            'last_seen' => now(),
+        ])->save();
+
+        return $this;
+    }
+
+    public function isOnline()
+    {
+        // Un usuario está online si:
+        // 1. is_online es true Y
+        // 2. su última actividad fue hace menos de 5 minutos
+        return $this->is_online &&
+            $this->last_activity &&
+            $this->last_activity->greaterThan(now()->subMinutes(5));
+    }
+
+    public function getLastSeenAttribute($value)
+    {
+        if (!$value) return null;
+
+        $lastSeen = \Carbon\Carbon::parse($value);
+        return $lastSeen->diffForHumans();
+    }
+
+    // Scope para obtener solo usuarios online
+    public function scopeOnline($query)
+    {
+        return $query->where('is_online', true)
+            ->where('last_activity', '>', now()->subMinutes(5));
     }
 }

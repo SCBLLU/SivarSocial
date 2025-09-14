@@ -6,22 +6,21 @@
 
 @section('contenido')
     <div class="flex h-full">
-        <div class="container mx-auto px-4">
+        <div class="container px-4 mx-auto">
             <div class="grid h-full grid-cols-1 gap-4 lg:gap-8 lg:grid-cols-3">
                 <!-- Columna 1: Vacía (espaciador) -->
                 <div class="hidden lg:block"></div>
 
                 <!-- Columna 2: Posts centrados sin scroll interno -->
-                <div class="w-full flex flex-col">
-                    <div id="posts-container" class="pr-0 lg:pr-2 flex flex-col">
+                <div class="flex flex-col w-full">
+                    <div id="posts-container" class="flex flex-col pr-0 lg:pr-2">
                         @include('components.new-post')
                         @component('components.listar-post', ['posts' => $posts])
                         @endcomponent
                     </div>
                 </div>
-
                 <!-- Columna 3: Perfiles a la derecha con altura igual a posts -->
-                <div class="w-full h-full  lg:flex lg:flex-col">
+                <div class="w-full h-full lg:flex lg:flex-col">
                     <div id="users-container"
                         class="perfilfor-post flex flex-col p-4 bg-white shadow-lg rounded-2xl h-full max-h-[600px]">
                         <h2
@@ -53,20 +52,20 @@
 
                         @auth
                             @if (!$isProfile)
-                                <div class="bg-white rounded-full shadow-sm mb-3 sm:mb-4 w-full mx-auto">
+                                <div class="w-full mx-auto mb-3 bg-white rounded-full shadow-sm sm:mb-4">
                                     <div class="flex items-center p-2" onclick="activarInput()"
                                         style="padding-left: 15px; height: 40px;">
                                         <i class="bx bx-search-alt-2"></i>
                                         <div class="flex-shrink-0 buscar-input">
                                             <input type="text" id="buscar2" name="buscaru" placeholder="Buscar"
-                                                class="rounded-full px-3 py-1">
+                                                class="px-3 py-1 rounded-full">
                                         </div>
                                     </div>
                                 </div>
                             @endif
                         @endauth
 
-                        <div id="resultados-busqueda2" class="flex-1 overflow-y-auto scrollbar-purple min-h-0">
+                        <div id="resultados-busqueda2" class="flex-1 min-h-0 overflow-y-auto scrollbar-purple">
                             @component('components.listar-perfiles', ['users' => $users])
                             @endcomponent
                         </div>

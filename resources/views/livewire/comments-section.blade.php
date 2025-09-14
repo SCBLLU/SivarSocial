@@ -1,7 +1,7 @@
 <!-- Contenedor principal de comentarios -->
 <div class="flex flex-col h-auto lg:h-full">
     <!-- Header de comentarios -->
-    <div class="px-4 py-3 border-b border-gray-200 flex-shrink-0">
+    <div class="flex-shrink-0 px-4 py-3 border-b border-gray-200">
         <h2 class="text-lg font-bold text-center text-black">Comentarios</h2>
     </div>
 
@@ -10,7 +10,7 @@
         id="comments-list">
         @if ($this->comentarios->count())
             @foreach ($this->comentarios as $index => $comentario)
-                <div wire:key="comment-{{ $comentario->id }}" class="group relative" x-data="{ showOptions: false }"
+                <div wire:key="comment-{{ $comentario->id }}" class="relative group" x-data="{ showOptions: false }"
                     @click.away="showOptions = false">
 
                     <!-- Comentario card -->
@@ -22,15 +22,15 @@
                             <div class="flex-shrink-0">
                                 <img src="{{ $comentario->user && $comentario->user->imagen ? asset('perfiles/' . $comentario->user->imagen) : asset('img/img.jpg') }}"
                                     alt="Avatar de {{ $comentario->user->username }}"
-                                    class="w-10 h-10 rounded-full object-cover border-2 border-gray-100"
+                                    class="object-cover w-10 h-10 border-2 border-gray-100 rounded-full"
                                     onerror="this.src='{{ asset('img/img.jpg') }}'">
                             </div>
 
                             <!-- Usuario, badge, timestamp y opciones -->
-                            <div class="flex-1 min-w-0 flex items-center justify-between">
-                                <div class="flex items-center gap-2 min-w-0">
+                            <div class="flex items-center justify-between flex-1 min-w-0">
+                                <div class="flex items-center min-w-0 gap-2">
                                     <a href="{{ route('posts.index', $comentario->user->username) }}"
-                                        class="font-semibold text-sm text-gray-900 hover:text-blue-600 transition-colors truncate flex items-center gap-1">
+                                        class="flex items-center gap-1 text-sm font-semibold text-gray-900 truncate transition-colors hover:text-blue-600">
                                         {{ $comentario->user->username }}
                                         <x-user-badge :badge="$comentario->user->insignia ?? null" size="medium" />
                                     </a>
@@ -41,10 +41,10 @@
                                 </div>
 
                                 <!-- Timestamp y opciones -->
-                                <div class="flex items-center gap-2 flex-shrink-0">
+                                <div class="flex items-center flex-shrink-0 gap-2">
                                     <!-- Timestamp -->
                                     <span class="text-xs text-gray-500">
-                                        {{ $comentario->compact_time }}
+                                        {{ $comentario->created_at->diffForHumans() }}
                                     </span>
 
                                     <!-- Botón de opciones -->
@@ -76,11 +76,11 @@
                                                         wire:confirm="¿Estás seguro de eliminar este comentario?"
                                                         wire:loading.attr="disabled" wire:target="deleteComment"
                                                         @click="showOptions = false"
-                                                        class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 rounded-xl mx-1 disabled:opacity-50">
+                                                        class="flex items-center w-full gap-2 px-4 py-2 mx-1 text-sm text-left text-red-600 transition-colors hover:bg-red-50 rounded-xl disabled:opacity-50">
 
                                                         <!-- Spinner de carga -->
                                                         <div wire:loading wire:target="deleteComment({{ $comentario->id }})"
-                                                            class="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin">
+                                                            class="w-4 h-4 border-2 border-red-600 rounded-full border-t-transparent animate-spin">
                                                         </div>
 
                                                         <!-- Icono de eliminar -->
@@ -111,22 +111,22 @@
                                 <!-- Solo GIF -->
                                 <div class="mt-2">
                                     <img src="{{ $comentario->gif_url }}" alt="GIF"
-                                        class="max-w-full h-auto rounded-xl shadow-sm max-h-48 object-contain border border-gray-100">
+                                        class="object-contain h-auto max-w-full border border-gray-100 shadow-sm rounded-xl max-h-48">
                                 </div>
                             @elseif($comentario->hasGif())
                                 <!-- Texto + GIF -->
                                 @if(!empty($comentario->comentario))
-                                    <p class="text-sm text-gray-700 leading-relaxed break-words mb-2">
+                                    <p class="mb-2 text-sm leading-relaxed text-gray-700 break-words">
                                         {{ $comentario->comentario }}
                                     </p>
                                 @endif
                                 <div class="mt-2">
                                     <img src="{{ $comentario->gif_url }}" alt="GIF"
-                                        class="max-w-full h-auto rounded-xl shadow-sm max-h-48 object-contain border border-gray-100">
+                                        class="object-contain h-auto max-w-full border border-gray-100 shadow-sm rounded-xl max-h-48">
                                 </div>
                             @else
                                 <!-- Solo texto -->
-                                <p class="text-sm text-gray-700 leading-relaxed break-words">
+                                <p class="text-sm leading-relaxed text-gray-700 break-words">
                                     {{ $comentario->comentario }}
                                 </p>
                             @endif
@@ -140,7 +140,7 @@
             @if($showLoadMore)
                 <div class="py-3 text-center">
                     <button wire:click="loadMoreComments" wire:loading.attr="disabled"
-                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-all duration-200 disabled:opacity-50">
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 transition-all duration-200 hover:text-blue-700 disabled:opacity-50">
 
                         <svg wire:loading.remove wire:target="loadMoreComments" class="w-4 h-4" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
@@ -148,7 +148,7 @@
                         </svg>
 
                         <div wire:loading wire:target="loadMoreComments"
-                            class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                            class="w-4 h-4 border-2 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
 
                         <span wire:loading.remove wire:target="loadMoreComments">Ver más comentarios</span>
                         <span wire:loading wire:target="loadMoreComments">Cargando...</span>
@@ -157,24 +157,24 @@
             @endif
         @else
             <!-- Estado vacío -->
-            <div class="flex flex-col items-center justify-center py-6 lg:py-12 px-4 text-center">
-                <div class="bg-gray-100 rounded-full p-3 lg:p-4 mb-3 lg:mb-4">
-                    <svg class="w-6 h-6 lg:w-8 lg:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex flex-col items-center justify-center px-4 py-6 text-center lg:py-12">
+                <div class="p-3 mb-3 bg-gray-100 rounded-full lg:p-4 lg:mb-4">
+                    <svg class="w-6 h-6 text-gray-400 lg:w-8 lg:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                 </div>
-                <h3 class="text-base lg:text-lg font-medium text-gray-900 mb-1 lg:mb-2">No hay comentarios</h3>
-                <p class="text-gray-500 text-sm">Sé el primero en comentar esta publicación</p>
+                <h3 class="mb-1 text-base font-medium text-gray-900 lg:text-lg lg:mb-2">No hay comentarios</h3>
+                <p class="text-sm text-gray-500">Sé el primero en comentar esta publicación</p>
             </div>
         @endif
     </div>
 
     <!-- Formulario de comentario fijo -->
-    <div class="px-4 py-4 border-t border-gray-100 flex-shrink-0 bg-white rounded-b-2xl">
+    <div class="flex-shrink-0 px-4 py-4 bg-white border-t border-gray-100 rounded-b-2xl">
         @auth
             @if ($successMessage)
-                <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <div class="p-3 mb-4 border border-green-200 rounded-lg bg-green-50">
                     <div class="flex items-center gap-2 text-green-700">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -185,7 +185,7 @@
             @endif
 
             @if ($errors->has('comentario'))
-                <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <div class="p-3 mb-4 border border-red-200 rounded-lg bg-red-50">
                     <div class="flex items-center gap-2 text-red-700">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -198,16 +198,16 @@
 
             <!-- Preview del GIF seleccionado -->
             @if($selectedGif)
-                <div class="mb-3 p-2 bg-gray-50 rounded-2xl border border-gray-100">
+                <div class="p-2 mb-3 border border-gray-100 bg-gray-50 rounded-2xl">
                     <div class="flex items-start gap-2">
                         <img src="{{ $selectedGif }}" alt="GIF seleccionado"
-                            class="w-12 h-12 object-cover rounded-lg shadow-sm">
+                            class="object-cover w-12 h-12 rounded-lg shadow-sm">
                         <div class="flex-1 min-w-0">
                             <p class="text-xs font-medium text-gray-700">GIF seleccionado</p>
                             <p class="text-xs text-gray-500 truncate">Se enviará con tu comentario</p>
                         </div>
                         <button type="button" wire:click="removeSelectedGif"
-                            class="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-red-50">
+                            class="p-1 text-gray-400 transition-colors rounded-full hover:text-red-500 hover:bg-red-50">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M6 18L18 6M6 6l12 12" />
@@ -219,14 +219,14 @@
 
             <form wire:submit.prevent="store" autocomplete="off">
                 <div
-                    class="bg-white border border-gray-200 rounded-full p-2 flex items-center gap-2 sm:gap-3 hover:border-gray-300 transition-colors">
+                    class="flex items-center gap-2 p-2 transition-colors bg-white border border-gray-200 rounded-full sm:gap-3 hover:border-gray-300">
                     @if(auth()->user()->imagen)
                         <img src="{{ asset('perfiles/' . auth()->user()->imagen) }}" alt="Tu avatar"
-                            class="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border-2 border-gray-100 flex-shrink-0"
+                            class="flex-shrink-0 object-cover border-2 border-gray-100 rounded-full w-7 h-7 sm:w-8 sm:h-8"
                             onerror="this.src='{{ asset('img/img.jpg') }}'">
                     @else
                         <img src="{{ asset('img/img.jpg') }}" alt="Tu avatar por defecto"
-                            class="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border-2 border-gray-100 flex-shrink-0">
+                            class="flex-shrink-0 object-cover border-2 border-gray-100 rounded-full w-7 h-7 sm:w-8 sm:h-8">
                     @endif
                     <input type="text" wire:model="comentario"
                         class="flex-1 min-w-0 bg-transparent border-none outline-none text-sm placeholder-gray-400 text-gray-900 {{ $errors->has('comentario') ? 'text-red-500' : '' }}"
@@ -243,17 +243,17 @@
 
 
                     <button type="submit" wire:loading.attr="disabled" wire:target="store"
-                        class="text-gray-800 hover:text-black hover:bg-gray-100 rounded-full p-1 sm:p-2 transition-all duration-200 transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50"
+                        class="p-1 text-gray-800 transition-all duration-200 transform rounded-full hover:text-black hover:bg-gray-100 sm:p-2 hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50"
                         title="Enviar comentario">
                         <div wire:loading wire:target="store" class="w-4 h-4 sm:w-5 sm:h-5">
-                            <svg class="animate-spin w-full h-full" fill="none" viewBox="0 0 24 24">
+                            <svg class="w-full h-full animate-spin" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
                                 </circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
                             </svg>
                         </div>
                         <svg wire:loading.remove wire:target="store"
-                            class="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-200 hover:rotate-50 transform rotate-90"
+                            class="w-4 h-4 transition-transform duration-200 transform rotate-90 sm:w-5 sm:h-5 hover:rotate-50"
                             fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.1"
                                 d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -262,15 +262,15 @@
                 </div>
             </form>
         @else
-            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-3 sm:p-4 text-center">
+            <div class="p-3 text-center border border-gray-200 bg-gray-50 rounded-2xl sm:p-4">
                 <div class="mb-3">
-                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor"
+                    <svg class="w-6 h-6 mx-auto mb-2 text-gray-400 sm:w-8 sm:h-8" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
-                    <p class="text-gray-600 text-xs sm:text-sm font-medium mb-1">¿Quieres comentar?</p>
-                    <p class="text-gray-500 text-xs">Inicia sesión para poder comentar esta publicación</p>
+                    <p class="mb-1 text-xs font-medium text-gray-600 sm:text-sm">¿Quieres comentar?</p>
+                    <p class="text-xs text-gray-500">Inicia sesión para poder comentar esta publicación</p>
                 </div>
                 <a href="{{ route('login') }}"
                     class="inline-block bg-[#3B25DD] hover:bg-[#120073] text-white px-4 py-2 sm:px-6 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg">
@@ -282,7 +282,7 @@
 
     <!-- Modal de Selección de GIFs -->
     @if($showGifModal)
-        <div class="fixed inset-0 flex items-end sm:items-center justify-center transition-all duration-300 ease-out"
+        <div class="fixed inset-0 flex items-end justify-center transition-all duration-300 ease-out sm:items-center"
             style="background-color: rgba(0, 0, 0, 0.6); z-index: 9999;" x-data="{ show: false }" x-init="
                     $nextTick(() => show = true);
                     document.documentElement.style.overflowY = 'hidden';
@@ -306,11 +306,11 @@
                 x-on:touchend="endDrag($event)">
 
                 <!-- Drag handle mobile -->
-                <div class="p-4 border-b border-gray-200 text-center text-lg font-semibold sm:hidden">
+                <div class="p-4 text-lg font-semibold text-center border-b border-gray-200 sm:hidden">
                     <!-- Botón de cierre móvil -->
-                    <div class="absolute top-4 right-4 z-10">
+                    <div class="absolute z-10 top-4 right-4">
                         <button wire:click="toggleGifModal" @click.stop @touchstart.stop @touchend.stop
-                            class="p-1 rounded-full transition-colors">
+                            class="p-1 transition-colors rounded-full">
                             <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M6 18L18 6M6 6l12 12" />
@@ -320,7 +320,7 @@
 
                     <!-- Área de drag -->
                     <div class="cursor-grab touch-none" x-ref="dragHandle">
-                        <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-2"></div>
+                        <div class="w-12 h-1 mx-auto mb-2 bg-gray-300 rounded-full"></div>
                         <div class="flex items-center justify-start px-2">
                             <span class="text-base font-bold text-gray-900">Seleccionar GIF</span>
                         </div>
@@ -328,10 +328,10 @@
                 </div>
 
                 <!-- Header desktop -->
-                <div class="hidden sm:block flex-none border-b border-gray-200 bg-white sm:rounded-t-xl sticky top-0 z-10">
+                <div class="sticky top-0 z-10 flex-none hidden bg-white border-b border-gray-200 sm:block sm:rounded-t-xl">
                     <div class="flex items-center justify-between px-4 py-3">
                         <h3 class="text-base font-semibold text-gray-900">Seleccionar GIF</h3>
-                        <button wire:click="toggleGifModal" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
+                        <button wire:click="toggleGifModal" class="p-1 transition-colors rounded-full hover:bg-gray-100">
                             <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M6 18L18 6M6 6l12 12" />
@@ -341,13 +341,13 @@
                 </div>
 
                 <!-- Contenido scrolleable -->
-                <div class="p-4 space-y-3 overflow-y-auto flex-1 pb-0 bg-white"
+                <div class="flex-1 p-4 pb-0 space-y-3 overflow-y-auto bg-white"
                     x-data="giphySelector('{{ $this->giphyApiKey }}')">
                     <!-- Sección fija: Buscador y categorías -->
-                    <div class="space-y-3 pb-4">
+                    <div class="pb-4 space-y-3">
                         <!-- Buscador -->
                         <div class="relative">
-                            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                            <svg class="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"
                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -358,12 +358,12 @@
 
                         <!-- Categorías populares -->
                         <div x-show="searchTerm === ''">
-                            <p class="text-xs font-medium text-gray-700 mb-2">Populares</p>
+                            <p class="mb-2 text-xs font-medium text-gray-700">Populares</p>
                             <div class="flex flex-wrap gap-2">
                                 <template
                                     x-for="category in ['😀 Feliz', '😂 Divertido', '❤️ Amor', '🎉 Emocionado', '👍 Bien', '👏 Aplausos']">
                                     <button @click="quickSearch(category.split(' ')[1])"
-                                        class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-xs text-gray-700 transition-all duration-200 hover:scale-105 font-medium">
+                                        class="px-2 py-1 text-xs font-medium text-gray-700 transition-all duration-200 bg-gray-100 rounded-full hover:bg-gray-200 hover:scale-105">
                                         <span x-text="category"></span>
                                     </button>
                                 </template>
@@ -374,21 +374,21 @@
                     <!-- Área de contenido scrolleable -->
                     <div class="space-y-4">
                         <!-- Loading -->
-                        <div x-show="loading" class="text-center py-8">
+                        <div x-show="loading" class="py-8 text-center">
                             <div
                                 class="animate-spin w-8 h-8 border-2 border-[#3B25DD] border-t-transparent rounded-full mx-auto">
                             </div>
-                            <p class="text-gray-500 text-sm mt-2">Cargando GIFs...</p>
+                            <p class="mt-2 text-sm text-gray-500">Cargando GIFs...</p>
                         </div>
 
                         <!-- Error -->
-                        <div x-show="error && !loading" class="text-center py-8">
-                            <svg class="w-12 h-12 text-red-400 mx-auto mb-2" fill="none" stroke="currentColor"
+                        <div x-show="error && !loading" class="py-8 text-center">
+                            <svg class="w-12 h-12 mx-auto mb-2 text-red-400" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <p class="text-red-500 text-sm mb-2">Error al cargar GIFs</p>
+                            <p class="mb-2 text-sm text-red-500">Error al cargar GIFs</p>
                             <button @click="loadTrendingGifs()"
                                 class="text-[#3B25DD] hover:text-[#120073] text-sm font-medium">
                                 Intentar de nuevo
@@ -398,27 +398,27 @@
                         <!-- Grid de GIFs -->
                         <div x-show="!loading && !error && gifs.length > 0" class="grid grid-cols-2 gap-2 pb-4">
                             <template x-for="gif in gifs" :key="gif.id">
-                                <div class="cursor-pointer rounded-xl overflow-hidden hover:opacity-90 transition-all duration-200 transform shadow-sm hover:shadow-md"
+                                <div class="overflow-hidden transition-all duration-200 transform shadow-sm cursor-pointer rounded-xl hover:opacity-90 hover:shadow-md"
                                     @click="selectGif(gif.images.fixed_height.url)">
                                     <img :src="gif.images.fixed_height_small.url" :alt="gif.title"
-                                        class="w-full h-20 sm:h-24 object-cover" loading="lazy">
+                                        class="object-cover w-full h-20 sm:h-24" loading="lazy">
                                 </div>
                             </template>
                         </div>
 
                         <!-- Estado vacío -->
-                        <div x-show="!loading && !error && gifs.length === 0 && searchTerm !== ''" class="text-center py-8">
-                            <p class="text-gray-500 text-sm">No se encontraron GIFs</p>
+                        <div x-show="!loading && !error && gifs.length === 0 && searchTerm !== ''" class="py-8 text-center">
+                            <p class="text-sm text-gray-500">No se encontraron GIFs</p>
                         </div>
 
                         <!-- Estado inicial -->
-                        <div x-show="!loading && !error && gifs.length === 0 && searchTerm === ''" class="text-center py-8">
-                            <svg class="w-12 h-12 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor"
+                        <div x-show="!loading && !error && gifs.length === 0 && searchTerm === ''" class="py-8 text-center">
+                            <svg class="w-12 h-12 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            <p class="text-gray-500 text-sm">Busca un GIF para agregar a tu comentario</p>
+                            <p class="text-sm text-gray-500">Busca un GIF para agregar a tu comentario</p>
                         </div>
                     </div>
                 </div>

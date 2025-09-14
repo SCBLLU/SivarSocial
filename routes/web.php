@@ -1,3 +1,5 @@
+
+
 <?php
 
 use App\Models\Comentario;
@@ -124,6 +126,13 @@ Route::get('/posts/create', [PostController::class, 'create'])->name('posts.crea
 Route::post('/posts', [PostController::class, 'store'])->name('posts.store')->middleware('auth');
 
 /**
+ * EDICIÓN DE POSTS
+ * Formulario para editar publicaciones existentes
+ */
+Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit')->middleware('auth');
+Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update')->middleware('auth');
+
+/**
  * VISUALIZACIÓN Y GESTIÓN DE POSTS
  * Ver post individual y eliminar posts propios
  */
@@ -230,3 +239,21 @@ Route::get('/itunes/track', [iTunesApiController::class, 'getTrack'])->name('itu
 Route::get('/itunes/genre', [iTunesApiController::class, 'searchByGenre'])->name('itunes.genre');
 Route::get('/itunes/popular', [iTunesApiController::class, 'getPopular'])->name('itunes.popular');
 Route::get('/itunes/more', [iTunesApiController::class, 'getMoreResults'])->name('itunes.more');
+
+// ============================================================================
+// CHATIFY - CUSTOM ROUTES OVERRIDE
+// ============================================================================
+
+use App\Http\Controllers\ChatifyOverrideController;
+
+/**
+ * Custom Chatify endpoints to preserve unread counts and chat order
+ * These routes override the default Chatify behavior
+ */
+Route::middleware(['web', 'auth'])->prefix('chatify')->group(function () {
+    Route::post('/getContactsCustom', [ChatifyOverrideController::class, 'getContacts'])->name('chatify.contacts.get.custom');
+    Route::get('/getContactsCustom', [ChatifyOverrideController::class, 'getContacts'])->name('chatify.contacts.get.custom.fallback');
+    Route::post('/updateContacts', [ChatifyOverrideController::class, 'updateContactItem'])->name('chatify.contacts.update');
+    Route::post('/mutualContactsList', [ChatifyOverrideController::class, 'mutualContactsList'])->name('chatify.mutual.contacts');
+    Route::post('/idInfo', [ChatifyOverrideController::class, 'idInfo'])->name('chatify.idinfo');
+});

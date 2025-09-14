@@ -140,8 +140,8 @@ if ($currentRoute && $currentRoute->getName() === 'posts.index') {
     class="fixed bottom-0 left-0 right-0 bg-white text-black rounded-t-2xl shadow-lg z-50 flex flex-col max-h-[80vh] w-full mx-auto sm:relative sm:w-96 sm:h-96 sm:rounded-xl overflow-hidden">
     <!-- Drag handle -->
     <div id="dragHandle0"
-      class="p-4 border-b border-gray-200 text-center text-lg font-semibold cursor-grab touch-none sm:hidden">
-      <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-2"></div>
+      class="p-4 text-lg font-semibold text-center border-b border-gray-200 cursor-grab touch-none sm:hidden">
+      <div class="w-12 h-1 mx-auto mb-2 bg-gray-300 rounded-full"></div>
       <div class="flex items-center justify-between px-2">
         <span class="text-lg font-bold text-purple-700" style="display: flex; align-items: center;">Perfiles <i
             class="ml-1 fa-solid fa-user-group" aria-hidden="true" style="font-size: 12px;"></i></span>
@@ -153,7 +153,7 @@ if ($currentRoute && $currentRoute->getName() === 'posts.index') {
       </div>
     </div>
     <!-- Header solo en desktop -->
-    <div class="hidden sm:block flex-none border-b border-gray-200 bg-white sm:rounded-t-xl sticky top-0 z-10">
+    <div class="sticky top-0 z-10 flex-none hidden bg-white border-b border-gray-200 sm:block sm:rounded-t-xl">
       <div class="flex items-center justify-between px-4 py-3">
         <h3 class="text-lg font-semibold text-purple-700" style="display: flex; align-items: center;">Perfiles <i
             class="ml-1 fa-solid fa-user-group" aria-hidden="true" style="font-size: 12px;"></i></h3>
@@ -202,8 +202,8 @@ if ($currentRoute && $currentRoute->getName() === 'posts.index') {
   <div id="modalmenu1"
     class="fixed bottom-0 left-0 right-0 bg-white text-black rounded-t-2xl shadow-lg z-50 flex flex-col max-h-[80vh] w-full mx-auto sm:relative sm:w-96 sm:h-96 sm:rounded-xl overflow-hidden">
     <!-- Drag handle -->
-    <div id="dragHandle1" class="p-4 text-center text-lg font-semibold cursor-grab touch-none sm:hidden">
-      <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-2"></div>
+    <div id="dragHandle1" class="p-4 text-lg font-semibold text-center cursor-grab touch-none sm:hidden">
+      <div class="w-12 h-1 mx-auto mb-2 bg-gray-300 rounded-full"></div>
       <div class="flex items-center justify-between px-2">
         <span class="text-base font-bold text-gray-900"></span>
         <button onclick="closeModal(1)" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
@@ -214,7 +214,7 @@ if ($currentRoute && $currentRoute->getName() === 'posts.index') {
       </div>
     </div>
     <!-- Header solo en desktop -->
-    <div class="hidden sm:block flex-none bg-white sm:rounded-t-xl sticky top-0 z-10">
+    <div class="sticky top-0 z-10 flex-none hidden bg-white sm:block sm:rounded-t-xl">
       <div class="flex items-center justify-between px-4 py-3">
         <h3 class="text-base font-semibold text-gray-900"></h3>
         <button onclick="closeModal(1)" class="p-1 hover:bg-gray-100 rounded-full transition-colors">

@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Agregar middleware para extender duración de sesión
         $middleware->web(append: [
             \App\Http\Middleware\ExtendSessionLifetime::class,
+            \App\Http\Middleware\UpdateUserActivity::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
