@@ -305,6 +305,7 @@ i.bx.bx-search-alt-2 {
   backdrop-filter: blur(10px);
   z-index: 1001;
   visibility: hidden;
+  overflow: hidden;
 }
 
 /*.header {
@@ -437,6 +438,7 @@ i.bx.bx-search-alt-2 {
   font-size: 1.8rem;
   white-space: nowrap;
 }
+
 .header__trigger::before {
   content: "";
   display: block;
@@ -652,12 +654,55 @@ img, video, iframe {
 /* ------------------------------------------------*/
 /* Blocks Menu Start */
 /* ------------------------------------------------*/
+
+/*Animacion de menu*/
+.menu{
+  position: relative;
+  display: flex;
+}
+
+.menu__list {
+  position: relative;
+  display: flex;
+  justify-content: space-around;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.border-frame {
+  position: absolute;
+  width: 3.5rem !important;
+  height: 3.5rem !important;
+  border: 5px solid #2575fc;
+  border-radius: 50%;
+  transition: all 0.4s ease;
+  pointer-events: none;
+  transform: translate(-50%, -50%); /* centrado */
+  box-sizing: border-box;
+}
+
+.border-frame.no-transition {
+  transition: none !important;
+}
+
+.circle{
+  z-index: 1;
+}
+
+.menu__link.active,
+.header__trigger.active {
+  color: #2575fc;
+}
+/*Final de animacion*/
+
 .menu__item {
   display: -webkit-inline-box;
   display: -moz-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
+
 @media only screen and (min-width: 992px) {
   .menu__item {
     margin-right: 1rem;
@@ -681,10 +726,7 @@ img, video, iframe {
   -moz-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
 }
-.menu__link.active {
-  color: var(--t-opp-bright);
-  background-color: var(--base-opp);
-}
+
 @media only screen and (min-width: 992px) {
   .menu__link {
     width: 5rem;
