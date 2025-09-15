@@ -76,7 +76,7 @@
                         <!-- Botones para actualizaciones -->
                         <div class="space-y-3">
                             <button 
-                                wire:click="markAsUnderstood"
+                                wire:click="dismissBanner"
                                 class="w-full bg-blue-800 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-xl transition-colors duration-200"
                             >
                                 Enterado
@@ -95,7 +95,7 @@
                         <div class="space-y-3">
                             @if($banner->action_url)
                                 <button 
-                                    wire:click="actionClick"
+                                    wire:click="dismissBanner"
                                     class="w-full bg-blue-800 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-xl transition-colors duration-200"
                                 >
                                     {{ $banner->action_text ?? 'Enterado' }}
@@ -103,23 +103,6 @@
                             @endif
                         </div>
                     @else
-                        <!-- Botones genéricos (fallback) -->
-                        <div class="space-y-3">
-                            @if($banner->action_url)
-                                <button 
-                                    wire:click="actionClick"
-                                    class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105"
-                                >
-                                    {{ $banner->action_text ?? 'Continuar' }}
-                                </button>
-                            @endif
-                            <button 
-                                wire:click="dismissBanner"
-                                class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-xl transition-colors duration-200"
-                            >
-                                Cerrar
-                            </button>
-                        </div>
                     @endif
                 </div>
             </div>
@@ -129,25 +112,16 @@
 
     @if($isVisible)
         <style>
-            /* Bloquear scroll del body y de toda la página */
+            /* Bloquear scroll del body */
             body {
                 overflow: hidden !important;
-                position: fixed !important;
-                width: 100% !important;
-                height: 100% !important;
             }
             
-            /* Bloquear scroll en html también */
-            html {
-                overflow: hidden !important;
-                position: fixed !important;
-                width: 100% !important;
-                height: 100% !important;
-            }
-            
-            /* Prevenir scroll en el viewport */
-            * {
-                overscroll-behavior: none !important;
+            /* Solo en móviles, el JavaScript maneja el position fixed */
+            @media (max-width: 768px) {
+                html {
+                    overflow: hidden !important;
+                }
             }
             
             /* Estilos para el draggable */
@@ -266,34 +240,48 @@
                 
                 if (!modalContainer || !dragHandle || !bannerModal) return;
                 
-                // Forzar la eliminación completa del scroll de la página
-                function forceNoPageScroll() {
-                    // Bloquear scroll en body y html
-                    document.body.style.overflow = 'hidden';
-                    document.body.style.position = 'fixed';
-                    document.body.style.width = '100%';
-                    document.body.style.height = '100%';
-                    
-                    document.documentElement.style.overflow = 'hidden';
-                    document.documentElement.style.position = 'fixed';
-                    document.documentElement.style.width = '100%';
-                    document.documentElement.style.height = '100%';
-                    
-                    // Prevenir eventos de scroll
-                    window.addEventListener('scroll', preventDefault, { passive: false });
-                    window.addEventListener('wheel', preventDefault, { passive: false });
-                    window.addEventListener('touchmove', preventDefault, { passive: false });
-                    document.addEventListener('scroll', preventDefault, { passive: false });
-                    document.addEventListener('wheel', preventDefault, { passive: false });
-                    document.addEventListener('touchmove', preventDefault, { passive: false });
+                // Variables para manejar scroll
+                let originalScrollY = 0;
+                let scrollListeners = [];
+                
+                // Función para bloquear scroll
+                function blockScroll() {
+                    if (window.innerWidth <= 768) {
+                        // Guardar posición actual
+                        originalScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+                        
+                        // Bloquear scroll en móviles
+                        document.body.style.position = 'fixed';
+                        document.body.style.top = `-${originalScrollY}px`;
+                        document.body.style.width = '100%';
+                        document.body.style.overflow = 'hidden';
+                        document.documentElement.style.overflow = 'hidden';
+                    } else {
+                        // Solo overflow en desktop
+                        document.body.style.overflow = 'hidden';
+                    }
                 }
                 
-                // Función para prevenir eventos
-                function preventDefault(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
+                // Función para restaurar scroll
+                function restoreScroll() {
+                    if (window.innerWidth <= 768) {
+                        // Restaurar todos los estilos móviles
+                        document.body.style.position = '';
+                        document.body.style.top = '';
+                        document.body.style.width = '';
+                        document.body.style.overflow = '';
+                        document.documentElement.style.overflow = '';
+                        
+                        // Restaurar posición de scroll
+                        window.scrollTo(0, originalScrollY);
+                    } else {
+                        // Restaurar desktop
+                        document.body.style.overflow = '';
+                    }
                 }
+                
+                // Exponer función globalmente
+                window.restorePageScroll = restoreScroll;
                 
                 // Forzar la eliminación completa del scroll del modal
                 function forceNoScroll() {
@@ -312,11 +300,11 @@
                     });
                 }
                 
-                // Ejecutar inmediatamente y en un intervalo para asegurar
-                forceNoPageScroll();
+                // Ejecutar bloqueo de scroll al cargar
+                blockScroll();
                 forceNoScroll();
                 setTimeout(() => {
-                    forceNoPageScroll();
+                    blockScroll();
                     forceNoScroll();
                 }, 100);
                 

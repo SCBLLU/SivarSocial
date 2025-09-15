@@ -96,17 +96,27 @@ class BannerNovedades extends Component
     {
         $this->isVisible = false;
         $this->banner = null;
-
-        // Restaurar scroll completamente
+        
+        // Restaurar scroll de manera simple y efectiva
         $this->js('
-            document.body.style.overflow = "";
-            document.body.style.position = "";
-            document.body.style.width = "";
-            document.body.style.height = "";
-            document.documentElement.style.overflow = "";
-            document.documentElement.style.position = "";
-            document.documentElement.style.width = "";
-            document.documentElement.style.height = "";
+            if (window.restorePageScroll) {
+                window.restorePageScroll();
+            } else {
+                // Fallback robusto
+                document.body.style.overflow = "";
+                document.body.style.position = "";
+                document.body.style.top = "";
+                document.body.style.left = "";
+                document.body.style.width = "";
+                document.documentElement.style.overflow = "";
+                document.body.style.height = "";
+                
+                // Forzar restauración completa
+                setTimeout(() => {
+                    document.body.style.cssText = "";
+                    document.documentElement.style.cssText = "";
+                }, 50);
+            }
         ');
     }
 
