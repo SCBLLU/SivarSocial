@@ -21,7 +21,7 @@ class BannerNovedades extends Component
     public function loadBanner()
     {
         Log::info('BannerNovedades: loadBanner() called');
-        
+
         if (!Auth::check()) {
             Log::info('BannerNovedades: User not authenticated');
             return;
@@ -47,7 +47,7 @@ class BannerNovedades extends Component
         if ($this->banner && Auth::check()) {
             $this->banner->markAsViewedBy(Auth::id());
         }
-        
+
         $this->closeBanner();
     }
 
@@ -57,7 +57,7 @@ class BannerNovedades extends Component
         if ($this->banner && Auth::check()) {
             $this->banner->markAsViewedBy(Auth::id());
         }
-        
+
         $this->closeBanner();
     }
 
@@ -67,10 +67,10 @@ class BannerNovedades extends Component
         if ($this->banner && Auth::check()) {
             $this->banner->markAsViewedBy(Auth::id());
         }
-        
+
         $url = $this->banner->action_url ?? null;
         $this->closeBanner();
-        
+
         // Redirigir a la URL de acción si existe
         if ($url) {
             return redirect($url);
@@ -84,10 +84,10 @@ class BannerNovedades extends Component
             if (Auth::check()) {
                 $this->banner->markAsViewedBy(Auth::id());
             }
-            
+
             $url = $this->banner->action_url ?? '/';
             $this->closeBanner();
-            
+
             return redirect($url);
         }
     }
@@ -97,8 +97,27 @@ class BannerNovedades extends Component
         $this->isVisible = false;
         $this->banner = null;
         
-        // Enviar evento para restaurar scroll
-        $this->dispatch('banner-closed');
+        // Restaurar scroll de manera simple y efectiva
+        $this->js('
+            if (window.restorePageScroll) {
+                window.restorePageScroll();
+            } else {
+                // Fallback robusto
+                document.body.style.overflow = "";
+                document.body.style.position = "";
+                document.body.style.top = "";
+                document.body.style.left = "";
+                document.body.style.width = "";
+                document.documentElement.style.overflow = "";
+                document.body.style.height = "";
+                
+                // Forzar restauración completa
+                setTimeout(() => {
+                    document.body.style.cssText = "";
+                    document.documentElement.style.cssText = "";
+                }, 50);
+            }
+        ');
     }
 
     public function render()

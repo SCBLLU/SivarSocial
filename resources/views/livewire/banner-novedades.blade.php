@@ -3,17 +3,19 @@
         <!-- Modal Banner de Novedades - Estilo Instagram/Spotify -->
         <div 
             id="bannerModal" 
-            class="fixed inset-0 items-center justify-center flex" 
-            style="background-color: rgba(0, 0, 0, 0.75); z-index: 1200;"
+            class="fixed inset-0 flex items-end justify-center md:items-center" 
+            style="background-color: rgba(0, 0, 0, 0.75); z-index: 1200; overflow: hidden; overscroll-behavior: none;"
             wire:ignore.self
         >
         <!-- Contenedor del Modal -->
         <div 
-            class="relative bg-white mx-4 rounded-2xl shadow-2xl max-w-sm w-full max-h-[80vh] overflow-hidden
-                   md:max-w-md lg:max-w-lg"
+            id="modalContainer"
+            class="relative bg-white w-full md:mx-4 md:mb-0 rounded-t-2xl md:rounded-2xl shadow-2xl 
+                   md:max-w-md lg:max-w-lg transition-transform duration-300 ease-out"
+            style="height: auto; max-height: 85vh; overflow: hidden !important;"
         >
-            <!-- Drag handle para móvil (solo visual, no funcional) -->
-            <div class="flex justify-center pt-4 pb-2 md:hidden">
+            <!-- Drag handle para móvil (ahora funcional) -->
+            <div id="dragHandle" class="flex justify-center pt-4 pb-2 md:hidden cursor-grab active:cursor-grabbing">
                 <div class="w-12 h-1 bg-gray-300 rounded-full"></div>
             </div>
 
@@ -39,14 +41,14 @@
             </div>
 
             <!-- Contenido del modal -->
-            <div class="px-6 pb-6 text-center">
+            <div class="px-6 pb-6 text-center" style="overflow: hidden !important;">
                 <!-- Título -->
                 <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-3 leading-tight">
                     {{ $banner->title }}
                 </h2>
 
                 <!-- Descripción -->
-                <div class="text-gray-600 text-sm md:text-base mb-6 leading-relaxed">
+                <div class="text-gray-600 text-sm md:text-base mb-6 leading-relaxed" style="overflow: hidden !important; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
                     {!! $banner->content !!}
                 </div>
 
@@ -74,7 +76,7 @@
                         <!-- Botones para actualizaciones -->
                         <div class="space-y-3">
                             <button 
-                                wire:click="markAsUnderstood"
+                                wire:click="dismissBanner"
                                 class="w-full bg-blue-800 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-xl transition-colors duration-200"
                             >
                                 Enterado
@@ -93,7 +95,7 @@
                         <div class="space-y-3">
                             @if($banner->action_url)
                                 <button 
-                                    wire:click="actionClick"
+                                    wire:click="dismissBanner"
                                     class="w-full bg-blue-800 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-xl transition-colors duration-200"
                                 >
                                     {{ $banner->action_text ?? 'Enterado' }}
@@ -101,151 +103,309 @@
                             @endif
                         </div>
                     @else
-                        <!-- Botones genéricos (fallback) -->
-                        <div class="space-y-3">
-                            @if($banner->action_url)
-                                <button 
-                                    wire:click="actionClick"
-                                    class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105"
-                                >
-                                    {{ $banner->action_text ?? 'Continuar' }}
-                                </button>
-                            @endif
-                            <button 
-                                wire:click="dismissBanner"
-                                class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-xl transition-colors duration-200"
-                            >
-                                Cerrar
-                            </button>
-                        </div>
                     @endif
                 </div>
             </div>
 
-            <!-- Los usuarios DEBEN usar los botones contextuales para cerrar -->
-            <!-- Se eliminó el botón X y la función de deslizar para forzar interacción específica -->
         </div>
     </div>
 
     @if($isVisible)
         <style>
-            /* Prevenir scroll cuando el modal está abierto - Todas las plataformas */
-            body, html {
-                overflow: hidden !important;
-                position: fixed !important;
-                width: 100% !important;
-                height: 100% !important;
-            }
-            
-            /* Específico para móviles - Prevenir scroll touch */
+            /* Bloquear scroll del body */
             body {
-                -webkit-overflow-scrolling: auto !important;
-                overscroll-behavior: none !important;
-                touch-action: none !important;
-            }
-            
-            /* Asegurar que el contenido principal no se mueva */
-            .content-wrapper {
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                bottom: 0 !important;
                 overflow: hidden !important;
             }
             
-            /* Prevenir zoom en iOS cuando se toca */
-            input, textarea, select {
-                font-size: 16px !important;
-                -webkit-user-select: none !important;
-                -webkit-touch-callout: none !important;
+            /* Solo en móviles, el JavaScript maneja el position fixed */
+            @media (max-width: 768px) {
+                html {
+                    overflow: hidden !important;
+                }
+            }
+            
+            /* Estilos para el draggable */
+            #modalContainer {
+                will-change: transform;
+                backface-visibility: hidden;
+                overflow: hidden !important; /* Prevenir scroll del contenedor principal */
+                overscroll-behavior: none !important;
+            }
+            
+            /* Prevenir scroll en TODO el modal de manera agresiva */
+            #modalContainer,
+            #modalContainer *,
+            #modalContainer div,
+            #modalContainer p,
+            #modalContainer span {
+                overflow: hidden !important;
+                overscroll-behavior: none !important;
+                scroll-behavior: auto !important;
+            }
+            
+            /* Forzar que nada tenga scroll */
+            #modalContainer ::-webkit-scrollbar {
+                display: none !important;
+                width: 0 !important;
+                height: 0 !important;
+            }
+            
+            #dragHandle {
+                user-select: none;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                touch-action: none;
+                padding: 8px 16px;
+            }
+            
+            #dragHandle:hover .w-12 {
+                background-color: #9CA3AF;
+                transform: scaleY(1.2);
+                transition: all 0.2s ease;
+            }
+            
+            #dragHandle:active .w-12 {
+                background-color: #6B7280;
+                transform: scaleY(1.4);
+            }
+            
+            /* Animación de entrada del modal desde abajo */
+            @keyframes slideUpFromBottom {
+                from {
+                    transform: translateY(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            
+            #modalContainer {
+                animation: slideUpFromBottom 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+            
+            /* En desktop, centrar el modal */
+            @media (min-width: 768px) {
+                #bannerModal {
+                    align-items: center !important;
+                }
+                
+                #modalContainer {
+                    animation: slideUpFromBottom 0.3s ease-out;
+                }
+            }
+            
+            /* Mejorar la apariencia del handle en dispositivos móviles */
+            @media (max-width: 768px) {
+                #dragHandle .w-12 {
+                    width: 3.5rem;
+                    height: 0.25rem;
+                    background-color: #D1D5DB;
+                    border-radius: 9999px;
+                    transition: all 0.2s ease;
+                }
+                
+                /* Modal ocupa todo el ancho en móviles */
+                #modalContainer {
+                    margin: 0 !important;
+                    border-radius: 1rem 1rem 0 0 !important;
+                    max-height: 80vh !important;
+                    height: auto !important;
+                    overflow: hidden !important;
+                }
+                
+                /* Asegurar que no hay scroll en móviles */
+                #modalContainer *,
+                #modalContainer div {
+                    overflow: hidden !important;
+                    overscroll-behavior: none !important;
+                }
+                
+                /* Limitar texto aún más en móviles */
+                #modalContainer .text-gray-600 {
+                    -webkit-line-clamp: 2 !important;
+                    max-height: 3em !important;
+                }
             }
         </style>
         
         <script>
-            // Prevenir scroll y gestos en móvil cuando el banner está visible
             document.addEventListener('DOMContentLoaded', function() {
+                // Modal draggable que solo se puede cerrar por drag hacia abajo o botones
+                const modalContainer = document.getElementById('modalContainer');
+                const dragHandle = document.getElementById('dragHandle');
                 const bannerModal = document.getElementById('bannerModal');
                 
-                if (bannerModal) {
-                    // Función para prevenir eventos de scroll/touch
-                    function preventScroll(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        return false;
+                if (!modalContainer || !dragHandle || !bannerModal) return;
+                
+                // Variables para manejar scroll
+                let originalScrollY = 0;
+                let scrollListeners = [];
+                
+                // Función para bloquear scroll
+                function blockScroll() {
+                    if (window.innerWidth <= 768) {
+                        // Guardar posición actual
+                        originalScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+                        
+                        // Bloquear scroll en móviles
+                        document.body.style.position = 'fixed';
+                        document.body.style.top = `-${originalScrollY}px`;
+                        document.body.style.width = '100%';
+                        document.body.style.overflow = 'hidden';
+                        document.documentElement.style.overflow = 'hidden';
+                    } else {
+                        // Solo overflow en desktop
+                        document.body.style.overflow = 'hidden';
                     }
-                    
-                    // Prevenir scroll con rueda del mouse
-                    function preventWheel(e) {
-                        e.preventDefault();
-                        return false;
+                }
+                
+                // Función para restaurar scroll
+                function restoreScroll() {
+                    if (window.innerWidth <= 768) {
+                        // Restaurar todos los estilos móviles
+                        document.body.style.position = '';
+                        document.body.style.top = '';
+                        document.body.style.width = '';
+                        document.body.style.overflow = '';
+                        document.documentElement.style.overflow = '';
+                        
+                        // Restaurar posición de scroll
+                        window.scrollTo(0, originalScrollY);
+                    } else {
+                        // Restaurar desktop
+                        document.body.style.overflow = '';
                     }
+                }
+                
+                // Exponer función globalmente
+                window.restorePageScroll = restoreScroll;
+                
+                // Forzar la eliminación completa del scroll del modal
+                function forceNoScroll() {
+                    modalContainer.style.overflow = 'hidden';
+                    modalContainer.style.overflowX = 'hidden';
+                    modalContainer.style.overflowY = 'hidden';
+                    modalContainer.style.overscrollBehavior = 'none';
                     
-                    // Prevenir teclas de navegación
-                    function preventKeys(e) {
-                        const keys = [32, 33, 34, 35, 36, 37, 38, 39, 40]; // space, page up/down, end, home, arrows
-                        if (keys.includes(e.keyCode)) {
-                            e.preventDefault();
-                            return false;
-                        }
-                    }
-                    
-                    // Aplicar bloqueos
-                    document.addEventListener('touchmove', preventScroll, { passive: false });
-                    document.addEventListener('touchstart', function(e) {
-                        // Solo permitir touch en el banner modal
-                        if (!bannerModal.contains(e.target)) {
-                            e.preventDefault();
-                        }
-                    }, { passive: false });
-                    document.addEventListener('wheel', preventWheel, { passive: false });
-                    document.addEventListener('keydown', preventKeys);
-                    
-                    // Limpiar eventos cuando el banner se oculte
-                    const observer = new MutationObserver(function(mutations) {
-                        mutations.forEach(function(mutation) {
-                            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                                if (bannerModal.style.display === 'none' || !bannerModal.style.display) {
-                                    // Banner oculto, remover bloqueos
-                                    document.removeEventListener('touchmove', preventScroll);
-                                    document.removeEventListener('wheel', preventWheel);
-                                    document.removeEventListener('keydown', preventKeys);
-                                    observer.disconnect();
-                                }
-                            }
-                        });
+                    // Aplicar a todos los elementos hijos también
+                    const allElements = modalContainer.querySelectorAll('*');
+                    allElements.forEach(element => {
+                        element.style.overflow = 'hidden';
+                        element.style.overflowX = 'hidden';
+                        element.style.overflowY = 'hidden';
+                        element.style.overscrollBehavior = 'none';
                     });
+                }
+                
+                // Ejecutar bloqueo de scroll al cargar
+                blockScroll();
+                forceNoScroll();
+                setTimeout(() => {
+                    blockScroll();
+                    forceNoScroll();
+                }, 100);
+                
+                let isDragging = false;
+                let startY = 0;
+                let currentY = 0;
+                let initialTransform = 0;
+                
+                // Función para cerrar el modal
+                function closeModal() {
+                    @this.dismissBanner();
+                }
+                
+                // Obtener coordenada Y del touch/mouse
+                function getClientY(e) {
+                    return e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                }
+                
+                // Iniciar drag - solo desde el handle
+                function startDrag(e) {
+                    // Solo permitir drag si se inicia desde el handle
+                    if (!e.target.closest('#dragHandle')) return;
                     
-                    observer.observe(bannerModal, { attributes: true });
+                    isDragging = true;
+                    startY = getClientY(e);
+                    currentY = startY;
+                    initialTransform = 0;
+                    
+                    modalContainer.style.transition = 'none';
+                    dragHandle.style.cursor = 'grabbing';
+                    
+                    e.preventDefault();
+                    e.stopPropagation();
                 }
-            });
-            
-            // Escuchar evento de Livewire para restaurar scroll
-            window.addEventListener('banner-closed', function() {
-                // Restaurar scroll
-                document.body.style.removeProperty('overflow');
-                document.body.style.removeProperty('position');
-                document.body.style.removeProperty('width');
-                document.body.style.removeProperty('height');
-                document.body.style.removeProperty('-webkit-overflow-scrolling');
-                document.body.style.removeProperty('overscroll-behavior');
-                document.body.style.removeProperty('touch-action');
                 
-                document.documentElement.style.removeProperty('overflow');
-                document.documentElement.style.removeProperty('position');
-                document.documentElement.style.removeProperty('width');
-                document.documentElement.style.removeProperty('height');
-                
-                // Restaurar content-wrapper si existe
-                const contentWrapper = document.querySelector('.content-wrapper');
-                if (contentWrapper) {
-                    contentWrapper.style.removeProperty('position');
-                    contentWrapper.style.removeProperty('top');
-                    contentWrapper.style.removeProperty('left');
-                    contentWrapper.style.removeProperty('right');
-                    contentWrapper.style.removeProperty('bottom');
-                    contentWrapper.style.removeProperty('overflow');
+                // Durante el drag
+                function duringDrag(e) {
+                    if (!isDragging) return;
+                    
+                    currentY = getClientY(e);
+                    const deltaY = Math.max(0, currentY - startY); // Solo permitir arrastrar hacia abajo
+                    
+                    // Aplicar transformación con resistencia
+                    const resistance = deltaY > 50 ? 0.7 : 1;
+                    const transform = deltaY * resistance;
+                    
+                    modalContainer.style.transform = `translateY(${transform}px)`;
+                    
+                    // Cambiar opacidad del backdrop basado en la distancia
+                    const opacity = Math.max(0.3, 0.75 - (deltaY / 300));
+                    bannerModal.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
+                    
+                    e.preventDefault();
                 }
+                
+                // Finalizar drag
+                function endDrag(e) {
+                    if (!isDragging) return;
+                    
+                    isDragging = false;
+                    const deltaY = currentY - startY;
+                    
+                    modalContainer.style.transition = 'transform 0.3s ease-out';
+                    dragHandle.style.cursor = 'grab';
+                    
+                    // Si se arrastró más de 100px hacia abajo, cerrar modal
+                    if (deltaY > 100) {
+                        modalContainer.style.transform = 'translateY(100vh)';
+                        setTimeout(closeModal, 300);
+                    } else {
+                        // Volver a la posición original
+                        modalContainer.style.transform = 'translateY(0)';
+                        bannerModal.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+                    }
+                }
+                
+                // Event listeners para touch (móvil) - solo en el handle
+                dragHandle.addEventListener('touchstart', startDrag, { passive: false });
+                document.addEventListener('touchmove', duringDrag, { passive: false });
+                document.addEventListener('touchend', endDrag);
+                
+                // Event listeners para mouse (escritorio) - solo en el handle
+                dragHandle.addEventListener('mousedown', startDrag);
+                document.addEventListener('mousemove', duringDrag);
+                document.addEventListener('mouseup', endDrag);
+                
+                // Prevenir que el modal se cierre al hacer clic dentro del contenedor
+                modalContainer.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+                
+                // Prevenir interference con botones y otros elementos interactivos
+                const interactiveElements = modalContainer.querySelectorAll('button, a, input, select, textarea');
+                interactiveElements.forEach(element => {
+                    element.addEventListener('touchstart', function(e) {
+                        e.stopPropagation();
+                    });
+                    element.addEventListener('mousedown', function(e) {
+                        e.stopPropagation();
+                    });
+                });
             });
         </script>
     @endif
