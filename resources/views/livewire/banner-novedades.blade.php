@@ -122,132 +122,16 @@
                 </div>
             </div>
 
-            <!-- Los usuarios DEBEN usar los botones contextuales para cerrar -->
-            <!-- Se eliminó el botón X y la función de deslizar para forzar interacción específica -->
         </div>
     </div>
 
     @if($isVisible)
         <style>
-            /* Prevenir scroll cuando el modal está abierto - Todas las plataformas */
-            body, html {
-                overflow: hidden !important;
-                position: fixed !important;
-                width: 100% !important;
-                height: 100% !important;
-            }
-            
-            /* Específico para móviles - Prevenir scroll touch */
+            /* Solo bloquear scroll del body, nada más */
             body {
-                -webkit-overflow-scrolling: auto !important;
-                overscroll-behavior: none !important;
-                touch-action: none !important;
-            }
-            
-            /* Asegurar que el contenido principal no se mueva */
-            .content-wrapper {
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                bottom: 0 !important;
-                overflow: hidden !important;
-            }
-            
-            /* Prevenir zoom en iOS cuando se toca */
-            input, textarea, select {
-                font-size: 16px !important;
-                -webkit-user-select: none !important;
-                -webkit-touch-callout: none !important;
+                overflow: hidden;
             }
         </style>
-        
-        <script>
-            // Prevenir scroll y gestos en móvil cuando el banner está visible
-            document.addEventListener('DOMContentLoaded', function() {
-                const bannerModal = document.getElementById('bannerModal');
-                
-                if (bannerModal) {
-                    // Función para prevenir eventos de scroll/touch
-                    function preventScroll(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        return false;
-                    }
-                    
-                    // Prevenir scroll con rueda del mouse
-                    function preventWheel(e) {
-                        e.preventDefault();
-                        return false;
-                    }
-                    
-                    // Prevenir teclas de navegación
-                    function preventKeys(e) {
-                        const keys = [32, 33, 34, 35, 36, 37, 38, 39, 40]; // space, page up/down, end, home, arrows
-                        if (keys.includes(e.keyCode)) {
-                            e.preventDefault();
-                            return false;
-                        }
-                    }
-                    
-                    // Aplicar bloqueos
-                    document.addEventListener('touchmove', preventScroll, { passive: false });
-                    document.addEventListener('touchstart', function(e) {
-                        // Solo permitir touch en el banner modal
-                        if (!bannerModal.contains(e.target)) {
-                            e.preventDefault();
-                        }
-                    }, { passive: false });
-                    document.addEventListener('wheel', preventWheel, { passive: false });
-                    document.addEventListener('keydown', preventKeys);
-                    
-                    // Limpiar eventos cuando el banner se oculte
-                    const observer = new MutationObserver(function(mutations) {
-                        mutations.forEach(function(mutation) {
-                            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                                if (bannerModal.style.display === 'none' || !bannerModal.style.display) {
-                                    // Banner oculto, remover bloqueos
-                                    document.removeEventListener('touchmove', preventScroll);
-                                    document.removeEventListener('wheel', preventWheel);
-                                    document.removeEventListener('keydown', preventKeys);
-                                    observer.disconnect();
-                                }
-                            }
-                        });
-                    });
-                    
-                    observer.observe(bannerModal, { attributes: true });
-                }
-            });
-            
-            // Escuchar evento de Livewire para restaurar scroll
-            window.addEventListener('banner-closed', function() {
-                // Restaurar scroll
-                document.body.style.removeProperty('overflow');
-                document.body.style.removeProperty('position');
-                document.body.style.removeProperty('width');
-                document.body.style.removeProperty('height');
-                document.body.style.removeProperty('-webkit-overflow-scrolling');
-                document.body.style.removeProperty('overscroll-behavior');
-                document.body.style.removeProperty('touch-action');
-                
-                document.documentElement.style.removeProperty('overflow');
-                document.documentElement.style.removeProperty('position');
-                document.documentElement.style.removeProperty('width');
-                document.documentElement.style.removeProperty('height');
-                
-                // Restaurar content-wrapper si existe
-                const contentWrapper = document.querySelector('.content-wrapper');
-                if (contentWrapper) {
-                    contentWrapper.style.removeProperty('position');
-                    contentWrapper.style.removeProperty('top');
-                    contentWrapper.style.removeProperty('left');
-                    contentWrapper.style.removeProperty('right');
-                    contentWrapper.style.removeProperty('bottom');
-                    contentWrapper.style.removeProperty('overflow');
-                }
-            });
-        </script>
     @endif
     @endif
 </div>
