@@ -5,15 +5,15 @@
 $currentRoute = request()->route();
 $isProfile = false;
 
-if ($currentRoute && $currentRoute->getName() === 'posts.index') {
-  $routeUser = $currentRoute->parameter('user');
+if ($currentRoute && $currentRoute->getName() === 'posts.index' && Auth::check()) {
+    $routeUser = $currentRoute->parameter('user');
 
-  // Manejar tanto cuando $routeUser es un objeto como cuando es un string
-  $routeUsername = is_object($routeUser) ? $routeUser->username : $routeUser;
+    // Si es objeto (User) saca el username, si es string, úsalo tal cual
+    $routeUsername = is_object($routeUser) ? $routeUser->username : $routeUser;
 
-  if ($routeUsername && $routeUsername === Auth::user()->username) {
-    $isProfile = true;
-  }
+    if ($routeUsername === Auth::user()->username) {
+        $isProfile = true;
+    }
 }
 @endphp
 
