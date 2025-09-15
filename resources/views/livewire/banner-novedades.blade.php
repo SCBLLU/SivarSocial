@@ -4,14 +4,15 @@
         <div 
             id="bannerModal" 
             class="fixed inset-0 flex items-end justify-center md:items-center" 
-            style="background-color: rgba(0, 0, 0, 0.75); z-index: 1200;"
+            style="background-color: rgba(0, 0, 0, 0.75); z-index: 1200; overflow: hidden; overscroll-behavior: none;"
             wire:ignore.self
         >
         <!-- Contenedor del Modal -->
         <div 
             id="modalContainer"
             class="relative bg-white w-full md:mx-4 md:mb-0 rounded-t-2xl md:rounded-2xl shadow-2xl 
-                   md:max-w-md lg:max-w-lg max-h-[90vh] transition-transform duration-300 ease-out"
+                   md:max-w-md lg:max-w-lg transition-transform duration-300 ease-out"
+            style="height: auto; max-height: 85vh; overflow: hidden !important;"
         >
             <!-- Drag handle para móvil (ahora funcional) -->
             <div id="dragHandle" class="flex justify-center pt-4 pb-2 md:hidden cursor-grab active:cursor-grabbing">
@@ -40,14 +41,14 @@
             </div>
 
             <!-- Contenido del modal -->
-            <div class="px-6 pb-6 text-center">
+            <div class="px-6 pb-6 text-center" style="overflow: hidden !important;">
                 <!-- Título -->
                 <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-3 leading-tight">
                     {{ $banner->title }}
                 </h2>
 
                 <!-- Descripción -->
-                <div class="text-gray-600 text-sm md:text-base mb-6 leading-relaxed">
+                <div class="text-gray-600 text-sm md:text-base mb-6 leading-relaxed" style="overflow: hidden !important; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
                     {!! $banner->content !!}
                 </div>
 
@@ -128,16 +129,51 @@
 
     @if($isVisible)
         <style>
-            /* Solo bloquear scroll del body, nada más */
+            /* Bloquear scroll del body y de toda la página */
             body {
-                overflow: hidden;
+                overflow: hidden !important;
+                position: fixed !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+            
+            /* Bloquear scroll en html también */
+            html {
+                overflow: hidden !important;
+                position: fixed !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+            
+            /* Prevenir scroll en el viewport */
+            * {
+                overscroll-behavior: none !important;
             }
             
             /* Estilos para el draggable */
             #modalContainer {
                 will-change: transform;
                 backface-visibility: hidden;
-                overflow: hidden; /* Prevenir scroll del contenedor principal */
+                overflow: hidden !important; /* Prevenir scroll del contenedor principal */
+                overscroll-behavior: none !important;
+            }
+            
+            /* Prevenir scroll en TODO el modal de manera agresiva */
+            #modalContainer,
+            #modalContainer *,
+            #modalContainer div,
+            #modalContainer p,
+            #modalContainer span {
+                overflow: hidden !important;
+                overscroll-behavior: none !important;
+                scroll-behavior: auto !important;
+            }
+            
+            /* Forzar que nada tenga scroll */
+            #modalContainer ::-webkit-scrollbar {
+                display: none !important;
+                width: 0 !important;
+                height: 0 !important;
             }
             
             #dragHandle {
@@ -199,9 +235,24 @@
                 
                 /* Modal ocupa todo el ancho en móviles */
                 #modalContainer {
-                    margin: 0;
-                    border-radius: 1rem 1rem 0 0;
-                    max-height: 90vh;
+                    margin: 0 !important;
+                    border-radius: 1rem 1rem 0 0 !important;
+                    max-height: 80vh !important;
+                    height: auto !important;
+                    overflow: hidden !important;
+                }
+                
+                /* Asegurar que no hay scroll en móviles */
+                #modalContainer *,
+                #modalContainer div {
+                    overflow: hidden !important;
+                    overscroll-behavior: none !important;
+                }
+                
+                /* Limitar texto aún más en móviles */
+                #modalContainer .text-gray-600 {
+                    -webkit-line-clamp: 2 !important;
+                    max-height: 3em !important;
                 }
             }
         </style>
@@ -214,6 +265,60 @@
                 const bannerModal = document.getElementById('bannerModal');
                 
                 if (!modalContainer || !dragHandle || !bannerModal) return;
+                
+                // Forzar la eliminación completa del scroll de la página
+                function forceNoPageScroll() {
+                    // Bloquear scroll en body y html
+                    document.body.style.overflow = 'hidden';
+                    document.body.style.position = 'fixed';
+                    document.body.style.width = '100%';
+                    document.body.style.height = '100%';
+                    
+                    document.documentElement.style.overflow = 'hidden';
+                    document.documentElement.style.position = 'fixed';
+                    document.documentElement.style.width = '100%';
+                    document.documentElement.style.height = '100%';
+                    
+                    // Prevenir eventos de scroll
+                    window.addEventListener('scroll', preventDefault, { passive: false });
+                    window.addEventListener('wheel', preventDefault, { passive: false });
+                    window.addEventListener('touchmove', preventDefault, { passive: false });
+                    document.addEventListener('scroll', preventDefault, { passive: false });
+                    document.addEventListener('wheel', preventDefault, { passive: false });
+                    document.addEventListener('touchmove', preventDefault, { passive: false });
+                }
+                
+                // Función para prevenir eventos
+                function preventDefault(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                
+                // Forzar la eliminación completa del scroll del modal
+                function forceNoScroll() {
+                    modalContainer.style.overflow = 'hidden';
+                    modalContainer.style.overflowX = 'hidden';
+                    modalContainer.style.overflowY = 'hidden';
+                    modalContainer.style.overscrollBehavior = 'none';
+                    
+                    // Aplicar a todos los elementos hijos también
+                    const allElements = modalContainer.querySelectorAll('*');
+                    allElements.forEach(element => {
+                        element.style.overflow = 'hidden';
+                        element.style.overflowX = 'hidden';
+                        element.style.overflowY = 'hidden';
+                        element.style.overscrollBehavior = 'none';
+                    });
+                }
+                
+                // Ejecutar inmediatamente y en un intervalo para asegurar
+                forceNoPageScroll();
+                forceNoScroll();
+                setTimeout(() => {
+                    forceNoPageScroll();
+                    forceNoScroll();
+                }, 100);
                 
                 let isDragging = false;
                 let startY = 0;

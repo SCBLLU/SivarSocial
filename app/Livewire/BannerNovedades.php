@@ -21,7 +21,7 @@ class BannerNovedades extends Component
     public function loadBanner()
     {
         Log::info('BannerNovedades: loadBanner() called');
-        
+
         if (!Auth::check()) {
             Log::info('BannerNovedades: User not authenticated');
             return;
@@ -47,7 +47,7 @@ class BannerNovedades extends Component
         if ($this->banner && Auth::check()) {
             $this->banner->markAsViewedBy(Auth::id());
         }
-        
+
         $this->closeBanner();
     }
 
@@ -57,7 +57,7 @@ class BannerNovedades extends Component
         if ($this->banner && Auth::check()) {
             $this->banner->markAsViewedBy(Auth::id());
         }
-        
+
         $this->closeBanner();
     }
 
@@ -67,10 +67,10 @@ class BannerNovedades extends Component
         if ($this->banner && Auth::check()) {
             $this->banner->markAsViewedBy(Auth::id());
         }
-        
+
         $url = $this->banner->action_url ?? null;
         $this->closeBanner();
-        
+
         // Redirigir a la URL de acción si existe
         if ($url) {
             return redirect($url);
@@ -84,10 +84,10 @@ class BannerNovedades extends Component
             if (Auth::check()) {
                 $this->banner->markAsViewedBy(Auth::id());
             }
-            
+
             $url = $this->banner->action_url ?? '/';
             $this->closeBanner();
-            
+
             return redirect($url);
         }
     }
@@ -96,9 +96,18 @@ class BannerNovedades extends Component
     {
         $this->isVisible = false;
         $this->banner = null;
-        
-        // Restaurar scroll con JavaScript simple
-        $this->js('document.body.style.overflow = "";');
+
+        // Restaurar scroll completamente
+        $this->js('
+            document.body.style.overflow = "";
+            document.body.style.position = "";
+            document.body.style.width = "";
+            document.body.style.height = "";
+            document.documentElement.style.overflow = "";
+            document.documentElement.style.position = "";
+            document.documentElement.style.width = "";
+            document.documentElement.style.height = "";
+        ');
     }
 
     public function render()
