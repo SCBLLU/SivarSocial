@@ -66,13 +66,13 @@ if ($currentRoute && $currentRoute->getName() === 'posts.index' && Auth::check()
           @guest
           @if (request()->routeIs('login') || request()->routeIs('register') || request()->routeIs('recuperar'))
           <li class="menu__item">
-            <a class="menu__link btn" href="{{ url('/') }}#home">
+            <a class="menu__link circle btn" href="{{ url('/') }}#home" data-route="home">
               <i class='bx bx-home-smile'></i>
             </a>
           </li>
-          @if (request()->routeIs('recuperar'))
+          @if (!request()->routeIs('login'))
           <li class="menu__item">
-            <a class="menu__link btn" href="{{ url('/register') }}">
+            <a class="menu__link circle btn" href="{{ url('/register') }}" data-route="register">
               <i class='bx bxs-user-detail'></i>
             </a>
           </li>
@@ -85,13 +85,18 @@ if ($currentRoute && $currentRoute->getName() === 'posts.index' && Auth::check()
           </li>
           @else
           <li class="menu__item">
-            <a class="menu__link btn" href="{{ route('login') }}">
-              <i class='bx bx-user'></i>
+            <a class="menu__link circle btn" href="{{ url('/') }}#home" data-route="home">
+              <i class='bx bx-home-smile'></i>
             </a>
           </li>
           <li class="menu__item">
-            <a class="menu__link btn" href="{{ url('/register') }}">
+            <a class="menu__link circle btn" href="{{ url('/register') }}" data-route="register">
               <i class='bx bxs-user-detail'></i>
+            </a>
+          </li>
+          <li class="menu__item">
+            <a class="menu__link circle btn" href="{{ route('login') }}" data-route="login">
+              <i class='bx bx-user'></i>
             </a>
           </li>
           @endif
@@ -111,11 +116,13 @@ if ($currentRoute && $currentRoute->getName() === 'posts.index' && Auth::check()
 
           @guest
             @if (request()->routeIs('register'))
-            <div class="profile-img">
-              <a id="notify-trigger" class="header__trigger btn" href="{{ route('login') }}">
-                <i class='bx bx-user'></i>
-              </a>
-            </div>
+            <li class="menu__item">
+              <div class="profile-img">
+                <a id="notify-trigger" class="header__trigger menu__link circle btn" href="{{ route('login') }}">
+                  <i class='bx bx-user'></i>
+                </a>
+              </div>
+            </li>
             @endif
           @endguest
           <!-- Header Controls End -->
