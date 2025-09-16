@@ -39,7 +39,7 @@
 
 <div id="preloader" style="display:none;">
     <!-- Video centrado -->
-    <video id="preloader-video" autoplay muted loop>
+    <video id="preloader-video" autoplay muted loop playsinline>
         <source src="{{ asset('video/logo-ani.mp4') }}" type="video/mp4">
         Tu navegador no soporta video.
     </video>
@@ -73,6 +73,20 @@
 
         window.addEventListener("load", () => {
             video.removeAttribute("loop");
+            
+            // Manejar posibles errores de reproducción en iOS
+            video.addEventListener("error", () => {
+                console.log("Error al cargar video del preloader");
+                // Si falla el video, ocultar el preloader después de un delay
+                setTimeout(() => {
+                    preloader.classList.add("fade-out");
+                    setTimeout(() => {
+                        preloader.style.display = "none";
+                    }, 500);
+                    sessionStorage.setItem("preloaderShown", "true");
+                }, 1000);
+            });
+            
             video.addEventListener("ended", () => {
                 preloader.classList.add("fade-out");
                 setTimeout(() => {
