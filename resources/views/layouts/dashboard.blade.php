@@ -234,7 +234,6 @@
     </section>
     <!-- script para copiar al portapapeles -->
      <script>
-        
         const btn = document.querySelector('#copyProfileBtn');
         const msg = document.querySelector('#copy_msg');
         const icon = document.querySelector('#copyIcon');
@@ -256,7 +255,7 @@
                  setTimeout(() => {
                     icon.innerHTML = copySVG;
                      if(msg) msg.textContent = 'Copiar perfil';
-                }, 2000);
+                }, 2000); 
              
             }catch(err){
                 console.error('Error al copiar al portapapeles: ', err);
