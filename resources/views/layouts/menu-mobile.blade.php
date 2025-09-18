@@ -31,6 +31,8 @@ if ($currentRoute && $currentRoute->getName() === 'posts.index' && Auth::check()
             left: 50%; top: 50%; transform: translate(-50%, -50%);
           @elseif (request()->routeIs('posts.index'))
             left: 90%; top: 50%; transform: translate(-50%, -50%);
+          @elseif (request()->is('/'))
+            left: 10%; top: 50%; transform: translate(-50%, -50%);
           @else
             left: -9999px; top: -9999px; /* oculto si no hay ruta */
           @endif
@@ -62,6 +64,26 @@ if ($currentRoute && $currentRoute->getName() === 'posts.index' && Auth::check()
           @endauth
 
           @guest
+          @if (request()->routeIs('login') || request()->routeIs('register') || request()->routeIs('recuperar'))
+          <li class="menu__item">
+            <a class="menu__link circle btn" href="{{ url('/') }}#home" data-route="home">
+              <i class='bx bx-home-smile'></i>
+            </a>
+          </li>
+          @if (!request()->routeIs('login'))
+          <li class="menu__item">
+            <a class="menu__link circle btn" href="{{ url('/register') }}" data-route="register">
+              <i class='bx bxs-user-detail'></i>
+            </a>
+          </li>
+          @endif
+          @elseif (request()->routeIs('code.verific') || request()->routeIs('restablecer'))
+          <li class="menu__item">
+            <a class="menu__link btn" onclick="openModal(1)">
+              <i class="fa-regular fa-circle-question"></i>
+            </a>
+          </li>
+          @else
           <li class="menu__item">
             <a class="menu__link circle btn" href="{{ url('/') }}#home" data-route="home">
               <i class='bx bx-home-smile'></i>
@@ -69,18 +91,12 @@ if ($currentRoute && $currentRoute->getName() === 'posts.index' && Auth::check()
           </li>
           <li class="menu__item">
             <a class="menu__link circle btn" href="{{ url('/register') }}" data-route="register">
-              <i class='bx bx-user-plus'></i>
+              <i class='bx bxs-user-detail'></i>
             </a>
           </li>
           <li class="menu__item">
             <a class="menu__link circle btn" href="{{ route('login') }}" data-route="login">
-              <i class='bx bx-user-circle'></i>
-            </a>
-          </li>
-          @if (request()->routeIs('code.verific') || request()->routeIs('restablecer'))
-          <li class="menu__item">
-            <a class="menu__link btn" onclick="openModal(1)">
-              <i class="fa-regular fa-circle-question"></i>
+              <i class='bx bx-user'></i>
             </a>
           </li>
           @endif
@@ -97,6 +113,18 @@ if ($currentRoute && $currentRoute->getName() === 'posts.index' && Auth::check()
               </div>
             </li>
           @endauth
+
+          @guest
+            @if (request()->routeIs('register'))
+            <li class="menu__item">
+              <div class="profile-img">
+                <a id="notify-trigger" class="header__trigger menu__link circle btn" href="{{ route('login') }}">
+                  <i class='bx bx-user'></i>
+                </a>
+              </div>
+            </li>
+            @endif
+          @endguest
           <!-- Header Controls End -->
         </ul>
       </nav>

@@ -674,7 +674,7 @@ img, video, iframe {
   position: absolute;
   width: 3.5rem !important;
   height: 3.5rem !important;
-  border: 5px solid #7e22ce;
+  border: 5px solid #2575fc;
   border-radius: 50%;
   transition: all 0.4s ease;
   pointer-events: none;
@@ -692,7 +692,7 @@ img, video, iframe {
 
 .menu__link.active,
 .header__trigger.active {
-  color: #7e22ce;
+  color: #2575fc;
 }
 /*Final de animacion*/
 
