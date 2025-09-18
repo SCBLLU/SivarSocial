@@ -54,6 +54,11 @@
             {{-- Estadísticas --}}
             <livewire:user-stats :user="$user" :postsCount="$totalPosts" />
 
+            {{-- Enlaces sociales --}}
+            <div class="mt-4">
+                <livewire:social-links-display :user="$user" />
+            </div>
+
             {{-- Acciones dinámicas --}}
             <div class="mt-4">
                 @auth

@@ -93,6 +93,12 @@ Route::get('/editar-perfil', [PerfilController::class, 'index'])->name('perfil.i
 Route::post('/editar-perfil', [PerfilController::class, 'store'])->name('perfil.store')->middleware('auth');
 
 /**
+ * ENLACES SOCIALES
+ * Gestión de enlaces sociales del usuario
+ */
+Route::post('/social-links', [PerfilController::class, 'storeSocialLink'])->name('social-links.store')->middleware('auth');
+
+/**
  * BÚSQUEDA DE USUARIOS
  * Sistema de búsqueda para encontrar otros usuarios de la plataforma
  */

@@ -124,6 +124,12 @@ class User extends Authenticatable
         return $this->unreadNotifications()->count();
     }
 
+    // Relación con enlaces sociales
+    public function socialLinks()
+    {
+        return $this->hasMany(SocialLink::class)->ordered();
+    }
+
     /**
      * Métodos para manejar estado activo global
      */

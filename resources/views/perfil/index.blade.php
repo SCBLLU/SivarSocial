@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @push('scripts')
-    <script src="//unpkg.com/alpinejs" defer></script>
     <style>
         [x-cloak] {
             display: none !important;
@@ -200,6 +199,11 @@
                     Listo
                 </button>
             </form>
+
+            <!-- Gestión de enlaces sociales (fuera del formulario) -->
+            <div class="bg-gray-50 p-6 rounded-lg border mt-6">
+                <livewire:social-links-manager />
+            </div>
 
             <!-- Script para manejar el click en la imagen -->
             <script>
