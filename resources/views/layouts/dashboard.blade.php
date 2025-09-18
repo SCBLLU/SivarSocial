@@ -19,7 +19,7 @@
         <h1 class="text-white text-2xl font-bold mx-auto">Perfil</h1>
     </div>
 @endsection
-
+ 
 @section('contenido')
     @if (session('success'))
         <div class="flex justify-center px-4">
@@ -30,6 +30,8 @@
             </div>
         </div>
     @endif
+
+
 
     {{-- Vista de perfil estilo tarjeta replicada --}}
     <div
@@ -113,13 +115,31 @@
                                 </svg>
                                 Cerrar sesión
                             </button>
-                        </form>
-                    </div>
+                        </form> 
+                            @csrf
+                            <button type="submit" id="copyProfileBtn"
+                                class="w-full text-left px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                <svg id="copyIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="w-3 h-3 sm:w-4 sm:h-4 mr-3 text-gray-500" fill="none" stroke="currentColor"viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                                </svg>
+                                <p id="copy_msg">Copiar perfil</p>
+                            </button>
+                     </div>
                 </div>
-            @endif
+            @else
+                <div class="absolute top-4 right-7 sm:top-6 sm:right-6 z-10">
+                <button type="submit" id="copyProfileBtn"
+                class="w-full text-left px-4 py-2 text-xs sm:text-sm text-gray-800 flex items-center cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" id="copyIcon"
+                    class="w-3 h-3 sm:w-4 sm:h-4 mr-3 text-gray-500" viewBox="0 0 16 16">
+                 <path fill-rule="evenodd"
+                d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                </svg>
+                </button>
+                </div>
+                @endif
         @endauth
     </div>
-
 
     {{-- Sección de publicaciones (solo imagen redondeada) --}}
     <section class="container mx-auto mt-10 px-4 sm:px-6 lg:px-8">
@@ -212,7 +232,38 @@
             <p class="text-gray-400 uppercase text-xs sm:text-sm text-center font-bold mt-10">No hay publicaciones aún</p>
         @endif
     </section>
+    <!-- script para copiar al portapapeles -->
+     <script>
+        
+        const btn = document.querySelector('#copyProfileBtn');
+        const msg = document.querySelector('#copy_msg');
+        const icon = document.querySelector('#copyIcon');
+        let mensaje = String(window.location.href);
+          const copySVG = `
+        <path fill-rule="evenodd"
+            d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+    `;
 
+    const checkSVG = `
+        <path fill-rule="evenodd"
+            d="M13.485 1.929a1.5 1.5 0 0 1 0 2.121l-7.07 7.07-3.536-3.535a1.5 1.5 0 1 1 2.121-2.122L6.415 8.12l5.95-5.95a1.5 1.5 0 0 1 2.12 0z"/>
+    `;
+        btn.addEventListener('click', async() => {
+             try{
+                await navigator.clipboard.writeText(mensaje.trim());
+                if(msg) msg.textContent = '¡Copiado!';
+                icon.innerHTML = checkSVG;
+                 setTimeout(() => {
+                    icon.innerHTML = copySVG;
+                     if(msg) msg.textContent = 'Copiar perfil';
+                }, 2000);
+             
+            }catch(err){
+                console.error('Error al copiar al portapapeles: ', err);
+            }
+        });
+
+     </script>
     <!-- Modal de Likes Livewire -->
     <livewire:likes-modal />
 @endsection
