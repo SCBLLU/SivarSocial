@@ -297,7 +297,7 @@ i.bx.bx-search-alt-2 {
   transform: translateX(-50%);
   bottom: 1.1rem;
   width: auto;
-  height: 4rem;
+  height: 4.2rem;
   -moz-border-radius: 2rem;
   border-radius: 2rem;
   background-color: var(--t-per-bright-light);
@@ -386,8 +386,8 @@ i.bx.bx-search-alt-2 {
   a.profile-cont {
     position: absolute;
     display: flex;
-    top: 7px;
-    right: 9px;
+    top: 0.55rem;
+    right: 0.55rem;
   }
 
   a.profile-cont img {
@@ -672,9 +672,9 @@ img, video, iframe {
 
 .border-frame {
   position: absolute;
-  width: 3.5rem !important;
-  height: 3.5rem !important;
-  border: 5px solid #2575fc;
+  width: 3.6rem !important;
+  height: 3.6rem !important;
+  border: 5px solid #7e22ce;
   border-radius: 50%;
   transition: all 0.4s ease;
   pointer-events: none;
@@ -692,7 +692,7 @@ img, video, iframe {
 
 .menu__link.active,
 .header__trigger.active {
-  color: #2575fc;
+  color: #7e22ce;
 }
 /*Final de animacion*/
 
