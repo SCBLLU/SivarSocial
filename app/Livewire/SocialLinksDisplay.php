@@ -16,21 +16,36 @@ class SocialLinksDisplay extends Component
 
     public function getPlatformColor($platform)
     {
-        $colors = [
+        return match($platform) {
             'instagram' => '#E4405F',
-            'github' => '#333',
-            'discord' => '#5865F2',
-            'twitter' => '#1DA1F2',
-            'linkedin' => '#0077B5',
+            'tiktok' => '#FE2C55',
+            'github' => '#333333',
             'youtube' => '#FF0000',
-            'tiktok' => '#000000',
-            'facebook' => '#1877F2',
             'spotify' => '#1DB954',
-            'twitch' => '#9146FF',
-            'other' => '#6B7280'
-        ];
+            'discord' => '#7289DA',
+            'linkedin' => '#0077B5',
+            'twitter' => '#000000',
+            'facebook' => '#1877F2',
+            'telegram' => '#0088CC',
+            default => '#6B7280'
+        };
+    }
 
-        return $colors[$platform] ?? $colors['other'];
+    public function getPlatformIcon($platform)
+    {
+        return match($platform) {
+            'instagram' => 'fab fa-instagram',
+            'tiktok' => 'fab fa-tiktok',
+            'github' => 'fab fa-github',
+            'youtube' => 'fab fa-youtube',
+            'spotify' => 'fab fa-spotify',
+            'discord' => 'fab fa-discord',
+            'linkedin' => 'fab fa-linkedin',
+            'twitter' => 'fab fa-x-twitter',
+            'facebook' => 'fab fa-facebook',
+            'telegram' => 'fab fa-telegram',
+            default => 'fas fa-link'
+        };
     }
 
     public function render()

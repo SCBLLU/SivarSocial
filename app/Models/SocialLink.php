@@ -139,4 +139,46 @@ class SocialLink extends Model
 
         return null;
     }
+
+    /**
+     * Obtiene el color de la plataforma
+     */
+    public function getPlatformColor(): string
+    {
+        return match($this->platform) {
+            'instagram' => '#E4405F',
+            'tiktok' => '#FE2C55',
+            'github' => '#333333',
+            'youtube' => '#FF0000',
+            'spotify' => '#1DB954',
+            'discord' => '#7289DA',
+            'linkedin' => '#0077B5',
+            'twitter' => '#000000',
+            'facebook' => '#1877F2',
+            'telegram' => '#0088CC',
+            'twitch' => '#9146FF',
+            default => '#6B7280'
+        };
+    }
+
+    /**
+     * Obtiene el icono de la plataforma
+     */
+    public function getPlatformIcon(): string
+    {
+        return match($this->platform) {
+            'instagram' => 'fab fa-instagram',
+            'tiktok' => 'fab fa-tiktok',
+            'github' => 'fab fa-github',
+            'youtube' => 'fab fa-youtube',
+            'spotify' => 'fab fa-spotify',
+            'discord' => 'fab fa-discord',
+            'linkedin' => 'fab fa-linkedin',
+            'twitter' => 'fab fa-x-twitter',
+            'facebook' => 'fab fa-facebook',
+            'telegram' => 'fab fa-telegram',
+            'twitch' => 'fab fa-twitch',
+            default => 'fas fa-link'
+        };
+    }
 }

@@ -56,7 +56,7 @@
 
             {{-- Enlaces sociales --}}
             <div class="mt-4">
-                <livewire:social-links-display :user="$user" />
+                @include('components.social-links', ['managementMode' => false, 'user' => $user])
             </div>
 
             {{-- Acciones dinámicas --}}

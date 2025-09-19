@@ -200,9 +200,9 @@
                 </button>
             </form>
 
-            <!-- Gestión de enlaces sociales (fuera del formulario) -->
+            <!-- Gestión de enlaces sociales (modo gestión) -->
             <div class="bg-gray-50 p-6 rounded-lg border mt-6">
-                <livewire:social-links-manager />
+                @include('components.social-links', ['managementMode' => true, 'user' => auth()->user()])
             </div>
 
             <!-- Script para manejar el click en la imagen -->
