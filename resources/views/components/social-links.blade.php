@@ -75,10 +75,19 @@
 
         {{-- Grid de enlaces sociales --}}
         @if($socialLinks->count() > 0)
-            <div class="grid {{ $canManage ? 'grid-cols-1' : 'grid-cols-2' }} gap-2 {{ !$canManage ? 'justify-items-center max-w-sm mx-auto lg:max-w-none lg:mx-0 lg:justify-items-start' : '' }}"
+            @php
+                $gridClasses = $canManage ? 'grid-cols-1' : ($socialLinks->count() == 1 ? 'grid-cols-1' : 'grid-cols-2');
+                $containerClasses = !$canManage && $socialLinks->count() == 1 
+                    ? 'justify-items-center max-w-xs mx-auto lg:max-w-sm lg:mx-0 lg:justify-items-start' 
+                    : (!$canManage ? 'justify-items-center max-w-sm mx-auto lg:max-w-none lg:mx-0 lg:justify-items-start' : '');
+            @endphp
+            <div class="grid {{ $gridClasses }} gap-2 {{ $containerClasses }}"
                 id="socialLinksGrid">
                 @foreach($socialLinks as $index => $link)
-                    <div class="social-link-item relative group overflow-hidden bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-700 transition duration-200 ease-in-out sm:hover:shadow-md sm:hover:-translate-y-0.5 sm:hover:bg-gray-100 dark:sm:hover:bg-gray-800 w-full"
+                    @php
+                        $singleLinkClass = !$canManage && $socialLinks->count() == 1 ? 'max-w-sm' : '';
+                    @endphp
+                    <div class="social-link-item relative group overflow-hidden bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-700 transition duration-200 ease-in-out sm:hover:shadow-md sm:hover:-translate-y-0.5 sm:hover:bg-gray-100 dark:sm:hover:bg-gray-800 w-full {{ $singleLinkClass }}"
                         style="border-left: 3px solid {{ $link->getPlatformColor() }};">
 
                         <div class="relative flex items-center space-x-3 {{ !$canManage ? 'justify-between' : '' }}">
