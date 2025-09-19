@@ -87,15 +87,29 @@ class PerfilController extends Controller
         // Procesar imagen solo si se subió una nueva
         if ($request->hasFile('imagen')) {
             $imagen = $request->file('imagen');
-            $nombreImagen = Str::uuid() . "." . $imagen->extension();
+            $nombreImagen = Str::uuid() . ".jpg"; // Siempre guardar como JPG para consistencia
 
             $manager = new ImageManager(new Driver());
             $imagenServidor = $manager->read($imagen);
-            $imagenServidor->cover(1000, 1000);
+
+            // Obtener dimensiones originales
+            $width = $imagenServidor->width();
+            $height = $imagenServidor->height();
+
+            // Tamaño objetivo para perfiles
+            $targetSize = 400;
+
+            // Mantener proporciones originales sin canvas, solo redimensionar para que quepa
+            $scale = min($targetSize / $width, $targetSize / $height);
+            $newWidth = (int)($width * $scale);
+            $newHeight = (int)($height * $scale);
+
+            // Redimensionar manteniendo proporciones sin recortar ni añadir canvas
+            $imagenServidor->scale($newWidth, $newHeight);
 
             // Guarda la imagen en el directorio 'perfiles' dentro de 'public'
             $imagenPath = public_path('perfiles') . '/' . $nombreImagen;
-            $imagenServidor->save($imagenPath);
+            $imagenServidor->save($imagenPath, 90); // Calidad 90%
 
             // Eliminar imagen anterior si existe
             if ($user->imagen && file_exists(public_path('perfiles/' . $user->imagen))) {
