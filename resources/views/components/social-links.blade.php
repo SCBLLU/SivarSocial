@@ -78,7 +78,7 @@
             <div class="grid {{ $canManage ? 'grid-cols-1' : 'grid-cols-2' }} gap-2 {{ !$canManage ? 'justify-items-center max-w-sm mx-auto lg:max-w-none lg:mx-0 lg:justify-items-start' : '' }}"
                 id="socialLinksGrid">
                 @foreach($socialLinks as $index => $link)
-                    <div class="social-link-item relative group overflow-hidden bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-700 transition duration-200 ease-in-out hover:shadow-md hover:-translate-y-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 w-full"
+                    <div class="social-link-item relative group overflow-hidden bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-700 transition duration-200 ease-in-out sm:hover:shadow-md sm:hover:-translate-y-0.5 sm:hover:bg-gray-100 dark:sm:hover:bg-gray-800 w-full"
                         style="border-left: 3px solid {{ $link->getPlatformColor() }};">
 
                         <div class="relative flex items-center space-x-3 {{ !$canManage ? 'justify-between' : '' }}">
@@ -102,11 +102,11 @@
                             {{-- Botones de acción (solo en modo gestión) --}}
                             @if($canManage)
                                 <div
-                                    class="flex items-center space-x-1 social-link-actions opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
+                                    class="flex items-center space-x-1 social-link-actions opacity-100 transition-opacity duration-200">
                                     {{-- Mover arriba --}}
                                     @if(!$loop->first)
                                         <button type="button" onclick="moveLink({{ $link->id }}, 'up')"
-                                            class="p-2 text-gray-500 sm:hover:text-blue-600 sm:hover:bg-blue-50 dark:sm:hover:bg-blue-900/20 rounded-lg sm:transition-all sm:duration-200"
+                                            class="p-2 text-gray-500 rounded-lg"
                                             title="Mover arriba">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
@@ -117,7 +117,7 @@
                                     {{-- Mover abajo --}}
                                     @if(!$loop->last)
                                         <button type="button" onclick="moveLink({{ $link->id }}, 'down')"
-                                            class="p-2 text-gray-500 sm:hover:text-blue-600 sm:hover:bg-blue-50 dark:sm:hover:bg-blue-900/20 rounded-lg sm:transition-all sm:duration-200"
+                                            class="p-2 text-gray-500 rounded-lg"
                                             title="Mover abajo">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -127,7 +127,7 @@
 
                                     {{-- Eliminar --}}
                                     <button type="button" onclick="deleteLink({{ $link->id }})"
-                                        class="p-2 text-red-500 sm:hover:text-red-600 sm:hover:bg-red-50 dark:sm:hover:bg-red-900/20 rounded-lg sm:transition-all sm:duration-200"
+                                        class="p-2 text-red-500 rounded-lg"
                                         title="Eliminar enlace">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -181,12 +181,19 @@
     }
 
     .social-link-actions {
-        opacity: 0;
+        opacity: 1; /* Siempre visible en móvil */
         transition: opacity 0.2s;
     }
 
-    .social-link-item:hover .social-link-actions {
-        opacity: 1;
+    /* Solo aplicar efectos hover en pantallas medianas y grandes (640px+) */
+    @media (min-width: 640px) {
+        .social-link-actions {
+            opacity: 0;
+        }
+        
+        .social-link-item:hover .social-link-actions {
+            opacity: 1;
+        }
     }
 </style>
 
