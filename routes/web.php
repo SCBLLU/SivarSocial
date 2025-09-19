@@ -93,6 +93,15 @@ Route::get('/editar-perfil', [PerfilController::class, 'index'])->name('perfil.i
 Route::post('/editar-perfil', [PerfilController::class, 'store'])->name('perfil.store')->middleware('auth');
 
 /**
+ * ENLACES SOCIALES
+ * Gestión de enlaces sociales del usuario
+ */
+Route::post('/social-links', [App\Http\Controllers\SocialLinksController::class, 'store'])->name('social-links.store')->middleware('auth');
+Route::delete('/social-links/{id}', [App\Http\Controllers\SocialLinksController::class, 'destroy'])->name('social-links.destroy')->middleware('auth');
+Route::patch('/social-links/{id}/move-up', [App\Http\Controllers\SocialLinksController::class, 'moveUp'])->name('social-links.move-up')->middleware('auth');
+Route::patch('/social-links/{id}/move-down', [App\Http\Controllers\SocialLinksController::class, 'moveDown'])->name('social-links.move-down')->middleware('auth');
+
+/**
  * BÚSQUEDA DE USUARIOS
  * Sistema de búsqueda para encontrar otros usuarios de la plataforma
  */

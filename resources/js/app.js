@@ -599,7 +599,7 @@ if (document.getElementById('dropzone')) {
 // DROPZONE PARA REGISTRO DE USUARIO
 if (document.getElementById('dropzone-register')) {
     let dropzoneRegister = new Dropzone('#dropzone-register', {
-        url: '/imagenes',
+        url: '/imagenes-perfil',
         dictDefaultMessage: 'Arrastra aquí tu imagen de perfil o haz clic',
         acceptedFiles: '.jpg,.jpeg,.png',
         addRemoveLinks: true,
