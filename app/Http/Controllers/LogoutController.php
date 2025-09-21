@@ -33,4 +33,13 @@ class LogoutController extends Controller
         auth()->guard()->logout();
         return redirect()->route('login');
     }
+
+    public function storeus()
+    {
+        if (Auth::guard('super')->check()) {
+            Auth::guard('super')->logout(); 
+        }
+
+        return redirect()->route('login'); 
+    }
 }

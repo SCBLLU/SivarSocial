@@ -1,0 +1,205 @@
+/*=============================
+	1. Google Fonts
+===============================*/
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700&amp;display=swap');
+
+/*=============================
+	01. Variable CSS start
+===============================*/
+
+:root {
+	--font-family: "Bricolage Grotesque", sans-serif;
+	--primary: #4770FF;
+	--black: #1A1F2C;
+	--light-black: #576076;
+	--white: #ffffff;
+	--dark-theme-bg: #000;
+	--dark-theme-black: #0E1018;
+	--dark-theme-white: #f0f2f5;
+	--dark-theme-light-white: rgba(240, 242, 245, 0.7);
+	--paragraph: #616670;
+	--background: #F0F2F5;
+	--font-size: 16px;
+	--font-weight: 400;
+	--line-height: 1.6em;
+	--transision: all 0.1s ease-out 0s;
+	--border: #DBDFE5;
+}
+
+/* card title start */
+.card-title {
+	font-size: 24px;
+	font-weight: 600;
+	line-height: 1.333em;
+	display: flex;
+	align-items: center;
+	gap: 24px;
+}
+
+.card-title .link-btn {
+	font-size: 16px;
+	font-weight: 400;
+	color: var(--primary);
+	line-height: 1.5em;
+	border-bottom: 1px solid var(--border);
+}
+
+.card-title .link-btn:hover {
+	border-color: var(--primary);
+}
+
+.card-title .link-btn .icon {
+	stroke: var(--primary);
+}
+
+/*=============================
+	04. Home page CSS Start
+===============================*/
+
+.home-area {
+	margin-top: 24px;
+}
+
+.card {
+	border: 0;
+	background-color: var(--white);
+	box-shadow: 0 1px 2px 0 rgba(26, 31, 44, 0.25);
+	border-radius: 16px;
+	height: 100%;
+}
+
+.card-body {
+	padding: 24px;
+}
+
+.profile-card .image {
+	background-color: var(--background);
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.profile-card .image img {
+	margin-top: 10px;
+}
+
+.profile-card .text {
+	margin-top: 24px;
+}
+
+.profile-card .text p {
+	margin-top: 8px;
+	color: var(--light-black);
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 1.5em;
+}
+
+.profile-card .text p span {
+	color: var(--black);
+	font-weight: 600;
+}
+
+.expertise-card {
+	height: 299px;
+}
+
+.expertise-card .expertise-item {
+	text-align: center;
+}
+
+.expertise-card .expertise-item .image {
+	background-color: var(--background);
+	border-radius: 8px;
+	padding: 14px 10px;
+}
+
+.expertise-card .expertise-item .image img {
+	width: 32px;
+	height: 32px;
+}
+
+.expertise-card .expertise-item .text .title {
+	font-size: 16px;
+	font-weight: 500;
+	color: var(--black);
+	line-height: 1.5em;
+	margin-top: 8px;
+}
+
+.services-item {
+	background-color: var(--background);
+	padding: 16px 16px 24px 16px;
+	border-radius: 16px;
+}
+
+.services-item .image {
+	background-color: var(--white);
+	border-radius: 8px;
+	padding: 25px 14px;
+}
+
+.services-item .text .title {
+	font-size: 16px;
+	font-weight: 500;
+	color: var(--black);
+	line-height: 1.5em;
+	margin-top: 16px;
+}
+
+.lets-talk-together-card .scrolling-info {
+	background-color: var(--background);
+	overflow: hidden;
+	border-radius: 8px;
+	height: 56px;
+	margin-bottom: 24px;
+	display: flex;
+	align-items: center;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.lets-talk-together-card .scrolling-info p {
+	font-size: 18px !important;
+	font-weight: 500 !important;
+	color: var(--light-black);
+	animation: marquee 10s linear infinite;
+	margin-right: 10px;
+}
+
+.lets-talk-together-card .scrolling-info .slider-item {
+	animation: scrolling 12s linear infinite;
+}
+
+@keyframes scrolling {
+	0% {
+		transform: translateX(35%)
+	}
+
+	to {
+		transform: translateX(calc(-100% - 1.5rem))
+	}
+}
+
+.lets-talk-together-card .card-title {
+	font-size: 40px;
+	font-weight: 600;
+	color: var(--black);
+	line-height: 1.375em;
+	display: block;
+}
+
+.lets-talk-together-card .link-btn {
+	font-size: 16px;
+	font-weight: 500;
+	color: var(--primary);
+	margin-top: 14px;
+	border-bottom: 1px solid var(--border);
+}
+
+.lets-talk-together-card .link-btn:hover {
+	border-color: var(--primary);
+}
+
+.lets-talk-together-card .link-btn .icon {
+	stroke: var(--primary) !important;
+}
