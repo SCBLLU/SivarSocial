@@ -339,3 +339,8 @@ input[type="password"] {
     animation: none !important;
     transform: translateX(0);
 }
+
+.rounded-b-\[20px\] {
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 0;
+}
