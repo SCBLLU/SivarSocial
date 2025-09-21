@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Su_ad; 
+use App\Models\User;
 
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
@@ -22,13 +24,19 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'), $request->remember)) {
-            // Si las credenciales no coinciden, redirigir de vuelta con un mensaje de error
-            return back()
-                ->with('status', 'Las credenciales no coinciden')
-                ->withInput($request->only('email'));
+        // 1️⃣ Verificar credenciales en superusuarios
+        if (Auth::guard('super')->attempt($request->only('email', 'password'), $request->remember)) {
+            return redirect()->route('su.dash');
         }
 
-        return redirect()->route('posts.index', Auth::user()); // redirigir al muro del usuario autenticado
+        // 2️⃣ Verificar credenciales en usuarios normales
+        if (Auth::attempt($request->only('email', 'password'), $request->remember)) {
+            return redirect()->route('posts.index', Auth::user());
+        }
+
+        // 3️⃣ Si nada coincide → error
+        return back()
+            ->with('status', 'Las credenciales no coinciden')
+            ->withInput($request->only('email'));
     }
 }

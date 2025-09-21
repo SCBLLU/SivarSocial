@@ -5,6 +5,7 @@
 use App\Models\Comentario;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SUController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
@@ -248,6 +249,34 @@ Route::get('/itunes/track', [iTunesApiController::class, 'getTrack'])->name('itu
 Route::get('/itunes/genre', [iTunesApiController::class, 'searchByGenre'])->name('itunes.genre');
 Route::get('/itunes/popular', [iTunesApiController::class, 'getPopular'])->name('itunes.popular');
 Route::get('/itunes/more', [iTunesApiController::class, 'getMoreResults'])->name('itunes.more');
+
+/**
+ * 
+ * SU
+ * 
+ */
+// creador de usuario
+Route::post('/crear-usuario', [SUController::class, 'store'])->name('usuario.store');
+
+Route::post('/logoutus', [LogoutController::class, 'storeus'])->name('logoutus');
+
+Route::middleware(['auth:super'])
+    ->prefix('us')
+    ->as('su.')
+    ->group(function () {
+        Route::get('/dashboard', [SUController::class, 'dashboard'])->name('dash');
+
+        Route::get('/info/{user:username}', [SUController::class, 'info'])->name('info');
+        Route::post('/info/{user:username}/insignia', [SUController::class, 'addInsignia'])->name('add.insig');
+        Route::put('/info/{user:username}/insignia', [SUController::class, 'editInsignia'])->name('update.insig');
+        Route::delete('/info/{user:username}/insignia', [SUController::class, 'deleteInsignia'])->name('delete.insig');
+
+        Route::get('/ads/create', [SUController::class, 'ads'])->name('ads');
+        Route::post('/ads/create', [SUController::class, 'create'])->name('ads.create');
+
+        Route::get('/insig/create', [SUController::class, 'insig'])->name('insig');
+    });
+
 
 // ============================================================================
 // CHATIFY - CUSTOM ROUTES OVERRIDE
