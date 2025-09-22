@@ -275,6 +275,8 @@ Route::middleware(['auth:super'])
         Route::post('/ads/create', [SUController::class, 'create'])->name('ads.create');
 
         Route::get('/insig/create', [SUController::class, 'insig'])->name('insig');
+
+        Route::get('/buscar-userus', [UserController::class, 'buscarUsuarios'])->name('user.buscar');
     });
 
 

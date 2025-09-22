@@ -34,6 +34,17 @@ class UserController extends Controller
         return view('components.listar-perfiles', compact('users'));
     }
 
+    public function buscarUsuarios(Request $request)
+    {
+        $query = $request->input('buscar');
+        $users = User::when($query, function($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%")
+              ->orWhere('username', 'like', "%{$query}%");
+        })->get();
+
+        return view('components.listar-perfiles-su', compact('users'));
+    }
+
     /**
      * Store a newly created resource in storage.
      */

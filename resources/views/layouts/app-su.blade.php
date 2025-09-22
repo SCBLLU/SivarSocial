@@ -301,7 +301,7 @@
                 input.addEventListener('keyup', function() {
                     const query = this.value;
 
-                    fetch(`/buscar-usuarios?buscar=${encodeURIComponent(query)}`)
+                    fetch(`/us/buscar-userus?buscar=${encodeURIComponent(query)}`)
                         .then(response => response.text())
                         .then(html => {
                             campo.resultIds.forEach(id => {
