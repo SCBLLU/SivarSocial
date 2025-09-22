@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Su_ad extends Authenticatable
+class su_ad extends Authenticatable
 {
     use HasFactory;
 
