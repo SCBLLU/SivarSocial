@@ -344,3 +344,15 @@ input[type="password"] {
     border-bottom-right-radius: 20px;
     border-bottom-left-radius: 0;
 }
+
+/*animacion de ocultacion para menu mobil*/
+#header {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  transition: 0.3s ease;
+}
+
+#header.hide-menu {
+  bottom: -7rem; /* se desliza hacia abajo */
+}

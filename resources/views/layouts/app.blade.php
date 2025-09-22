@@ -255,6 +255,26 @@
         <!-- menu para mobile -->
         @include('layouts.menu-mobile')
         @yield('menu-mobile')
+        
+        <script>
+            const header = document.getElementById('header');
+            let lastScrollY = window.scrollY; // posición anterior
+
+            window.addEventListener('scroll', () => {
+                const currentScroll = window.scrollY;
+
+                // Se oculta si bajamos
+                if (currentScroll > lastScrollY && currentScroll > 10) {
+                    header.classList.add('hide-menu');
+                } else {
+                    // Se muestra si subimos
+                    header.classList.remove('hide-menu');
+                }
+
+                // Actualizamos la última posición
+                lastScrollY = currentScroll;
+            });
+        </script>
         <!-- fin menu para mobile -->
 
         <div class="contenido">
