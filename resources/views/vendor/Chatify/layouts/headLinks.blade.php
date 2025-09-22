@@ -1,9 +1,9 @@
 {{--
-  Incluye los meta tags, scripts y estilos necesarios para la interfaz de Chatify.
-  - Meta: datos de usuario, color, tema, CSRF, etc.
-  - Scripts: jQuery, FontAwesome, autosize, app.js, NProgress.
-  - Estilos: NProgress, Chatify (normal y dark), app.css.
-  - Define el color primario del chat como variable CSS.
+Incluye los meta tags, scripts y estilos necesarios para la interfaz de Chatify.
+- Meta: datos de usuario, color, tema, CSRF, etc.
+- Scripts: jQuery, FontAwesome, autosize, app.js, NProgress.
+- Estilos: NProgress, Chatify (normal y dark), app.css.
+- Define el color primario del chat como variable CSS.
 --}}
 <title>{{ config('chatify.name') }}</title>
 
@@ -41,5 +41,20 @@
 <style>
     :root {
         --primary-color: {{ $messengerColor }};
+    }
+
+    /* Estilos específicos para el indicador BETA */
+    .beta-indicator {
+        background: var(--primary-color) !important;
+        font-size: 10px !important;
+        padding: 2px 8px !important;
+        border-radius: 5px !important;
+        margin-left: 8px !important;
+        letter-spacing: 1px !important;
+        color: white !important;
+        display: inline-block !important;
+        vertical-align: baseline !important;
+        position: relative !important;
+        top: -3.1px !important;
     }
 </style>

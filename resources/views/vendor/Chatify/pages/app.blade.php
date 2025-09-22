@@ -12,7 +12,9 @@
                 <a href="/" aria-label="Ir al inicio" style="margin-right: 10px;"><i class="fas fa-home"></i></a>
                 <span class="messenger-headTitle"
                     style="position: absolute; left: 45%; transform: translateX(-50%); text-align: center; color: white;">SIVAR
-                    CHAT</span>
+                    CHAT
+                    <div class="beta-indicator">BETA</div>
+                </span>
                 {{-- header buttons --}}
                 <nav class="m-header-right">
                     <a href="#"><i class="fas fa-cog settings-btn"></i></a>

@@ -180,10 +180,7 @@ body {
 .m-header svg {
   color: var(--primary-color);
   font-size: var(--icon-size);
-  transition: transform 0.12s;
-}
-.m-header svg:active {
-  transform: scale(0.9);
+  /* Animación removida para mantener los iconos fijos */
 }
 .messenger-search[type="text"] {
   margin: 0px 10px;
@@ -613,11 +610,7 @@ body {
   color: #bdcbd6;
   cursor: pointer;
   font-size: 21px;
-  transition: transform 0.15s;
-}
-
-.messenger-sendCard svg:active {
-  transform: scale(0.9);
+  /* Animación removida para mantener los iconos fijos */
 }
 .m-send {
   font-size: 14px;
