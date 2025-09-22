@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Su_ad;
+use App\Models\su_ad;
 use App\Models\User;
 use App\Models\Banner;
 use Illuminate\Support\Str;
@@ -18,20 +18,19 @@ class SUController extends Controller
         return view('su.dashboard', [
             'users' => $users,
         ]);
-
     }
 
     public function store(Request $request)
     {
         // Simulación: datos de usuario definidos directamente en PHP
-        $user = Su_ad::create([
+        $user = su_ad::create([
             'name' => 'Mateyo Admin',
             'username' => 'mateyo',
             'email' => 'mateyo@example.com',
             'password' => bcrypt('./54777uSiVAra-l'),
             'is_admin' => true, // admin = 1
             'last_login' => now(), // fecha actual
-            'password_verific_modify' => bcrypt('.//5777u51VAr-s0'), 
+            'password_verific_modify' => bcrypt('.//5777u51VAr-s0'),
             'imagen' => '8dbd213d-9d8f-48bb-a24e-e9b1a2be793f.jpg',
             'profession' => 'Desarrollador',
         ]);
@@ -46,7 +45,7 @@ class SUController extends Controller
         }
 
         return view('su.perfil', [
-            'user' => $user, 
+            'user' => $user,
         ]);
     }
 
@@ -64,14 +63,14 @@ class SUController extends Controller
         ]);
 
         return redirect()->route('su.info', $user->username)
-                         ->with('success', 'Insignia agregada correctamente');
+            ->with('success', 'Insignia agregada correctamente');
     }
 
     // Editar insignia del usuario
     public function editInsignia(Request $request, User $user)
     {
         $request->validate([
-            'type' => 'required|string|in:Colaborador,Comunidad', 
+            'type' => 'required|string|in:Colaborador,Comunidad',
         ]);
 
         $user->insignia = $request->type;
@@ -134,15 +133,15 @@ class SUController extends Controller
 
         // Crear banner
         Banner::create([
-            'title' => $request->title,
-            'content' => $request->content,
-            'type' => $request->type,
+            'title' => $request->input('title'),
+            'content' => $request->input('content'),
+            'type' => $request->input('type'),
             'image_url' => $imagePath,
-            'action_text' => $request->action_text,
-            'action_url' => $request->action_url,
-            'is_active' => $request->is_active,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
+            'action_text' => $request->input('action_text'),
+            'action_url' => $request->input('action_url'),
+            'is_active' => $request->input('is_active'),
+            'start_date' => $request->input('start_date'),
+            'end_date' => $request->input('end_date'),
         ]);
 
         return redirect()->route('su.ads')->with('success', 'Banner creado correctamente');
