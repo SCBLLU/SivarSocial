@@ -33,7 +33,7 @@
 
                 </div>
 
-                <div id="resultados-busqueda" class="p-4 space-y-3 scrollable-list flex-1 pb-0 bg-white">
+                <div id="resultados-busqueda" class="p-4 space-y-3 scrollable-list flex-1 pb-0 bg-white overflow-y-auto max-h-[490px]">
                   @if (isset($users) && $users->count())
                   @component('components.listar-perfiles-su', ['users' => $users]) @endcomponent
                   @else
