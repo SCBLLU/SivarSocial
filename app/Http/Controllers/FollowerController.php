@@ -150,8 +150,10 @@ class FollowerController extends Controller
      */
     public function followers(User $user)
     {
+        $users = \App\Models\User::latest()->get();
         return view('users.followers', [
             'user' => $user,
+            'users' => $users,
             'totalFollowers' => $user->followers()->count(),
         ]);
     }
@@ -161,8 +163,10 @@ class FollowerController extends Controller
      */
     public function following(User $user)
     {
+        $users = \App\Models\User::latest()->get();
         return view('users.following', [
             'user' => $user,
+            'users' => $users,
             'totalFollowing' => $user->following()->count(),
         ]);
     }
