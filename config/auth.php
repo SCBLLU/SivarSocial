@@ -72,7 +72,7 @@ return [
 
         'su_ad' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Su_ad::class,
+            'model' => App\Models\su_ad::class,
         ],
 
         // 'users' => [

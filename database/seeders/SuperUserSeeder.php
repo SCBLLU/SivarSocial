@@ -14,6 +14,14 @@ class SuperUserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Verificar si ya existe el super usuario
+        $existingUser = su_ad::where('email', 'admin@sivarsocial.com')->first();
+        
+        if ($existingUser) {
+            $this->command->info('❌ Super usuario ya existe, saltando creación.');
+            return;
+        }
+
         $superUser = [
             'name' => 'Administrador',
             'email' => 'admin@sivarsocial.com',
@@ -27,6 +35,6 @@ class SuperUserSeeder extends Seeder
 
         su_ad::create($superUser);
 
-        $this->command->info('Super usuario creado exitosamente.');
+        $this->command->info('✅ Super usuario creado exitosamente.');
     }
 }

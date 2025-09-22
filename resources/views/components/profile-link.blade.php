@@ -22,7 +22,7 @@
 @endif
 
 {{-- Bloque adicional solo si es un superusuario --}}
-@if($user instanceof \App\Models\Su_ad)
+@if($user instanceof \App\Models\su_ad)
 <div class="hidden md:block">
     <a href="{{ route('su.dash') }}"
         class="flex items-center justify-between group max-w-md mx-auto rounded-lg transition">
