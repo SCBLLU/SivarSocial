@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Su_ad;
+use App\Models\su_ad;
 
 class SuperUserSeeder extends Seeder
 {
@@ -25,7 +25,7 @@ class SuperUserSeeder extends Seeder
             'last_login' => now(),
         ];
 
-        Su_ad::create($superUser);
+        su_ad::create($superUser);
 
         $this->command->info('Super usuario creado exitosamente.');
     }
