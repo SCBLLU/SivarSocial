@@ -13,8 +13,7 @@
     height: 100%;
     object-fit: cover;
     display: block;
-    background-color: #000000;
-    /* Gray-100 como placeholder */
+    background-color: #f3f4f6;
 }
 
 
@@ -339,6 +338,11 @@ input[type="password"] {
 .no-scroll {
     animation: none !important;
     transform: translateX(0);
+}
+
+.rounded-b-\[20px\] {
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 0;
 }
 
 /*animacion de ocultacion para menu mobil*/

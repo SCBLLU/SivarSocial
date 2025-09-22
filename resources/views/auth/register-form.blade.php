@@ -384,7 +384,7 @@
             }
             setTimeout(function() {
                 const dropzoneRegister = new Dropzone('#dropzone-register', {
-                    url: '/imagenes',
+                    url: '/imagenes-perfil',
                     dictDefaultMessage: 'Arrastra aquí tu imagen de perfil o haz clic',
                     acceptedFiles: '.jpg,.jpeg,.png',
                     addRemoveLinks: true,

@@ -102,8 +102,20 @@ class ImagenController extends Controller
             // Leer la imagen
             $imagenServidor = $manager->read($imagen);
 
-            // Para perfiles, usar tamaño fijo cuadrado
-            $imagenServidor->cover(400, 400);
+            // Obtener dimensiones originales
+            $width = $imagenServidor->width();
+            $height = $imagenServidor->height();
+
+            // Tamaño objetivo para perfiles
+            $targetSize = 400;
+
+            // Mantener proporciones originales sin canvas, solo redimensionar para que quepa
+            $scale = min($targetSize / $width, $targetSize / $height);
+            $newWidth = (int)($width * $scale);
+            $newHeight = (int)($height * $scale);
+
+            // Redimensionar manteniendo proporciones sin recortar ni añadir canvas
+            $imagenServidor->scale($newWidth, $newHeight);
 
             // Guardar con calidad alta para perfiles
             $imagenPath = public_path('perfiles') . '/' . $nombreImagen;
@@ -116,7 +128,7 @@ class ImagenController extends Controller
 
         return response()->json([
             'imagen' => $nombreImagen,
-            'message' => 'Imagen de perfil subida correctamente'
+            'message' => 'Imagen de perfil subida correctamente - manteniendo proporciones originales'
         ]);
     }
 

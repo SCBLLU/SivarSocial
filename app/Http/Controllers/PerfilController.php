@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\SocialLink;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -86,15 +87,29 @@ class PerfilController extends Controller
         // Procesar imagen solo si se subió una nueva
         if ($request->hasFile('imagen')) {
             $imagen = $request->file('imagen');
-            $nombreImagen = Str::uuid() . "." . $imagen->extension();
+            $nombreImagen = Str::uuid() . ".jpg"; // Siempre guardar como JPG para consistencia
 
             $manager = new ImageManager(new Driver());
             $imagenServidor = $manager->read($imagen);
-            $imagenServidor->cover(1000, 1000);
+
+            // Obtener dimensiones originales
+            $width = $imagenServidor->width();
+            $height = $imagenServidor->height();
+
+            // Tamaño objetivo para perfiles
+            $targetSize = 400;
+
+            // Mantener proporciones originales sin canvas, solo redimensionar para que quepa
+            $scale = min($targetSize / $width, $targetSize / $height);
+            $newWidth = (int)($width * $scale);
+            $newHeight = (int)($height * $scale);
+
+            // Redimensionar manteniendo proporciones sin recortar ni añadir canvas
+            $imagenServidor->scale($newWidth, $newHeight);
 
             // Guarda la imagen en el directorio 'perfiles' dentro de 'public'
             $imagenPath = public_path('perfiles') . '/' . $nombreImagen;
-            $imagenServidor->save($imagenPath);
+            $imagenServidor->save($imagenPath, 90); // Calidad 90%
 
             // Eliminar imagen anterior si existe
             if ($user->imagen && file_exists(public_path('perfiles/' . $user->imagen))) {
@@ -114,5 +129,49 @@ class PerfilController extends Controller
             return redirect()->route('posts.index', ['user' => $user->username])
                 ->with('info', 'No se realizaron cambios en el perfil');
         }
+    }
+
+    public function storeSocialLink(Request $request)
+    {
+        $request->validate([
+            'url' => 'required|url|max:255',
+        ]);
+
+        $user = Auth::user();
+        
+        // Verificar que el usuario no exceda el límite de enlaces (máximo 4)
+        $currentLinksCount = $user->socialLinks()->count();
+        if ($currentLinksCount >= 4) {
+            return redirect()->back()->with('error', 'Solo puedes tener un máximo de 4 enlaces sociales.');
+        }
+
+        // Detectar la plataforma automáticamente
+        $platformData = SocialLink::detectPlatform($request->url);
+        
+        // Verificar que no exista ya un enlace de esta plataforma
+        $existingLink = $user->socialLinks()
+            ->where('platform', $platformData['platform'])
+            ->first();
+
+        if ($existingLink) {
+            return redirect()->back()->with('error', 'Ya tienes un enlace de ' . ucfirst($platformData['platform']) . '. Solo puedes tener uno por plataforma.');
+        }
+
+        // Extraer username
+        $username = SocialLink::extractUsername($request->url, $platformData['platform']);
+
+        // Obtener el siguiente número de orden
+        $nextOrder = $user->socialLinks()->max('order') + 1;
+
+        // Crear el enlace
+        $user->socialLinks()->create([
+            'platform' => $platformData['platform'],
+            'url' => $request->url,
+            'username' => $username,
+            'icon' => $platformData['icon'],
+            'order' => $nextOrder
+        ]);
+
+        return redirect()->back()->with('success', 'Enlace agregado exitosamente.');
     }
 }
