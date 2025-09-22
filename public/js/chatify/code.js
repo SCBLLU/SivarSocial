@@ -11,8 +11,9 @@ var messenger,
     dark_mode,
     messages_page = 1;
 
+/* esto sobrescribe al "Conectarse" a SIVAR CHAT*/
 const messagesContainer = $(".messenger-messagingView .m-body"),
-    messengerTitleDefault = $(".messenger-headTitle").text(),
+    messengerTitleDefault = $(".messenger-headTitle").html(),
     messageInputContainer = $(".messenger-sendCard"),
     messageInput = $("#message-form .m-send"),
     auth_id = $("meta[name=url]").attr("data-user"),
@@ -872,7 +873,7 @@ function checkInternet(state, selector) {
     switch (state) {
         case "connected":
             if (net_errs < 1) {
-                messengerTitle.text(messengerTitleDefault);
+                messengerTitle.html(messengerTitleDefault);
                 selector.addClass("successBG-rgba");
                 selector.find("span").hide();
                 selector.slideDown("fast", function () {
@@ -884,7 +885,10 @@ function checkInternet(state, selector) {
             }
             break;
         case "connecting":
-            messengerTitle.text($(".ic-connecting").text());
+            messengerTitle.html(
+                $(".ic-connecting").text() +
+                    ' <span class="beta-indicator">BETA</span>'
+            );
             selector.removeClass("successBG-rgba");
             selector.find("span").hide();
             selector.slideDown("fast", function () {
@@ -894,7 +898,10 @@ function checkInternet(state, selector) {
             break;
         // Not connected
         default:
-            messengerTitle.text($(".ic-noInternet").text());
+            messengerTitle.html(
+                $(".ic-noInternet").text() +
+                    ' <span class="beta-indicator">BETA</span>'
+            );
             selector.removeClass("successBG-rgba");
             selector.find("span").hide();
             selector.slideDown("fast", function () {
