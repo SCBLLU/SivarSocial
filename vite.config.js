@@ -8,8 +8,11 @@ export default defineConfig({
             input: [
                 'resources/css/app.css', 
                 'resources/css/menu-mobile.css',
-                'resources/js/app.js',
                 'resources/css/style.css',
+                'resources/css/responsive.css',
+                'resources/js/app.js',
+                'resources/js/script.js',
+                'resources/js/jquery-3.6.0.min.js',
             ],
             refresh: true,
         }),
