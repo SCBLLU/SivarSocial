@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
         
         $this->call([
             ImageSeeder::class,      // Crear imágenes de muestra primero
+            SuperUserSeeder::class,  // Super usuario administrativo
             UserSeeder::class,       // Usuarios con imágenes de perfil
             PostSeeder::class,       // Posts con imágenes y música
             ComentarioSeeder::class, // Comentarios en los posts
@@ -24,6 +25,7 @@ class DatabaseSeeder extends Seeder
         
         $this->command->info('✅ Base de datos poblada exitosamente!');
         $this->command->info('📊 Datos creados:');
+        $this->command->line('   • Super usuario administrativo');
         $this->command->line('   • Usuarios con imágenes de perfil');
         $this->command->line('   • Posts con imágenes y música');
         $this->command->line('   • Comentarios y likes');
