@@ -226,7 +226,6 @@
                 /* Limitar texto aún más en móviles */
                 #modalContainer .text-gray-600 {
                     -webkit-line-clamp: 2 !important;
-                    max-height: 3em !important;
                 }
             }
         </style>
