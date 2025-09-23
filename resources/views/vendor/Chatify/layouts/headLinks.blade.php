@@ -5,7 +5,8 @@ Incluye los meta tags, scripts y estilos necesarios para la interfaz de Chatify.
 - Estilos: NProgress, Chatify (normal y dark), app.css.
 - Define el color primario del chat como variable CSS.
 --}}
-<title>{{ config('chatify.name') }}</title>
+<title>SivarChat</title>
+<link rel="icon" href="{{ asset('img/icon.svg') }}" type="image/svg+xml">
 
 {{-- Meta tags --}}
 <meta name="viewport" content="width=device-width, initial-scale=1">
