@@ -38,65 +38,67 @@ if ($currentRoute && $currentRoute->getName() === 'posts.index' && Auth::check()
       </span>
       <nav id="menu" class="menu" data-current-route="{{ Route::currentRouteName() }}">
         <ul class="menu__list">
-          @auth
-          <li class="menu__item">
-            <a class="menu__link circle btn {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}#home" data-route="home">
-              <i class='bx bx-home-smile'></i>
-            </a>
-          </li>
-          <li class="menu__item">
-            <a class="menu__link btn" onclick="openModal(0)">
-              <i class='bx bx-group'></i>
-            </a>
-          </li>
-          <li class="menu__item">
-            <a class="menu__link circle btn {{ request()->routeIs('posts.create') ? 'active' : '' }}" href="{{ route('posts.create') }}" data-route="posts.create">
-              <i class='bx bx-plus'></i>
-            </a>
-          </li>
-          <li class="menu__item">
-            <div class="menu__link btn notification-btn-mobile">
-              @livewire('notification-button')
-            </div>
-          </li>
-          @endauth
-
-          @guest
-           <li class="menu__item">
-            <a class="menu__link circle btn" href="{{ url('/') }}#home" data-route="home">
-              <i class='bx bx-home-smile'></i>
-            </a>
-          </li>
-          <li class="menu__item">
-            <a class="menu__link circle btn" href="{{ url('/register') }}" data-route="register">
-              <i class='bx bx-user-plus'></i>
-            </a>
-          </li>
-          <li class="menu__item">
-            <a class="menu__link circle btn" href="{{ route('login') }}" data-route="login">
-              <i class='bx bx-user-circle'></i>
-            </a>
-          </li>
           @if (request()->routeIs('code.verific') || request()->routeIs('restablecer'))
-          <li class="menu__item">
-            <a class="menu__link btn" onclick="openModal(1)">
-              <i class="fa-regular fa-circle-question"></i>
-            </a>
-          </li>
-          @endif
-          @endguest
-          <!-- Navigation Menu End -->
-
-          <!-- Header Controls Start -->
-          @auth
+            {{-- SOLO este botón en esas rutas --}}
             <li class="menu__item">
-              <div class="profile-img">
-                <a id="notify-trigger" class="header__trigger menu__link circle btn {{ request()->routeIs('posts.index') ? 'active' : '' }}" href="{{ route('posts.index', auth()->user()) }}" data-route="posts.index">
-                  <x-profile-link :user="Auth::user()" />
-                </a>
-              </div>
+              <a class="menu__link btn" onclick="openModal(1)">
+                <i class="fa-regular fa-circle-question"></i>
+              </a>
             </li>
-          @endauth
+
+          @else
+            {{-- Todo el menú normal --}}
+            @auth
+              <li class="menu__item">
+                <a class="menu__link circle btn {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}#home" data-route="home">
+                  <i class='bx bx-home-smile'></i>
+                </a>
+              </li>
+              <li class="menu__item">
+                <a class="menu__link btn" onclick="openModal(0)">
+                  <i class='bx bx-group'></i>
+                </a>
+              </li>
+              <li class="menu__item">
+                <a class="menu__link circle btn {{ request()->routeIs('posts.create') ? 'active' : '' }}" href="{{ route('posts.create') }}" data-route="posts.create">
+                  <i class='bx bx-plus'></i>
+                </a>
+              </li>
+              <li class="menu__item">
+                <div class="menu__link btn notification-btn-mobile">
+                  @livewire('notification-button')
+                </div>
+              </li>
+            @endauth
+
+            @guest
+              <li class="menu__item">
+                <a class="menu__link circle btn" href="{{ url('/') }}#home" data-route="home">
+                  <i class='bx bx-home-smile'></i>
+                </a>
+              </li>
+              <li class="menu__item">
+                <a class="menu__link circle btn" href="{{ url('/register') }}" data-route="register">
+                  <i class='bx bx-user-plus'></i>
+                </a>
+              </li>
+              <li class="menu__item">
+                <a class="menu__link circle btn" href="{{ route('login') }}" data-route="login">
+                  <i class='bx bx-user-circle'></i>
+                </a>
+              </li>
+            @endguest
+
+            @auth
+              <li class="menu__item">
+                <div class="profile-img">
+                  <a id="notify-trigger" class="header__trigger menu__link circle btn {{ request()->routeIs('posts.index') ? 'active' : '' }}" href="{{ route('posts.index', auth()->user()) }}" data-route="posts.index">
+                    <x-profile-link :user="Auth::user()" />
+                  </a>
+                </div>
+              </li>
+            @endauth
+          @endif
           <!-- Header Controls End -->
         </ul>
       </nav>
