@@ -48,7 +48,7 @@
                 </h2>
 
                 <!-- Descripción -->
-                <div class="text-gray-600 text-sm md:text-base mb-6 leading-relaxed" style="overflow: hidden !important; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                <div class="text-gray-600 text-sm md:text-base mb-6 leading-relaxed" style="overflow: hidden !important; display: -webkit-box; -webkit-line-clamp: 3;">
                     {!! $banner->content !!}
                 </div>
 
@@ -112,8 +112,8 @@
 
     @if($isVisible)
         <style>
-            /* Bloquear scroll del body */
-            body {
+            /* Bloquear scroll del html */
+            html {
                 overflow: hidden !important;
             }
             
