@@ -180,7 +180,8 @@ body {
 .m-header svg {
   color: var(--primary-color);
   font-size: var(--icon-size);
-  /* Animación removida para mantener los iconos fijos */
+  /* Animación removida para mantener el icono de chat fijo */
+  transition: none;
 }
 .messenger-search[type="text"] {
   margin: 0px 10px;
@@ -611,6 +612,7 @@ body {
   cursor: pointer;
   font-size: 21px;
   /* Animación removida para mantener los iconos fijos */
+  transition: none;
 }
 .m-send {
   font-size: 14px;
