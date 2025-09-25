@@ -115,6 +115,16 @@ input[type="password"] {
     z-index: 1;
 }
 
+#header1{
+    position: fixed;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+}
+
+.m-b{
+    margin-top: 8rem; 
+}
 
 /* Animaciones para fade-in */
 @keyframes fade-in {
