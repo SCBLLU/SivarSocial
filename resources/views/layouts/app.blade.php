@@ -152,7 +152,7 @@
 
     {{-- Contenedor principal --}}
     <div class="content-wrapper">
-        <header class="bg-white shadow-violet-700/100 rounded-b-xl">
+        <header id="header1" class="bg-white shadow-violet-700/100 rounded-b-xl">
             <div class="container flex items-center justify-between p-5 mx-auto">
                 <a href="{{ route('home') }}" class="z-20 cursor-pointer">
                     <img srcset="https://res.cloudinary.com/dj848z4er/image/upload/v1748745136/tokhsr71m0thpsjaduyc.png 4x"
@@ -253,8 +253,10 @@
         </header>
 
         <!-- menu para mobile -->
-        @include('layouts.menu-mobile')
-        @yield('menu-mobile')
+        @if(!request()->routeIs('perfil.index'))
+            @include('layouts.menu-mobile')
+            @yield('menu-mobile')
+        @endif
         
         <script>
             const header = document.getElementById('header');
@@ -281,7 +283,7 @@
             @if (Route::is('recuperar', 'code.verific', 'restablecer'))
                 @yield('contenido-recover')
             @else
-                <main class="container p-5 mx-auto mt-10 mb-5">
+                <main class="container p-5 mx-auto m-b mb-5">
                     <h2 class="mb-10 text-3xl font-bold text-center">
                         @yield('titulo')
                     </h2>
