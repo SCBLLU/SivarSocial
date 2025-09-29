@@ -92,7 +92,7 @@
         {{-- Botón menú (3 puntos) --}}
         @auth
             @if ($user->id === auth()->id())
-                <div class="absolute top-4 right-4 sm:top-6 sm:right-6 z-10" x-data="{ open: false }" x-cloak>
+                <div class="absolute top-4 right-4 sm:top-6 sm:right-6" x-data="{ open: false }" x-cloak>
                     <button @click="open = !open"
                         class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center border border-gray-400 rounded-full hover:bg-gray-100 transition">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
@@ -108,7 +108,7 @@
                          x-transition:leave="transition ease-in duration-150"
                          x-transition:leave-start="opacity-100 scale-100"
                          x-transition:leave-end="opacity-0 scale-95"
-                        class="absolute right-0 mt-2 w-44 sm:w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-2">
+                        class="absolute right-0 mt-2 w-44 sm:w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2">
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
                             <button type="submit"

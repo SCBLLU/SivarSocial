@@ -181,7 +181,6 @@
 <style>
     .social-link-item {
         position: relative;
-        z-index: 1;
     }
 
     .social-link-item button {
