@@ -306,6 +306,7 @@ i.bx.bx-search-alt-2 {
   z-index: 1001;
   visibility: hidden;
   overflow: hidden;
+  border-bottom: 3px solid gray;
 }
 
 /*.header {

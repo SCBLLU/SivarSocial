@@ -366,3 +366,13 @@ input[type="password"] {
 #header.hide-menu {
   bottom: -7rem; /* se desliza hacia abajo */
 }
+
+/*animacion de opacidad de header*/
+#header1{
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#header1.opacity{
+    opacity: 0.5;
+}

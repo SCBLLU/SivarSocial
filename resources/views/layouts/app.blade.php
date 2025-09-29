@@ -260,6 +260,7 @@
         
         <script>
             const header = document.getElementById('header');
+            const header1 = document.getElementById('header1'); 
             let lastScrollY = window.scrollY; // posición anterior
 
             window.addEventListener('scroll', () => {
@@ -268,9 +269,11 @@
                 // Se oculta si bajamos
                 if (currentScroll > lastScrollY && currentScroll > 10) {
                     header.classList.add('hide-menu');
+                    header1.classList.add('opacity');
                 } else {
                     // Se muestra si subimos
                     header.classList.remove('hide-menu');
+                    header1.classList.remove('opacity');
                 }
 
                 // Actualizamos la última posición
