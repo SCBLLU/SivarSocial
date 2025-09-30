@@ -7,6 +7,11 @@ use Illuminate\Foundation\Configuration\Middleware;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__ . '/../routes/web.php',
+        /**
+         * Ruta al archivo de definición de rutas para la API.
+         * Este archivo contiene todas las rutas que gestionan las peticiones API del proyecto.
+         */
+        api: __DIR__ . '/../routes/api.php',
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )

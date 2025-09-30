@@ -6,9 +6,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+    /**
+     * Se utilizan los traits HasApiTokens, HasFactory y Notifiable para agregar funcionalidades al modelo User.
+     * - HasApiTokens: Permite la gestión de tokens de autenticación para APIs, facilitando la implementación de autenticación basada en tokens.
+     * - HasFactory: Habilita el uso de factories para la generación de instancias del modelo en pruebas y seeders.
+     * - Notifiable: Permite que el modelo reciba notificaciones a través de diferentes canales (correo, base de datos, etc.).
+     * Estos traits son esenciales para trabajar con APIs en Laravel, especialmente cuando se requiere autenticación y notificaciones.
+     */
+    use HasApiTokens, HasFactory, Notifiable;
     /**
      * Mutator para asegurar que el campo imagen siempre tenga un valor válido.
      */
@@ -69,6 +78,10 @@ class User extends Authenticatable
      */
     public function getImagenUrlAttribute()
     {
+        // Agregando este metodo para la imagen de perfil en la API
+        if ($this->imagen) {
+            return asset('imagenes/' . $this->imagen);
+        }
         // Siempre retorna la imagen real o la por defecto
         return asset('perfiles/' . ($this->imagen ?: 'img.jpg'));
     }
