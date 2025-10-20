@@ -58,6 +58,16 @@ class User extends Authenticatable
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     * Esto hace que imagen_url se incluya automáticamente en JSON
+     *
+     * @var array<string>
+     */
+    protected $appends = [
+        'imagen_url',
+    ];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -75,15 +85,16 @@ class User extends Authenticatable
 
     /**
      * Obtener la URL completa de la imagen de perfil
+     * Este accessor genera automáticamente la URL cuando accedes a $user->imagen_url
      */
     public function getImagenUrlAttribute()
     {
-        // Agregando este metodo para la imagen de perfil en la API
+        // Si el usuario tiene una imagen de perfil, genero la URL completa
         if ($this->imagen) {
-            return asset('imagenes/' . $this->imagen);
+            return url('perfiles/' . $this->imagen);
         }
-        // Siempre retorna la imagen real o la por defecto
-        return asset('perfiles/' . ($this->imagen ?: 'img.jpg'));
+        // Si no tiene imagen, retorno null para que la app móvil use una imagen por defecto
+        return null;
     }
 
     public function getRouteKeyName()

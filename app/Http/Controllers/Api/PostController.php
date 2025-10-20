@@ -32,9 +32,31 @@ class PostController extends Controller
             // Transformo cada post para agregar la URL completa de la imagen
             // Esto es necesario para que la app móvil pueda cargar las imágenes correctamente
             $posts->getCollection()->transform(function ($post) {
+                // Solo agrego la URL si el post tiene imagen
                 if ($post->imagen) {
-                    // Construyo la URL completa usando asset() para que funcione desde cualquier dominio
-                    $post->imagen_url = asset('imagenes/' . $post->imagen);
+                    $post->imagen_url = url('uploads/' . $post->imagen);
+                }
+                // Agrego también la imagen de perfil del usuario que creó el post
+                if ($post->user && $post->user->imagen) {
+                    $post->user->imagen_url = url('perfiles/' . $post->user->imagen);
+                }
+                // Agrego las imágenes de perfil de los usuarios en comentarios
+                if ($post->comentarios) {
+                    $post->comentarios->transform(function ($comentario) {
+                        if ($comentario->user && $comentario->user->imagen) {
+                            $comentario->user->imagen_url = url('perfiles/' . $comentario->user->imagen);
+                        }
+                        return $comentario;
+                    });
+                }
+                // Agrego las imágenes de perfil de los usuarios que dieron like
+                if ($post->likes) {
+                    $post->likes->transform(function ($like) {
+                        if ($like->user && $like->user->imagen) {
+                            $like->user->imagen_url = url('perfiles/' . $like->user->imagen);
+                        }
+                        return $like;
+                    });
                 }
                 return $post;
             });
@@ -84,9 +106,10 @@ class PostController extends Controller
                 $imagen = $request->file('imagen');
                 // Genero un nombre único usando timestamp para evitar conflictos
                 $nombreImagen = time() . '_' . $imagen->getClientOriginalName();
-                // Muevo la imagen a la carpeta public/imagenes
-                $imagen->move(public_path('imagenes'), $nombreImagen);
+                // Muevo la imagen a la carpeta public/uploads
+                $imagen->move(public_path('uploads'), $nombreImagen);
                 $post->imagen = $nombreImagen;
+                $post->imagen_url = url('uploads/' . $nombreImagen); // Genero URL absoluta
             }
 
             // Si es un post de música, guardo los metadatos adicionales
@@ -103,9 +126,14 @@ class PostController extends Controller
             $post->load(['user', 'comentarios', 'likes']);
             $post->loadCount(['comentarios', 'likes']);
 
-            // Si tiene imagen, agrego la URL completa para la app móvil
+            // Agrego la URL completa de la imagen del post para la app móvil
             if ($post->imagen) {
-                $post->imagen_url = asset('imagenes/' . $post->imagen);
+                $post->imagen_url = url('uploads/' . $post->imagen);
+            }
+
+            // Agrego también la imagen de perfil del usuario
+            if ($post->user && $post->user->imagen) {
+                $post->user->imagen_url = url('perfiles/' . $post->user->imagen);
             }
 
             // Devuelvo el post creado con código 201 (Created)
@@ -137,9 +165,34 @@ class PostController extends Controller
             $post->load(['user', 'comentarios.user', 'likes.user']);
             $post->loadCount(['comentarios', 'likes']); // Cuento las interacciones
 
-            // Si el post tiene imagen, agrego la URL completa
+            // Si el post tiene imagen, agrego la URL completa con dominio
             if ($post->imagen) {
-                $post->imagen_url = asset('imagenes/' . $post->imagen);
+                $post->imagen_url = url('uploads/' . $post->imagen);
+            }
+
+            // Agrego la imagen de perfil del usuario del post
+            if ($post->user && $post->user->imagen) {
+                $post->user->imagen_url = url('perfiles/' . $post->user->imagen);
+            }
+
+            // Agrego las imágenes de perfil de los usuarios en comentarios
+            if ($post->comentarios) {
+                $post->comentarios->transform(function ($comentario) {
+                    if ($comentario->user && $comentario->user->imagen) {
+                        $comentario->user->imagen_url = url('perfiles/' . $comentario->user->imagen);
+                    }
+                    return $comentario;
+                });
+            }
+
+            // Agrego las imágenes de perfil de los usuarios que dieron like
+            if ($post->likes) {
+                $post->likes->transform(function ($like) {
+                    if ($like->user && $like->user->imagen) {
+                        $like->user->imagen_url = url('perfiles/' . $like->user->imagen);
+                    }
+                    return $like;
+                });
             }
 
             // Devuelvo el post con todos sus detalles

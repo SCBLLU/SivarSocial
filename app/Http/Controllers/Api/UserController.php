@@ -29,8 +29,11 @@ class UserController extends Controller
             // Transformo cada usuario para agregar la URL completa de la imagen de perfil  
             // Esto es esencial para que la app móvil pueda cargar las fotos correctamente
             $users->getCollection()->transform(function ($user) {
-                // Si tiene imagen personalizada uso esa, si no uso la imagen por defecto
-                $user->imagen_url = $user->imagen ? asset('perfiles/' . $user->imagen) : asset('img/usuario.svg');
+                // Solo agrego la URL si el usuario tiene imagen de perfil
+                // Uso url() para generar URLs absolutas con el dominio completo
+                if ($user->imagen) {
+                    $user->imagen_url = url('perfiles/' . $user->imagen);
+                }
                 return $user;
             });
 
@@ -68,7 +71,10 @@ class UserController extends Controller
             $user->loadCount(['posts', 'followers', 'following']);
 
             // Agrego la URL completa de la imagen de perfil para la app móvil
-            $user->imagen_url = $user->imagen ? asset('perfiles/' . $user->imagen) : asset('img/usuario.svg');
+            // Solo si el usuario tiene imagen configurada
+            if ($user->imagen) {
+                $user->imagen_url = url('perfiles/' . $user->imagen);
+            }
 
             // Devuelvo el perfil completo del usuario
             return response()->json([
@@ -107,7 +113,10 @@ class UserController extends Controller
             // Transformo cada resultado para agregar la URL completa de la imagen
             // Necesario para que la app móvil pueda mostrar las fotos de perfil en los resultados
             $users->transform(function ($user) {
-                $user->imagen_url = $user->imagen ? asset('perfiles/' . $user->imagen) : asset('img/usuario.svg');
+                // Solo agrego la URL si el usuario tiene imagen de perfil
+                if ($user->imagen) {
+                    $user->imagen_url = url('perfiles/' . $user->imagen);
+                }
                 return $user;
             });
 
