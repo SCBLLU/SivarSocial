@@ -34,7 +34,9 @@ class Post extends Model
         'apple_music_url',
         'spotify_web_url',
         'artist_search_term',
-        'track_search_term'
+        'track_search_term',
+        // Campo de solo texto
+        'texto'
     ];
 
     public function user()

@@ -9,11 +9,16 @@ class Comentario extends Model
 {
     use HasFactory;
 
+    protected $table = 'comentarios';
     protected $fillable = [
         'user_id',
         'post_id',
         'comentario',
         'gif_url',
+        //campos para respuestas
+        'parent_id',
+        'depth',
+        'reply_count',
     ];
 
     // para traer los datos del usuario y del post de quien es el comentario
@@ -25,6 +30,17 @@ class Comentario extends Model
     public function post()
     {
         return $this->belongsTo(Post::class);
+    }
+
+    //funcion
+    public function parent()
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(self::class, 'parent_id');
     }
 
     /**

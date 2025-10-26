@@ -65,12 +65,14 @@ class PostController extends Controller
             // Valido todos los campos según el tipo de post que quiere crear
             $request->validate([
                 'descripcion' => 'nullable|string|max:500', // La descripción es opcional
-                'tipo' => 'required|in:imagen,musica', // Solo acepto estos dos tipos
+                'tipo' => 'required|in:imagen,musica,texto', // Solo acepto estos tres tipos
                 'imagen' => 'required_if:tipo,imagen|image|max:20480', // 20MB max para imágenes
                 // Campos específicos para posts de música
                 'artista' => 'nullable|string|max:255',
                 'titulo' => 'nullable|string|max:255',
                 'album' => 'nullable|string|max:255',
+                // Campo de texto
+                'texto' => 'nullable|string|max:5000',
             ]);
 
             // Creo el nuevo post y asigno los datos básicos
@@ -78,6 +80,7 @@ class PostController extends Controller
             $post->user_id = Auth::id(); // Obtengo el ID del usuario autenticado por token
             $post->descripcion = $request->descripcion;
             $post->tipo = $request->tipo;
+            $post->texto = $request->texto;
 
             // Si el post incluye una imagen, la proceso y guardo
             if ($request->hasFile('imagen')) {
@@ -94,6 +97,11 @@ class PostController extends Controller
                 $post->artista = $request->artista;
                 $post->titulo = $request->titulo;
                 $post->album = $request->album;
+            }
+
+            // Si el post es de texto simple, se guada en la columna de texto xd
+            if ($request->tipo === 'texto') {
+                $post->texto = $request->texto;
             }
 
             // Guardo el post en la base de datos
