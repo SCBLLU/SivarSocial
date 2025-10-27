@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use App\Rules\EmailDomain;
 
 /**
  * Controlador de autenticación para la API de SivarSocial
@@ -72,7 +73,7 @@ class AuthController extends Controller
             $request->validate([
                 'name' => 'required|string|max:255',
                 'username' => 'required|string|max:15|unique:users', // El username debe ser único
-                'email' => 'required|string|email|max:255|unique:users', // El email debe ser único
+                'email' => ['required','string','email','max:255','unique:users',new EmailDomain('itca.edu.sv')], // solo acepta correos del itca
                 'password' => 'required|string|min:8', // Mínimo 8 caracteres para la contraseña
             ]);
 
