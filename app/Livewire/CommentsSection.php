@@ -9,6 +9,8 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class CommentsSection extends Component
 {
@@ -23,6 +25,8 @@ class CommentsSection extends Component
     public $commentsPerPage = 10;
     public $loadedComments = 0;
     public $totalComments = 0;
+    public $replyToId = null;   // parent_id
+    public $replyToUser = null; // nombre del usuario al que se responde
 
     public function mount(Post $post)
     {
@@ -30,6 +34,27 @@ class CommentsSection extends Component
         $this->totalComments = $this->post->comentarios()->count();
         $this->loadedComments = min(10, $this->totalComments); // Cargar máximo 10 inicialmente
         $this->showLoadMore = $this->totalComments > $this->loadedComments;
+    }
+
+    protected $rules = [
+        'comentario' => 'required|string|max:500',
+        'postId' => 'required|integer|exists:posts,id',
+        'replyToId' => 'nullable|integer|exists:comentarios,id',
+    ];
+
+    // Asignar parent cuando el usuario pulsa "Responder"
+    public function setReplyTo(int $commentId, string $userName)
+    {
+        $this->replyToId = $commentId;
+        $this->replyToUser = $userName;
+        //$this->emit('focusInput'); // opcional: para poner foco en el input desde JS
+    }
+
+    // Limpiar estado de "responder"
+    public function clearReply()
+    {
+        $this->replyToId = null;
+        $this->replyToUser = null;
     }
 
     public function getComentariosProperty()
@@ -69,7 +94,7 @@ class CommentsSection extends Component
     public function selectGif($gifUrl)
     {
         $this->selectedGif = $gifUrl;
-        $this->showGifModal = false;        
+        $this->showGifModal = false;
         $this->dispatch('gif-selected');
     }
 
@@ -108,16 +133,46 @@ class CommentsSection extends Component
             ]);
         }
 
+        $parentId = $this->replyToId ?? null;
+
         try {
+            DB::beginTransaction();
+
+            $depth = 0;
+
+            if ($parentId) {
+                // Bloquea la fila padre para evitar race conditions en reply_count
+                $parent = Comentario::where('id', $parentId)->lockForUpdate()->first();
+
+                if (! $parent) {
+                    throw ValidationException::withMessages(['replyToId' => 'El comentario padre no existe.']);
+                }
+
+                if ($parent->post_id !== $this->post->id) {
+                    throw ValidationException::withMessages(['replyToId' => 'El comentario padre no pertenece a este post.']);
+                }
+
+                $depth = $parent->depth + 1;
+            }
             // Crear el comentario
             $comentarioText = !empty(trim($this->comentario)) ? trim($this->comentario) : null;
-            
+
             $nuevoComentario = Comentario::create([
                 'user_id' => Auth::id(),
                 'post_id' => $this->post->id,
                 'comentario' => $comentarioText,
                 'gif_url' => $this->selectedGif,
+                'parent_id' => $parentId,
+                'depth' => $depth,
+                'reply_count' => 0,
             ]);
+
+            // Incrementar el counter del padre
+            if ($parentId) {
+                Comentario::where('id', $parentId)->increment('reply_count');
+            }
+
+            DB::commit();
 
             // Crear notificación de comentario
             $notificationService = new NotificationService();
@@ -131,6 +186,7 @@ class CommentsSection extends Component
             // Limpiar los campos
             $this->comentario = '';
             $this->selectedGif = null;
+            $this->clearReply(); // método que limpia replyToId y replyToUser
 
             // Recalcular contadores desde la base de datos para asegurar consistencia
             $this->totalComments = $this->post->comentarios()->count();

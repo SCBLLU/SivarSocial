@@ -181,6 +181,7 @@ Route::get('/posts/{post}/likes', [PostController::class, 'getLikes'])->name('po
  * Permite comentar en las publicaciones de otros usuarios
  */
 Route::post('/{user:username}/posts/{post}', [ComentarioController::class, 'store'])->name('comentarios.store')->middleware('auth');
+//Route::post('/posts/{post}/comments', [ComentarioController::class, 'store'])->name('comentarios.store')->middleware('auth');
 
 // ============================================================================
 // GESTIÓN DE IMÁGENES
