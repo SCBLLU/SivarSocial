@@ -20,24 +20,29 @@ use App\Http\Controllers\Api\UserController;
 // Rutas públicas (no requieren autenticación)
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
-// Posts
+
+// Posts públicos (solo lectura)
 Route::get('/posts', [PostController::class, 'index']);
-Route::post('/posts', [PostController::class, 'store']);
 Route::get('/posts/{post}', [PostController::class, 'show']);
-Route::delete('/posts/{post}', [PostController::class, 'destroy']);
-// Rutas protegidas (requieren autenticación)
+
+// Rutas protegidas (requieren autenticación con token Sanctum)
 Route::middleware('auth:sanctum')->group(function () {
     // Autenticación
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
-    
+    Route::get('/auth/user', [AuthController::class, 'me']); // Alias para compatibilidad
+
+    // Posts protegidos (crear y eliminar requieren autenticación)
+    Route::post('/posts', [PostController::class, 'store']);
+    Route::delete('/posts/{post}', [PostController::class, 'destroy']);
+
     // Usuarios
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/search', [UserController::class, 'search']);
     Route::get('/users/{user}', [UserController::class, 'show']);
 });
 
-// Ruta de prueba de la APIii
+// Ruta de prueba de la API
 Route::get('/test', function () {
     return response()->json([
         'success' => true,

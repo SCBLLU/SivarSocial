@@ -100,9 +100,12 @@ class PostController extends Controller
             // Creo el nuevo post y asigno los datos básicos
             $post = new Post();
             $post->user_id = Auth::id(); // Obtengo el ID del usuario autenticado por token
-            $post->descripcion = $request->descripcion;
             $post->tipo = $request->tipo;
-            $post->texto = $request->texto;
+            
+            // Descripción opcional - solo asigno si tiene valor
+            if ($request->filled('descripcion')) {
+                $post->descripcion = $request->descripcion;
+            }
 
             // Si el post incluye una imagen, la proceso y guardo
             if ($request->hasFile('imagen')) {
@@ -112,19 +115,20 @@ class PostController extends Controller
                 // Muevo la imagen a la carpeta public/uploads
                 $imagen->move(public_path('uploads'), $nombreImagen);
                 $post->imagen = $nombreImagen;
-                $post->imagen_url = url('uploads/' . $nombreImagen); // Genero URL absoluta
             }
 
-            // Si es un post de música, guardo los metadatos adicionales
+            // Campos específicos por tipo de post
             if ($request->tipo === 'musica') {
-                $post->artista = $request->artista;
-                $post->titulo = $request->titulo;
-                $post->album = $request->album;
-            }
-
-            // Si el post es de texto simple, se guada en la columna de texto xd
-            if ($request->tipo === 'texto') {
-                $post->texto = $request->texto;
+                // Solo asigno los campos que tengan valor
+                if ($request->filled('titulo')) $post->titulo = $request->titulo;
+                if ($request->filled('artista')) $post->artista = $request->artista;
+                if ($request->filled('album')) $post->album = $request->album;
+            } elseif ($request->tipo === 'imagen') {
+                // Para posts de imagen, solo el título es relevante
+                if ($request->filled('titulo')) $post->titulo = $request->titulo;
+            } elseif ($request->tipo === 'texto') {
+                // Para posts de texto, guardo el contenido
+                if ($request->filled('texto')) $post->texto = $request->texto;
             }
 
             // Guardo el post en la base de datos
