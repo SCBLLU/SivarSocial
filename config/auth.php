@@ -41,6 +41,11 @@ return [
             'provider' => 'users',
         ],
 
+        'api' => [
+            'driver' => 'sanctum', // ← Importante
+            'provider' => 'users',
+        ],
+
         'super' => [
             'driver' => 'session',
             'provider' => 'su_ad',
