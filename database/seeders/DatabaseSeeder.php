@@ -21,6 +21,9 @@ class DatabaseSeeder extends Seeder
             ComentarioSeeder::class, // Comentarios en los posts
             LikeSeeder::class,       // Likes en posts
             FollowerSeeder::class,   // Relaciones de seguimiento
+            UniversidadSeeder::class,
+            CarreraSeeder::class,
+            CarreraUniversidadSeeder::class,
         ]);
         
         $this->command->info('✅ Base de datos poblada exitosamente!');
