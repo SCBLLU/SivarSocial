@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\Comentario;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,13 @@ use Illuminate\Support\Facades\Log;
 
 class ComentarioController extends Controller
 {
+    protected $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -78,6 +86,15 @@ class ComentarioController extends Controller
             }
 
             DB::commit();
+
+            // Crear notificación (solo si no es el dueño del post)
+            if ($post->user_id !== Auth::id()) {
+                $this->notificationService->createCommentNotification(
+                    Auth::user(),
+                    $post,
+                    $request->comentario
+                );
+            }
 
             return back()->with('success', 'Comentario agregado correctamente');
         } catch (ValidationException $ve) {

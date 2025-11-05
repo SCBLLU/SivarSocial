@@ -19,7 +19,15 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'http://localhost:8100',
+        'http://192.168.1.3:8100',
+        'capacitor://localhost',
+        'ionic://localhost',
+        'http://localhost',
+        'http://192.168.1.3',
+        '*' // Solo para desarrollo, en producción especifica las IPs exactas
+    ],
 
     'allowed_origins_patterns' => [],
 
