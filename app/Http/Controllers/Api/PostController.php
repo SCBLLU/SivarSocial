@@ -36,6 +36,10 @@ class PostController extends Controller
                 if ($post->imagen) {
                     $post->imagen_url = url('uploads/' . $post->imagen);
                 }
+                // Solo agrego la URL si el post tiene un archivo
+                if ($post->archivo) {
+                    $post->archivo_url = url('files/' . $post->archivo);
+                }
                 // Agrego también la imagen de perfil del usuario que creó el post
                 if ($post->user && $post->user->imagen) {
                     $post->user->imagen_url = url('perfiles/' . $post->user->imagen);
@@ -89,6 +93,7 @@ class PostController extends Controller
                 'descripcion' => 'nullable|string|max:500', // La descripción es opcional
                 'tipo' => 'required|in:imagen,musica,texto', // Solo acepto estos tres tipos
                 'imagen' => 'required_if:tipo,imagen|image|max:20480', // 20MB max para imágenes
+                'archivo' => 'nullable|mimes:pdf,doc,docx,zip|max:5120', // 5MB
                 // Campos específicos para posts de música
                 'artista' => 'nullable|string|max:255',
                 'titulo' => 'nullable|string|max:255',
@@ -117,6 +122,13 @@ class PostController extends Controller
                 $post->imagen = $nombreImagen;
             }
 
+            if ($request->hasFile('archivo')) {
+                $file = $request->file('archivo');
+                $nombreArchivo = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('files'), $nombreArchivo);
+                $post->archivo = $nombreArchivo;
+            }
+
             // Campos específicos por tipo de post
             if ($request->tipo === 'musica') {
                 // Solo asigno los campos que tengan valor
@@ -141,6 +153,11 @@ class PostController extends Controller
             // Agrego la URL completa de la imagen del post para la app móvil
             if ($post->imagen) {
                 $post->imagen_url = url('uploads/' . $post->imagen);
+            }
+
+            // Agrega la url completa del archivo del post para la app movil
+            if($post->archivo){
+                $post->archivo_url = url('files/' . $post->archivo);
             }
 
             // Agrego también la imagen de perfil del usuario
@@ -180,6 +197,11 @@ class PostController extends Controller
             // Si el post tiene imagen, agrego la URL completa con dominio
             if ($post->imagen) {
                 $post->imagen_url = url('uploads/' . $post->imagen);
+            }
+
+            // Solo agrego la URL si el post tiene un archivo
+            if ($post->archivo) {
+                $post->archivo_url = url('files/' . $post->archivo);
             }
 
             // Agrego la imagen de perfil del usuario del post

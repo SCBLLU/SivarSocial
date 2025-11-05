@@ -15,6 +15,7 @@ class Post extends Model
         'titulo',
         'descripcion',
         'imagen',
+        'archivo',
         'user_id',
         'tipo',
         'visibility',
