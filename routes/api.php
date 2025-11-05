@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +41,25 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/search', [UserController::class, 'search']);
     Route::get('/users/{user}', [UserController::class, 'show']);
+
+    // Notificaciones
+    Route::prefix('notifications')->group(function () {
+        // Listar notificaciones
+        Route::get('/', [NotificationController::class, 'index']);
+        
+        // Conteo de notificaciones no leídas
+        Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
+        
+        // Marcar notificación como leída
+        Route::post('/{notification}/mark-read', [NotificationController::class, 'markAsRead']);
+        
+        // Marcar todas como leídas
+        Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+        
+        // Registrar/desregistrar token de dispositivo
+        Route::post('/register-device', [NotificationController::class, 'registerDevice']);
+        Route::post('/unregister-device', [NotificationController::class, 'unregisterDevice']);
+    });
 });
 
 // Ruta de prueba de la API
