@@ -71,6 +71,11 @@ class Post extends Model
         return $this->tipo === 'imagen';
     }
 
+    public function isFilePost()
+    {
+        return $this->tipo === 'archivo';
+    }
+
     /**
      * Obtener el nombre de la canción (solo iTunes)
      */

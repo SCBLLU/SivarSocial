@@ -91,7 +91,7 @@ class PostController extends Controller
             // Valido todos los campos según el tipo de post que quiere crear
             $request->validate([
                 'descripcion' => 'nullable|string|max:500', // La descripción es opcional
-                'tipo' => 'required|in:imagen,musica,texto', // Solo acepto estos tres tipos
+                'tipo' => 'required|in:imagen,musica,texto,archivo',
                 'imagen' => 'required_if:tipo,imagen|image|max:20480', // 20MB max para imágenes
                 'archivo' => 'nullable|mimes:pdf,doc,docx,zip|max:5120', // 5MB
                 // Campos específicos para posts de música
@@ -106,7 +106,7 @@ class PostController extends Controller
             $post = new Post();
             $post->user_id = Auth::id(); // Obtengo el ID del usuario autenticado por token
             $post->tipo = $request->tipo;
-            
+
             // Descripción opcional - solo asigno si tiene valor
             if ($request->filled('descripcion')) {
                 $post->descripcion = $request->descripcion;
@@ -141,6 +141,9 @@ class PostController extends Controller
             } elseif ($request->tipo === 'texto') {
                 // Para posts de texto, guardo el contenido
                 if ($request->filled('texto')) $post->texto = $request->texto;
+            } elseif ($request->tipo === 'archivo') {
+                // Para posts de archivo, guardo el título
+                if ($request->filled('titulo')) $post->titulo = $request->titulo;
             }
 
             // Guardo el post en la base de datos
@@ -156,7 +159,7 @@ class PostController extends Controller
             }
 
             // Agrega la url completa del archivo del post para la app movil
-            if($post->archivo){
+            if ($post->archivo) {
                 $post->archivo_url = url('files/' . $post->archivo);
             }
 
