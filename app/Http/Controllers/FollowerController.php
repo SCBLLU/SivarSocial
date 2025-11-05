@@ -4,11 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Follower;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class FollowerController extends Controller
 {
+    protected $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -32,6 +40,10 @@ class FollowerController extends Controller
     {
         // El usuario autenticado sigue al usuario recibido
         $user->followers()->attach(Auth::id());
+        
+        // Crear notificación
+        $this->notificationService->createFollowNotification(Auth::user(), $user);
+        
         return back();
     }
 
@@ -93,6 +105,9 @@ class FollowerController extends Controller
 
             // El usuario autenticado sigue al usuario recibido
             $user->followers()->attach(Auth::id());
+
+            // Crear notificación
+            $this->notificationService->createFollowNotification(Auth::user(), $user);
 
             return response()->json([
                 'success' => true,

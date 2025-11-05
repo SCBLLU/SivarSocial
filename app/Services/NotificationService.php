@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\Post;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class NotificationService
 {
@@ -19,18 +21,36 @@ class NotificationService
             return null;
         }
 
-        // Crear notificación para cada acción de follow (estilo Instagram)
-        // Cada seguimiento genera una notificación independiente
-        return Notification::create([
-            'user_id' => $followed->id,
-            'from_user_id' => $follower->id,
-            'type' => Notification::TYPE_FOLLOW,
-            'data' => [
-                'follower_username' => $follower->username,
-                'follower_name' => $follower->name,
-                'follower_image' => $follower->imagen
-            ]
-        ]);
+        try {
+            // Crear notificación en la base de datos
+            $notification = Notification::create([
+                'user_id' => $followed->id,
+                'from_user_id' => $follower->id,
+                'type' => Notification::TYPE_FOLLOW,
+                'data' => [
+                    'follower_username' => $follower->username,
+                    'follower_name' => $follower->name,
+                    'follower_image' => $follower->imagen
+                ]
+            ]);
+
+            // Enviar notificación push
+            NotificationController::sendPushNotification(
+                $followed->id,
+                'Nuevo seguidor',
+                "{$follower->name} empezó a seguirte",
+                [
+                    'type' => 'follow',
+                    'user_id' => (string) $follower->id,
+                    'notification_id' => (string) $notification->id
+                ]
+            );
+
+            return $notification;
+        } catch (\Exception $e) {
+            Log::error('Error creating follow notification: ' . $e->getMessage());
+            return null;
+        }
     }
 
     /**
@@ -43,21 +63,40 @@ class NotificationService
             return null;
         }
 
-        // Crear notificación para cada acción de like (estilo Instagram)
-        // Cada like genera una notificación independiente
-        return Notification::create([
-            'user_id' => $post->user_id,
-            'from_user_id' => $liker->id,
-            'type' => Notification::TYPE_LIKE,
-            'post_id' => $post->id,
-            'data' => [
-                'liker_username' => $liker->username,
-                'liker_name' => $liker->name,
-                'liker_image' => $liker->imagen,
-                'post_title' => $post->titulo ?? '',
-                'post_image' => $post->imagen ?? null
-            ]
-        ]);
+        try {
+            // Crear notificación en la base de datos
+            $notification = Notification::create([
+                'user_id' => $post->user_id,
+                'from_user_id' => $liker->id,
+                'type' => Notification::TYPE_LIKE,
+                'post_id' => $post->id,
+                'data' => [
+                    'liker_username' => $liker->username,
+                    'liker_name' => $liker->name,
+                    'liker_image' => $liker->imagen,
+                    'post_title' => $post->titulo ?? '',
+                    'post_image' => $post->imagen ?? null
+                ]
+            ]);
+
+            // Enviar notificación push
+            NotificationController::sendPushNotification(
+                $post->user_id,
+                'Nuevo like',
+                "{$liker->name} le dio like a tu publicación",
+                [
+                    'type' => 'like',
+                    'post_id' => (string) $post->id,
+                    'user_id' => (string) $liker->id,
+                    'notification_id' => (string) $notification->id
+                ]
+            );
+
+            return $notification;
+        } catch (\Exception $e) {
+            Log::error('Error creating like notification: ' . $e->getMessage());
+            return null;
+        }
     }
 
     /**
@@ -70,24 +109,52 @@ class NotificationService
             return null;
         }
 
-        // Para comentarios, no verificamos duplicados ya que cada comentario
-        // es una interacción única que merece su propia notificación
-        // (a diferencia de los likes donde solo hay uno por usuario/post)
+        try {
+            $commentPreview = null;
+            if ($commentText) {
+                $commentPreview = strlen($commentText) > 100 
+                    ? substr($commentText, 0, 100) . '...' 
+                    : $commentText;
+            }
 
-        return Notification::create([
-            'user_id' => $post->user_id,
-            'from_user_id' => $commenter->id,
-            'type' => Notification::TYPE_COMMENT,
-            'post_id' => $post->id,
-            'data' => [
-                'commenter_username' => $commenter->username,
-                'commenter_name' => $commenter->name,
-                'commenter_image' => $commenter->imagen,
-                'post_title' => $post->titulo ?? '',
-                'post_image' => $post->imagen ?? null,
-                'comment_preview' => $commentText ? substr($commentText, 0, 100) . (strlen($commentText) > 100 ? '...' : '') : null
-            ]
-        ]);
+            // Crear notificación en la base de datos
+            $notification = Notification::create([
+                'user_id' => $post->user_id,
+                'from_user_id' => $commenter->id,
+                'type' => Notification::TYPE_COMMENT,
+                'post_id' => $post->id,
+                'data' => [
+                    'commenter_username' => $commenter->username,
+                    'commenter_name' => $commenter->name,
+                    'commenter_image' => $commenter->imagen,
+                    'post_title' => $post->titulo ?? '',
+                    'post_image' => $post->imagen ?? null,
+                    'comment_preview' => $commentPreview
+                ]
+            ]);
+
+            // Enviar notificación push
+            $pushBody = $commentPreview 
+                ? "{$commenter->name}: {$commentPreview}"
+                : "{$commenter->name} comentó tu publicación";
+
+            NotificationController::sendPushNotification(
+                $post->user_id,
+                'Nuevo comentario',
+                $pushBody,
+                [
+                    'type' => 'comment',
+                    'post_id' => (string) $post->id,
+                    'user_id' => (string) $commenter->id,
+                    'notification_id' => (string) $notification->id
+                ]
+            );
+
+            return $notification;
+        } catch (\Exception $e) {
+            Log::error('Error creating comment notification: ' . $e->getMessage());
+            return null;
+        }
     }
 
     /**
