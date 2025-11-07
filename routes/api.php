@@ -51,6 +51,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']); // Marcar todas como leídas
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy']); // Eliminar una notificación
     Route::delete('/notifications/clear-read', [NotificationController::class, 'clearRead']); // Limpiar leídas
+
+    // Push Notifications - Registro de tokens de dispositivo
+    Route::post('/notifications/register-device', [NotificationController::class, 'registerDevice']); // Registrar token FCM
+    Route::post('/notifications/unregister-device', [NotificationController::class, 'unregisterDevice']); // Desregistrar token FCM
 });
 
 // Ruta de prueba de la API

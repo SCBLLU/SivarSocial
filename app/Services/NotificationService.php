@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\Post;
-use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Api\NotificationController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -112,8 +112,8 @@ class NotificationService
         try {
             $commentPreview = null;
             if ($commentText) {
-                $commentPreview = strlen($commentText) > 100 
-                    ? substr($commentText, 0, 100) . '...' 
+                $commentPreview = strlen($commentText) > 100
+                    ? substr($commentText, 0, 100) . '...'
                     : $commentText;
             }
 
@@ -134,7 +134,7 @@ class NotificationService
             ]);
 
             // Enviar notificación push
-            $pushBody = $commentPreview 
+            $pushBody = $commentPreview
                 ? "{$commenter->name}: {$commentPreview}"
                 : "{$commenter->name} comentó tu publicación";
 
