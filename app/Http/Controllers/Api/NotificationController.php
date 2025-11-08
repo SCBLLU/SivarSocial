@@ -608,14 +608,16 @@ class NotificationController extends Controller
                         'title' => $title,
                         'body' => $body,
                     ],
-                    'data' => $stringData,
+                    'data' => array_merge($stringData, [
+                        'click_action' => 'NOTIFICATION_CLICK' // AGREGAR AQUÍ TAMBIÉN
+                    ]),
                     'android' => [
                         'priority' => 'high',
                         'notification' => [
                             'sound' => 'default',
-                            'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                            'click_action' => 'NOTIFICATION_CLICK', // Ya está bien
                             'channel_id' => 'default',
-                            'icon' => 'push_icon', // Nombre del archivo sin extensión
+                            'icon' => 'push_icon',
                             'color' => '#6200EA'
                         ]
                     ],
