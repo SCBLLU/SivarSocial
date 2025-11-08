@@ -614,7 +614,9 @@ class NotificationController extends Controller
                         'notification' => [
                             'sound' => 'default',
                             'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
-                            'channel_id' => 'default'
+                            'channel_id' => 'default',
+                            'icon' => 'push_icon', // Nombre del archivo sin extensión
+                            'color' => '#6200EA'
                         ]
                     ],
                     'apns' => [
