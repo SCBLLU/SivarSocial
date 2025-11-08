@@ -44,6 +44,7 @@
 
 /* Asegurar que el texto sea visible en todos los inputs */
 input[type="text"],
+textarea,
 input[type="email"],
 input[type="password"] {
     color: #1f2937 !important;

@@ -6,41 +6,42 @@
     </form>
     <!-- Área de subida principal -->
     <div id="upload-area"
-        class="border-2 border-dashed border-gray-300 rounded-xl p-8 transition-all hover:border-blue-400 hover:bg-blue-50/50 cursor-pointer">
+        class="border-2 border-dashed border-gray-300 rounded-2xl p-12 transition-all hover:border-blue-500 hover:bg-blue-50 cursor-pointer bg-gray-50">
         <div class="flex flex-col items-center gap-4">
-            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                <i class="fas fa-cloud-upload-alt text-blue-500 text-2xl"></i>
-            </div>
+            <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-2"></i>
             <div>
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">Subir Foto</h3>
-                <p class="text-gray-600 text-sm">
+                <p class="text-gray-700 font-semibold mb-2">
                     <span class="hidden md:inline">Arrastra una imagen aquí o </span>
-                    <span class="text-blue-500 font-medium">haz clic para seleccionar</span>
+                    <span class="text-blue-600">haz clic para seleccionar</span>
                 </p>
-                <p class="text-gray-400 text-xs mt-1">JPG, PNG hasta 20MB • Se ajustará automáticamente a 1:1</p>
+                <p class="text-gray-500 text-sm">JPG, PNG hasta 20MB</p>
+                <p class="text-xs text-gray-400 mt-2">• Se ajustará automáticamente a formato 1:1</p>
             </div>
         </div>
     </div>
     <!-- Opciones adicionales para móvil -->
-    <div class="mobile-only-controls mt-4 gap-3 justify-center hidden">
+    <div class="mobile-only-controls mt-6 gap-3 justify-center hidden">
         <button type="button" id="open-camera"
-            class="flex-1 bg-blue-500 text-white px-4 py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors">
-            <i class="fas fa-camera"></i>
+            class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md">
+            <i class="fas fa-camera text-lg"></i>
             Tomar Foto
         </button>
     </div>
     <!-- Input oculto para archivos -->
     <input type="file" id="file-input" accept="image/*" class="hidden">
     <!-- Preview de imagen -->
-    <div id="image-preview" class="hidden mt-6">
+    <div id="image-preview" class="hidden mt-8">
         <div class="relative inline-block">
-            <img id="preview-img" class="w-64 h-64 object-cover rounded-xl shadow-lg mx-auto" alt="Preview">
+            <img id="preview-img" class="w-full max-w-md h-auto object-cover rounded-2xl shadow-xl mx-auto border-4 border-white" alt="Preview">
             <button type="button" id="remove-image"
-                class="absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors">
-                <i class="fas fa-times text-sm"></i>
+                class="absolute -top-3 -right-3 w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-all shadow-lg hover:scale-110">
+                <i class="fas fa-times text-lg"></i>
             </button>
         </div>
-        <p class="text-sm text-gray-600 mt-2">Imagen seleccionada</p>
+        <div class="flex items-center justify-center gap-2 mt-4 text-sm text-green-600">
+            <i class="fas fa-check-circle"></i>
+            <span class="font-semibold">Imagen lista para publicar</span>
+        </div>
     </div>
 </div>
 <script>

@@ -132,10 +132,12 @@
                                         <div class="flex-1 min-w-0">
                                             <div class="track-title-container">
                                                 <div class="scrollable-title-wrapper">
-                                                    <span class="track-title text-white font-bold text-lg sm:text-xl mb-1 scrollable-title">
+                                                    <span
+                                                        class="track-title text-white font-bold text-lg sm:text-xl mb-1 scrollable-title">
                                                         {{ $trackName ?: 'Canción desconocida' }}
                                                     </span>
-                                                    <span class="track-title text-white font-bold text-lg sm:text-xl mb-1 scrollable-title clone">
+                                                    <span
+                                                        class="track-title text-white font-bold text-lg sm:text-xl mb-1 scrollable-title clone">
                                                         {{ $trackName ?: 'Canción desconocida' }}
                                                     </span>
                                                 </div>
@@ -143,26 +145,29 @@
 
                                             <div class="track-title-container">
                                                 <div class="scrollable-title-wrapper">
-                                                    <span class="track-title text-gray-300 text-sm sm:text-base mb-2 scrollable-title">
+                                                    <span
+                                                        class="track-title text-gray-300 text-sm sm:text-base mb-2 scrollable-title">
                                                         {{ $artistName ?: 'Artista desconocido' }}
                                                     </span>
-                                                    <span class="track-title text-gray-300 text-sm sm:text-base mb-2 scrollable-title clone">
+                                                    <span
+                                                        class="track-title text-gray-300 text-sm sm:text-base mb-2 scrollable-title clone">
                                                         {{ $artistName ?: 'Artista desconocido' }}
                                                     </span>
                                                 </div>
                                             </div>
 
                                             @if($albumName)
-                                            <div class="track-title-container">
-                                                <div class="scrollable-title-wrapper">
-                                                    <span class="track-title text-gray-400 text-xs sm:text-sm scrollable-title">
-                                                        {{ $albumName }}
-                                                    </span>
-                                                    <span class="track-title text-gray-400 text-xs sm:text-sm scrollable-title clone">
-                                                        {{ $albumName }}
-                                                    </span>
+                                                <div class="track-title-container">
+                                                    <div class="scrollable-title-wrapper">
+                                                        <span class="track-title text-gray-400 text-xs sm:text-sm scrollable-title">
+                                                            {{ $albumName }}
+                                                        </span>
+                                                        <span
+                                                            class="track-title text-gray-400 text-xs sm:text-sm scrollable-title clone">
+                                                            {{ $albumName }}
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                            </div>
                                             @endif
                                         </div>
 
@@ -174,19 +179,19 @@
                                             <!-- Barra de progreso responsive -->
                                             <div class="space-y-2 sm:space-y-3">
                                                 <div class="progress-container relative bg-white/20 hover:bg-white/30 rounded-full 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    h-1.5 sm:h-2 cursor-pointer transition-all duration-200"
                                                     id="progress-container">
                                                     <div id="progress-bar"
                                                         class="absolute left-0 top-0 h-full bg-white rounded-full 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                transition-all duration-100 ease-out"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        transition-all duration-100 ease-out"
                                                         style="width: 0%">
                                                     </div>
                                                     <!-- Punto de progreso -->
                                                     <div id="progress-thumb"
                                                         class="absolute w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                shadow-lg transform -translate-y-1/2 translate-x-1/2 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                opacity-0 transition-all duration-200 ease-out
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                hover:scale-110 active:scale-95"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        shadow-lg transform -translate-y-1/2 translate-x-1/2 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        opacity-0 transition-all duration-200 ease-out
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        hover:scale-110 active:scale-95"
                                                         style="left: 0%; top: 50%"></div>
                                                 </div>
 
@@ -272,6 +277,203 @@
                         @auth
                             @if ($post->user_id === Auth::user()->id)
                                 <form id="deleteMusicForm" action="{{ route('posts.destroy', $post) }}" method="POST" class="hidden">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                            @endif
+                        @endauth
+                    </div>
+
+                @elseif($post->tipo === 'texto')
+                    <!-- Post de texto -->
+                    <div id="post-container"
+                        class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col max-h-[85vh] overflow-hidden">
+                        <!-- Header usando componente reutilizable -->
+                        <x-post-header :post="$post" :showMenu="true" :showFollowButton="false">
+                            <div class="relative" x-data="{ showTextMenu: false }" @close-menus.window="showTextMenu = false">
+                                <button @click="showTextMenu = !showTextMenu"
+                                    class="p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                    </svg>
+                                </button>
+
+                                <div x-show="showTextMenu" x-cloak @click.away="showTextMenu = false" x-transition
+                                    class="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1">
+                                    <a href="{{ route('posts.edit', $post) }}"
+                                        class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                            </path>
+                                        </svg>
+                                        Editar
+                                    </a>
+                                    <hr class="my-1">
+                                    <button onclick="openDeleteModal()"
+                                        class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16">
+                                            </path>
+                                        </svg>
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </x-post-header>
+
+                        <!-- Contenido del texto -->
+                        <div class="w-full p-8 bg-gradient-to-br from-gray-50 to-white overflow-y-auto flex-1">
+                            @if($post->titulo)
+                                <h2 class="text-2xl font-bold text-gray-900 mb-4">{{ $post->titulo }}</h2>
+                            @endif
+                            <div class="prose prose-lg max-w-none">
+                                <p class="text-gray-800 leading-relaxed whitespace-pre-wrap">{{ $post->texto }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Acciones -->
+                        <div class="w-full px-4 py-3 border-t border-gray-100">
+                            <div class="flex items-center justify-end gap-4">
+                                <livewire:comment-post :post="$post" color="gray" />
+                                <livewire:like-post :post="$post" color="red" />
+                            </div>
+                        </div>
+
+                        @auth
+                            @if ($post->user_id === Auth::user()->id)
+                                <form id="deleteTextForm" action="{{ route('posts.destroy', $post) }}" method="POST" class="hidden">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                            @endif
+                        @endauth
+                    </div>
+
+                @elseif($post->tipo === 'archivo')
+                    <!-- Post de archivo -->
+                    <div id="post-container"
+                        class="bg-white rounded-2xl shadow-lg w-full lg:max-w-md flex flex-col mt-4 lg:mt-0">
+                        <!-- Header usando componente reutilizable -->
+                        <x-post-header :post="$post" :showMenu="true" :showFollowButton="false">
+                            <div class="relative" x-data="{ showFileMenu: false }" @close-menus.window="showFileMenu = false">
+                                <button @click="showFileMenu = !showFileMenu"
+                                    class="p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                    </svg>
+                                </button>
+
+                                <!-- Dropdown menu -->
+                                <div x-show="showFileMenu" x-cloak @click.away="showFileMenu = false" x-transition
+                                    class="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1">
+
+                                    <!-- Opción Editar -->
+                                    <a href="{{ route('posts.edit', $post) }}"
+                                        class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                            </path>
+                                        </svg>
+                                        Editar
+                                    </a>
+
+                                    <!-- Separador -->
+                                    <hr class="my-1">
+
+                                    <!-- Opción Eliminar -->
+                                    <button onclick="openDeleteModal()"
+                                        class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16">
+                                            </path>
+                                        </svg>
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </x-post-header>
+
+                        <!-- Contenido del archivo principal -->
+                        <div class="w-full p-6 bg-gradient-to-br from-blue-50 to-indigo-50 relative overflow-hidden">
+                            @php
+                                $extension = pathinfo($post->archivo, PATHINFO_EXTENSION);
+                                $iconClass = match (strtolower($extension)) {
+                                    'pdf' => 'fa-file-pdf',
+                                    'doc', 'docx' => 'fa-file-word',
+                                    'xls', 'xlsx' => 'fa-file-excel',
+                                    'txt' => 'fa-file-alt',
+                                    default => 'fa-file'
+                                };
+                            @endphp
+
+                            <!-- Contenido del archivo -->
+                            <div class="flex flex-col items-center justify-center relative z-10">
+                                <!-- Ícono del archivo -->
+                                <div class="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center shadow-md mb-3">
+                                    <i class="fas {{ $iconClass }} text-3xl text-white"></i>
+                                </div>
+
+                                <!-- Nombre del archivo -->
+                                <p class="text-gray-900 font-medium text-center mb-1 px-4 text-sm">
+                                    {{ $post->archivo_nombre_original ?? $post->archivo }}
+                                </p>
+                                <p class="text-gray-500 text-xs mb-4">Documento adjunto</p>
+
+                                <!-- Botones de acción -->
+                                <div class="flex gap-2 w-full max-w-xs">
+                                    @if(strtolower(pathinfo($post->archivo, PATHINFO_EXTENSION)) === 'pdf')
+                                        <button
+                                            onclick="openFilePreview('{{ route('archivos.preview', $post->archivo) }}', '{{ $post->titulo ?? $post->archivo }}')"
+                                            class="flex-1 bg-[#3B25DD] hover:bg-[#120073] text-white font-medium rounded-full border border-[#3B25DD] py-2 px-4 transition-all duration-200 flex items-center justify-center gap-2 text-sm">
+                                            <i class="fas fa-eye text-xs"></i>
+                                            <span>Vista previa</span>
+                                        </button>
+                                    @endif
+                                    <a href="{{ route('archivos.download', $post->archivo) }}"
+                                        class="flex-1 bg-[#3B25DD] hover:bg-[#120073] text-white font-medium rounded-full border border-[#3B25DD] py-2 px-4 transition-all duration-200 flex items-center justify-center gap-2 text-sm">Descargar
+                                        <i class="fas fa-download text-xs"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detalles debajo del contenido del archivo -->
+                        <div class="w-full px-4 py-3">
+                            <!-- Layout unificado para móviles y PC: título y acciones en la misma línea -->
+                            <div class="flex items-center justify-between mb-2">
+                                @if($post->titulo)
+                                    <span class="font-semibold text-black text-base sm:text-lg">{{ $post->titulo }}</span>
+                                @elseif($post->descripcion)
+                                    <span class="text-gray-700 text-base sm:text-lg">{{ $post->descripcion }}</span>
+                                @else
+                                    <span></span> <!-- Espacio para alinear las acciones a la derecha -->
+                                @endif
+                                <div class="flex items-center gap-4">
+                                    <livewire:comment-post :post="$post" color="gray" />
+                                    <livewire:like-post :post="$post" color="red" />
+                                </div>
+                            </div>
+
+                            <!-- Descripción abajo solo si tiene título Y descripción -->
+                            @if($post->titulo && $post->descripcion)
+                                <div class="mb-3">
+                                    <p class="text-gray-700 text-xs sm:text-sm">{{ $post->descripcion }}</p>
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Formulario oculto para eliminar posts de archivo -->
+                        @auth
+                            @if ($post->user_id === Auth::user()->id)
+                                <form id="deleteFileForm" action="{{ route('posts.destroy', $post) }}" method="POST" class="hidden">
                                     @csrf
                                     @method('DELETE')
                                 </form>
@@ -399,6 +601,8 @@
                         Esta acción eliminará permanentemente la publicación
                         @if($post->tipo === 'imagen')
                             y la imagen asociada.
+                        @elseif($post->tipo === 'archivo')
+                            y el archivo asociado.
                         @endif
                         <span class="font-semibold text-red-600">No se puede deshacer.</span>
                     </p>
@@ -1376,32 +1580,32 @@
                 const isFollowing = like.isFollowing || false;
 
                 html += `
-                                                                                    <div class="py-3 flex items-center justify-between">
-                                                                                        <div class="flex items-center gap-3">
-                                                                                            <a href="/${user.username}">
-                                                                                                <img src="${avatarUrl}" 
-                                                                                                     alt="${user.username}"
-                                                                                                     class="w-12 h-12 rounded-full object-cover"
-                                                                                                     onerror="this.src='/img/img.jpg'">
-                                                                                            </a>
-                                                                                            <div>
-                                                                                                <a href="/${user.username}" class="block">
-                                                                                                    <p class="font-semibold text-sm text-gray-900">${user.name || user.username}</p>
-                                                                                                    <p class="text-sm text-gray-500">${user.username}</p>
-                                                                                                </a>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        ${currentUserId && currentUserId !== user.id ? `
-                                                                                            <button onclick="toggleFollow(${user.id}, this)" 
-                                                                                                    data-user-id="${user.id}"
-                                                                                                    class="px-4 py-1.5 text-sm font-medium rounded-lg ${isFollowing
+                                                                                            <div class="py-3 flex items-center justify-between">
+                                                                                                <div class="flex items-center gap-3">
+                                                                                                    <a href="/${user.username}">
+                                                                                                        <img src="${avatarUrl}" 
+                                                                                                             alt="${user.username}"
+                                                                                                             class="w-12 h-12 rounded-full object-cover"
+                                                                                                             onerror="this.src='/img/img.jpg'">
+                                                                                                    </a>
+                                                                                                    <div>
+                                                                                                        <a href="/${user.username}" class="block">
+                                                                                                            <p class="font-semibold text-sm text-gray-900">${user.name || user.username}</p>
+                                                                                                            <p class="text-sm text-gray-500">${user.username}</p>
+                                                                                                        </a>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                ${currentUserId && currentUserId !== user.id ? `
+                                                                                                    <button onclick="toggleFollow(${user.id}, this)" 
+                                                                                                            data-user-id="${user.id}"
+                                                                                                            class="px-4 py-1.5 text-sm font-medium rounded-lg ${isFollowing
                             ? 'bg-gray-200 text-gray-700'
                             : 'bg-blue-500 text-white'
                         }">
-                                                                                                <span class="follow-text">${isFollowing ? 'Siguiendo' : 'Seguir'}</span>
-                                                                                            </button>
-                                                                                        ` : ''}
-                                                                                    </div>`;
+                                                                                                        <span class="follow-text">${isFollowing ? 'Siguiendo' : 'Seguir'}</span>
+                                                                                                    </button>
+                                                                                                ` : ''}
+                                                                                            </div>`;
             });
 
             container.innerHTML = html;
@@ -1434,11 +1638,11 @@
 
             // Animación de carga
             button.innerHTML = `
-                                                                                            <div class="flex items-center gap-2">
-                                                                                                <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                                                                                                <span class="text-sm">Procesando...</span>
-                                                                                            </div>
-                                                                                        `;
+                                                                                                    <div class="flex items-center gap-2">
+                                                                                                        <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                                                                                        <span class="text-sm">Procesando...</span>
+                                                                                                    </div>
+                                                                                                `;
 
             performFollowAction(userId, action, button, textElement, iconElement, originalText);
         }
@@ -1640,7 +1844,62 @@
                 }
             }
         });
+
+        // Función para abrir la vista previa de archivos PDF
+        function openFilePreview(url, title) {
+            const modal = document.getElementById('filePreviewModal');
+            const iframe = document.getElementById('filePreviewIframe');
+            const modalTitle = document.getElementById('filePreviewTitle');
+
+            if (modal && iframe && modalTitle) {
+                modalTitle.textContent = title;
+                iframe.src = url;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeFilePreview() {
+            const modal = document.getElementById('filePreviewModal');
+            const iframe = document.getElementById('filePreviewIframe');
+
+            if (modal && iframe) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                iframe.src = '';
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Cerrar modal al presionar ESC
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeFilePreview();
+            }
+        });
     </script>
+
+    <!-- Modal de vista previa de archivos -->
+    <div id="filePreviewModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-6xl h-[90vh] flex flex-col shadow-2xl">
+            <!-- Header del modal -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <h3 id="filePreviewTitle" class="text-lg font-semibold text-gray-900 truncate pr-4">Vista previa</h3>
+                <button onclick="closeFilePreview()"
+                    class="text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-full">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <!-- Iframe para el PDF -->
+            <div class="flex-1 overflow-hidden">
+                <iframe id="filePreviewIframe" class="w-full h-full border-0" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal de Likes Livewire -->
     <livewire:likes-modal />

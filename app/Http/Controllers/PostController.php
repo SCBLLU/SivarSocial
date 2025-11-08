@@ -81,7 +81,7 @@ class PostController extends Controller
             $request->validate([
                 'titulo' => 'required|max:255',
                 'descripcion' => 'nullable',
-                'tipo' => 'required|in:imagen,musica',
+                'tipo' => 'required|in:imagen,musica,texto,archivo',
                 'visibility' => 'required|in:public,followers',
                 'imagen' => 'required|string',
             ]);
@@ -89,7 +89,7 @@ class PostController extends Controller
             $request->validate([
                 'titulo' => 'nullable|max:255',
                 'descripcion' => 'nullable',
-                'tipo' => 'required|in:imagen,musica',
+                'tipo' => 'required|in:imagen,musica,texto,archivo',
                 'visibility' => 'required|in:public,followers',
                 'music_source' => 'required|in:itunes,spotify',
                 // Campos iTunes
@@ -109,6 +109,21 @@ class PostController extends Controller
             if (empty($request->itunes_track_id)) {
                 return back()->withErrors(['music' => 'Debes seleccionar una canción'])->withInput();
             }
+        } else if ($request->tipo === 'texto') {
+            $request->validate([
+                'titulo' => 'nullable|max:255',
+                'texto' => 'required|max:5000',
+                'tipo' => 'required|in:imagen,musica,texto,archivo',
+                'visibility' => 'required|in:public,followers',
+            ]);
+        } else if ($request->tipo === 'archivo') {
+            $request->validate([
+                'titulo' => 'nullable|max:255',
+                'descripcion' => 'nullable',
+                'tipo' => 'required|in:imagen,musica,texto,archivo',
+                'visibility' => 'required|in:public,followers',
+                'archivo' => 'required|string',
+            ]);
         }
 
         $postData = [
@@ -150,6 +165,11 @@ class PostController extends Controller
                     $searchTerms['track']
                 );
             }
+        } else if ($request->tipo === 'texto') {
+            $postData['texto'] = $request->texto;
+        } else if ($request->tipo === 'archivo') {
+            $postData['archivo'] = $request->archivo;
+            $postData['archivo_nombre_original'] = $request->archivo_nombre_original;
         }
 
         Post::create($postData);
@@ -240,6 +260,14 @@ class PostController extends Controller
             // Para posts de imagen, el título es obligatorio
             $rules['titulo'] = 'required|string|max:255';
             $rules['descripcion'] = 'nullable|string|max:500';
+        } else if ($post->tipo === 'texto') {
+            // Para posts de texto, el texto es obligatorio
+            $rules['titulo'] = 'nullable|string|max:255';
+            $rules['texto'] = 'required|string|max:5000';
+        } else if ($post->tipo === 'archivo') {
+            // Para posts de archivo
+            $rules['titulo'] = 'nullable|string|max:255';
+            $rules['descripcion'] = 'nullable|string|max:500';
         } else {
             // Para posts de música, ambos campos son opcionales
             $rules['titulo'] = 'nullable|string|max:255';
@@ -250,11 +278,19 @@ class PostController extends Controller
         $validatedData = $request->validate($rules);
 
         try {
-            // Actualizar el post
-            $post->update([
+            // Preparar datos para actualizar
+            $updateData = [
                 'titulo' => $validatedData['titulo'] ?? '',
                 'descripcion' => $validatedData['descripcion'] ?? ''
-            ]);
+            ];
+
+            // Si es tipo texto, actualizar el campo texto
+            if ($post->tipo === 'texto' && isset($validatedData['texto'])) {
+                $updateData['texto'] = $validatedData['texto'];
+            }
+
+            // Actualizar el post
+            $post->update($updateData);
 
             return redirect()
                 ->route('posts.show', ['user' => $post->user->username, 'post' => $post->id])

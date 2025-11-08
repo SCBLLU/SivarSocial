@@ -205,6 +205,45 @@ Route::post('/imagenes-perfil', [ImagenController::class, 'storePerfil'])->name(
  */
 Route::delete('/imagenes', [ImagenController::class, 'destroy'])->name('imagenes.destroy');
 
+/**
+ * SUBIDA DE ARCHIVOS
+ * Para posts con archivos adjuntos (PDF, DOC, etc.)
+ */
+Route::post('/archivos', [ImagenController::class, 'storeArchivo'])->name('archivos.store');
+
+/**
+ * DESCARGA DE ARCHIVOS
+ * Descargar archivos adjuntos en posts
+ */
+Route::get('/archivos/{filename}', function ($filename) {
+    $filePath = storage_path('app/public/archivos/' . $filename);
+    
+    if (!file_exists($filePath)) {
+        abort(404, 'Archivo no encontrado');
+    }
+    
+    return response()->download($filePath);
+})->name('archivos.download');
+
+/**
+ * VISTA PREVIA DE ARCHIVOS PDF
+ * Ver archivos PDF sin descargar
+ */
+Route::get('/archivos/preview/{filename}', function ($filename) {
+    $filePath = storage_path('app/public/archivos/' . $filename);
+    
+    if (!file_exists($filePath)) {
+        abort(404, 'Archivo no encontrado');
+    }
+    
+    $mimeType = mime_content_type($filePath);
+    
+    return response()->file($filePath, [
+        'Content-Type' => $mimeType,
+        'Content-Disposition' => 'inline; filename="' . $filename . '"'
+    ]);
+})->name('archivos.preview');
+
 // ============================================================================
 // SISTEMA DE SEGUIMIENTO (FOLLOW/UNFOLLOW)
 // ============================================================================

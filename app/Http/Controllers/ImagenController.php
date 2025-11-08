@@ -145,4 +145,46 @@ class ImagenController extends Controller
 
         return response()->json(['mensaje' => 'Imagen eliminada']);
     }
+
+    // Subida de archivos (PDF, DOC, etc.)
+    public function storeArchivo(Request $request)
+    {
+        try {
+            $request->validate([
+                'archivo' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,txt|max:10240', // 10 MB máximo
+            ]);
+
+            $archivo = $request->file('archivo');
+            $extension = $archivo->getClientOriginalExtension();
+            $nombreOriginal = $archivo->getClientOriginalName();
+            $nombreArchivo = Str::uuid() . '.' . $extension;
+
+            // Guardar en storage/app/public/archivos
+            $path = $archivo->storeAs('archivos', $nombreArchivo, 'public');
+            
+            if (!$path) {
+                throw new \Exception('Error al guardar el archivo');
+            }
+            
+            return response()->json([
+                'archivo' => $nombreArchivo,
+                'nombre_original' => $nombreOriginal,
+                'extension' => $extension,
+                'tamano' => $archivo->getSize(),
+                'url' => asset('storage/archivos/' . $nombreArchivo),
+                'message' => 'Archivo subido correctamente'
+            ], 200);
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'error' => 'Error de validación',
+                'message' => $e->validator->errors()->first()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al subir el archivo',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

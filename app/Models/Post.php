@@ -16,6 +16,7 @@ class Post extends Model
         'descripcion',
         'imagen',
         'archivo',
+        'archivo_nombre_original',
         'user_id',
         'tipo',
         'visibility',
@@ -74,6 +75,11 @@ class Post extends Model
     public function isFilePost()
     {
         return $this->tipo === 'archivo';
+    }
+
+    public function isTextPost()
+    {
+        return $this->tipo === 'texto';
     }
 
     /**
