@@ -45,6 +45,8 @@ class User extends Authenticatable
         'last_activity',
         'is_online',
         'last_seen',
+        'universidad_id',
+        'carrera_id',
     ];
 
     /**
@@ -200,5 +202,23 @@ class User extends Authenticatable
     {
         return $query->where('is_online', true)
             ->where('last_activity', '>', now()->subMinutes(5));
+    }
+
+    /**
+     * Relación con Universidad
+     * Un usuario pertenece a una universidad
+     */
+    public function universidad()
+    {
+        return $this->belongsTo(Universidad::class);
+    }
+
+    /**
+     * Relación con Carrera
+     * Un usuario tiene una carrera
+     */
+    public function carrera()
+    {
+        return $this->belongsTo(Carrera::class);
     }
 }

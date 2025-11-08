@@ -22,8 +22,9 @@ class UserController extends Controller
     {
         try {
             // Selecciono solo los campos necesarios para mejorar el rendimiento
-            // No traigo campos sensibles como email, password, etc.
-            $users = User::select(['id', 'name', 'username', 'imagen', 'profession', 'insignia'])
+            // Incluyo universidad_id y carrera_id para cargar las relaciones
+            $users = User::with(['universidad', 'carrera'])
+                ->select(['id', 'name', 'username', 'imagen', 'insignia', 'universidad_id', 'carrera_id'])
                 ->paginate(20); // Pagino de 20 en 20 para no sobrecargar la app
 
             // Transformo cada usuario para agregar la URL completa de la imagen de perfil  
@@ -60,6 +61,9 @@ class UserController extends Controller
     public function show(User $user)
     {
         try {
+            // Cargo las relaciones de universidad y carrera del usuario
+            $user->load(['universidad', 'carrera']);
+
             // Cargo los posts del usuario con sus relaciones de comentarios y likes
             // Uso una función dentro del load para optimizar y ordenar los posts
             $user->load(['posts' => function ($query) {
@@ -104,9 +108,10 @@ class UserController extends Controller
 
             // Busco usuarios que coincidan en nombre O username (búsqueda flexible)
             // Uso LIKE con % para encontrar coincidencias parciales
-            $users = User::where('name', 'like', "%{$query}%")
+            $users = User::with(['universidad', 'carrera'])
+                ->where('name', 'like', "%{$query}%")
                 ->orWhere('username', 'like', "%{$query}%")
-                ->select(['id', 'name', 'username', 'imagen', 'profession', 'insignia']) // Solo campos necesarios
+                ->select(['id', 'name', 'username', 'imagen', 'insignia', 'universidad_id', 'carrera_id']) // Solo campos necesarios
                 ->take(10) // Limito a 10 resultados para que la búsqueda sea rápida
                 ->get();
 
