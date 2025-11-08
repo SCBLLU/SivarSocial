@@ -16,7 +16,7 @@
         @enderror
     </div>
     <!-- Campo de descripción -->
-    <div class="mb-6">
+    <div class="mb-6" id="descripcion-container">
         <label for="descripcion" class="block text-gray-700 font-medium mb-2">
             <span id="descripcion-label">Descripción</span>
             <span id="descripcion-optional" class="text-sm text-gray-500 font-normal hidden">(Opcional)</span>
@@ -25,6 +25,21 @@
             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none {{ $errors->has('descripcion') ? 'border-red-500' : '' }}"
             placeholder="Cuéntanos más sobre tu publicación...">{{ old('descripcion') }}</textarea>
         @error('descripcion')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <!-- Campo de texto (solo visible para posts tipo texto) -->
+    <div class="mb-6 hidden" id="texto-container">
+        <label for="texto" class="block text-gray-700 font-medium mb-2">
+            <span>Mensaje</span>
+            <span class="text-sm text-red-500 font-normal">*</span>
+        </label>
+        <textarea id="texto" name="texto" rows="2"
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none {{ $errors->has('texto') ? 'border-red-500' : '' }}"
+            placeholder="Comparte cualquier mensaje que quieras transmitir...">{{ old('texto') }}</textarea>
+        <p class="text-sm text-gray-500 mt-1">Máximo 5000 caracteres</p>
+        @error('texto')
             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
         @enderror
     </div>
@@ -116,16 +131,30 @@
         <input name="itunes_country" type="hidden" value="{{ old('itunes_country') }}">
         <input name="itunes_primary_genre_name" type="hidden" value="{{ old('itunes_primary_genre_name') }}">
     </div>
+
+    <!-- Campos ocultos para archivo -->
+    <div id="archivo-fields" class="hidden">
+        <input name="archivo" type="hidden" value="{{ old('archivo') }}">
+        <input name="archivo_nombre_original" type="hidden" value="{{ old('archivo_nombre_original') }}">
+        @error('archivo')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+        @enderror
+    </div>
+
     <!-- Botón de envío -->
     <div class="flex gap-3">
         <button type="submit" id="btn-submit" disabled
-            class="flex-1 bg-[#3B25DD] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-[#2a1a9c] disabled:hover:bg-gray-300 flex items-center justify-center gap-2">
+            class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed hover:from-blue-700 hover:to-indigo-700 disabled:hover:from-gray-300 disabled:hover:to-gray-300 flex items-center justify-center gap-2 shadow-lg disabled:shadow-none">
+            <i class="fas fa-paper-plane text-lg"></i>
             <span id="submit-text">Publicar</span>
         </button>
     </div>
     <!-- Indicador de estado -->
-    <div id="submit-status" class="mt-3 text-center text-sm text-gray-500 hidden">
-        <span id="status-message">Completa los campos requeridos para publicar</span>
+    <div id="submit-status" class="mt-3 text-center text-sm hidden">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-full">
+            <i class="fas fa-info-circle"></i>
+            <span id="status-message">Completa los campos requeridos para publicar</span>
+        </div>
     </div>
 </form>
 <script>
@@ -144,6 +173,7 @@
             let progress = 0;
             let requiredFields = [];
             let completedFields = [];
+            
             if (currentType === 'imagen') {
                 // Para imágenes: imagen y título son obligatorios, descripción es opcional
                 const imagenInput = document.querySelector('input[name="imagen"]');
@@ -152,12 +182,15 @@
                 const hasImage = imagenInput && imagenInput.value.trim() !== '';
                 const hasTitle = tituloInput && tituloInput.value.trim() !== '';
                 const hasDescription = descripcionInput && descripcionInput.value.trim() !== '';
+                
                 requiredFields = ['imagen', 'título'];
                 if (hasImage) completedFields.push('imagen');
                 if (hasTitle) completedFields.push('título');
                 if (hasDescription) completedFields.push('descripción (opcional)');
+                
                 progress = (completedFields.filter(field => !field.includes('opcional')).length / requiredFields.length) * 100;
                 canSubmit = hasImage && hasTitle;
+                
                 // Mensajes dinámicos según progreso
                 if (completedFields.length === 0) {
                     message = 'Selecciona una imagen y agrega título';
@@ -172,16 +205,66 @@
                 const trackIdInput = document.querySelector('input[name="itunes_track_id"]');
                 const trackNameInput = document.querySelector('input[name="itunes_track_name"]');
                 const artistNameInput = document.querySelector('input[name="itunes_artist_name"]');
+                
                 const hasTrackId = trackIdInput && trackIdInput.value.trim() !== '';
                 const hasTrackName = trackNameInput && trackNameInput.value.trim() !== '';
                 const hasArtistName = artistNameInput && artistNameInput.value.trim() !== '';
+                
                 canSubmit = hasTrackId && hasTrackName && hasArtistName;
                 progress = canSubmit ? 100 : 0;
                 message = canSubmit ? 'Listo para publicar' : 'Selecciona una canción para continuar';
+            } else if (currentType === 'texto') {
+                // Para texto: solo el texto es obligatorio
+                const textoInput = document.querySelector('textarea[name="texto"]');
+                const tituloInput = document.querySelector('input[name="titulo"]');
+                
+                const hasTexto = textoInput && textoInput.value.trim() !== '';
+                const hasTitle = tituloInput && tituloInput.value.trim() !== '';
+                
+                requiredFields = ['texto'];
+                if (hasTexto) completedFields.push('texto');
+                if (hasTitle) completedFields.push('título (opcional)');
+                
+                progress = hasTexto ? 100 : 0;
+                canSubmit = hasTexto;
+                
+                if (hasTexto) {
+                    message = 'Listo para publicar';
+                } else {
+                    message = 'Escribe tu texto para continuar';
+                }
+            } else if (currentType === 'archivo') {
+                // Para archivo: archivo y título son obligatorios
+                const archivoInput = document.querySelector('input[name="archivo"]');
+                const tituloInput = document.querySelector('input[name="titulo"]');
+                const descripcionInput = document.querySelector('textarea[name="descripcion"]');
+                
+                const hasArchivo = archivoInput && archivoInput.value.trim() !== '';
+                const hasTitle = tituloInput && tituloInput.value.trim() !== '';
+                const hasDescription = descripcionInput && descripcionInput.value.trim() !== '';
+                
+                requiredFields = ['archivo', 'título'];
+                if (hasArchivo) completedFields.push('archivo');
+                if (hasTitle) completedFields.push('título');
+                if (hasDescription) completedFields.push('descripción (opcional)');
+                
+                progress = (completedFields.filter(field => !field.includes('opcional')).length / requiredFields.length) * 100;
+                canSubmit = hasArchivo && hasTitle;
+                
+                // Mensajes dinámicos según progreso
+                if (completedFields.length === 0) {
+                    message = 'Sube un archivo y agrega título';
+                } else if (completedFields.length === 1) {
+                    const missing = requiredFields.filter(field => !completedFields.includes(field));
+                    message = `Solo falta: ${missing[0]}`;
+                } else {
+                    message = 'Listo para publicar';
+                }
             } else {
                 message = 'Selecciona el tipo de publicación para comenzar';
                 progress = 0;
             }
+            
             // Actualizar botón con animaciones suaves
             updateButtonState(canSubmit, message, progress);
         };

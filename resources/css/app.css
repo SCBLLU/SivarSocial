@@ -44,6 +44,7 @@
 
 /* Asegurar que el texto sea visible en todos los inputs */
 input[type="text"],
+textarea,
 input[type="email"],
 input[type="password"] {
     color: #1f2937 !important;
@@ -115,16 +116,6 @@ input[type="password"] {
     z-index: 1;
 }
 
-#header1{
-    position: fixed;
-    top: 0;
-    z-index: 1;
-    width: 100%;
-}
-
-.m-b{
-    margin-top: 8rem; 
-}
 
 /* Animaciones para fade-in */
 @keyframes fade-in {
@@ -365,14 +356,4 @@ input[type="password"] {
 
 #header.hide-menu {
   bottom: -7rem; /* se desliza hacia abajo */
-}
-
-/*animacion de opacidad de header*/
-#header1{
-    opacity: 1;
-    transition: opacity 0.3s ease-in-out;
-}
-
-#header1.opacity{
-    opacity: 0.5;
 }
