@@ -31,39 +31,68 @@ function switchTab(type) {
 
     // Actualizar campo hidden del tipo de post
     postTipoField.value = type;
+
+    // Obtener elementos comunes
+    const imagenFields = document.getElementById('imagen-fields');
+    const musicaFields = document.getElementById('musica-fields');
+    const archivoFields = document.getElementById('archivo-fields');
+    const tituloContainer = document.querySelector('#titulo').closest('.mb-4'); // Contenedor del título
+    const descripcionContainer = document.getElementById('descripcion-container');
+    const textoContainer = document.getElementById('texto-container');
+    const tituloOptional = document.getElementById('titulo-optional');
+    const descripcionOptional = document.getElementById('descripcion-optional');
+    const tituloInput = document.getElementById('titulo');
+    const descripcionInput = document.getElementById('descripcion');
+
     // Mostrar/ocultar campos del formulario según el tipo de post
     if (type === 'imagen') {
-        const imagenFields = document.getElementById('imagen-fields');
-        const musicaFields = document.getElementById('musica-fields');
-        const tituloOptional = document.getElementById('titulo-optional');
-        const descripcionOptional = document.getElementById('descripcion-optional');
-        const tituloInput = document.getElementById('titulo');
-        const descripcionInput = document.getElementById('descripcion');
-
         if (imagenFields) imagenFields.classList.remove('hidden');
         if (musicaFields) musicaFields.classList.add('hidden');
+        if (archivoFields) archivoFields.classList.add('hidden');
+        if (tituloContainer) tituloContainer.classList.remove('hidden');
+        if (descripcionContainer) descripcionContainer.classList.remove('hidden');
+        if (textoContainer) textoContainer.classList.add('hidden');
         if (tituloOptional) tituloOptional.classList.add('hidden');
         if (descripcionOptional) descripcionOptional.classList.remove('hidden');
 
         // Cambiar placeholders para imagen
         if (tituloInput) tituloInput.placeholder = 'Título de la publicación';
         if (descripcionInput) descripcionInput.placeholder = 'Describe tu publicación (opcional)';
-    } else {
-        const imagenFields = document.getElementById('imagen-fields');
-        const musicaFields = document.getElementById('musica-fields');
-        const tituloOptional = document.getElementById('titulo-optional');
-        const descripcionOptional = document.getElementById('descripcion-optional');
-        const tituloInput = document.getElementById('titulo');
-        const descripcionInput = document.getElementById('descripcion');
-
+    } else if (type === 'musica') {
         if (imagenFields) imagenFields.classList.add('hidden');
         if (musicaFields) musicaFields.classList.remove('hidden');
+        if (archivoFields) archivoFields.classList.add('hidden');
+        if (tituloContainer) tituloContainer.classList.remove('hidden');
+        if (descripcionContainer) descripcionContainer.classList.remove('hidden');
+        if (textoContainer) textoContainer.classList.add('hidden');
         if (tituloOptional) tituloOptional.classList.remove('hidden');
         if (descripcionOptional) descripcionOptional.classList.remove('hidden');
 
         // Cambiar placeholders para música
-        if (tituloInput) tituloInput.placeholder = 'Título de la canción (opcional)';
+        if (tituloInput) tituloInput.placeholder = 'Título personalizado (opcional)';
         if (descripcionInput) descripcionInput.placeholder = 'Describe la música (opcional)';
+    } else if (type === 'texto') {
+        if (imagenFields) imagenFields.classList.add('hidden');
+        if (musicaFields) musicaFields.classList.add('hidden');
+        if (archivoFields) archivoFields.classList.add('hidden');
+        if (tituloContainer) tituloContainer.classList.add('hidden'); // 🔥 OCULTAR TÍTULO
+        if (descripcionContainer) descripcionContainer.classList.add('hidden');
+        if (textoContainer) textoContainer.classList.remove('hidden');
+
+        // No se necesitan placeholders porque el título está oculto
+    } else if (type === 'archivo') {
+        if (imagenFields) imagenFields.classList.add('hidden');
+        if (musicaFields) musicaFields.classList.add('hidden');
+        if (archivoFields) archivoFields.classList.remove('hidden');
+        if (tituloContainer) tituloContainer.classList.remove('hidden');
+        if (descripcionContainer) descripcionContainer.classList.remove('hidden');
+        if (textoContainer) textoContainer.classList.add('hidden');
+        if (tituloOptional) tituloOptional.classList.remove('hidden');
+        if (descripcionOptional) descripcionOptional.classList.remove('hidden');
+
+        // Cambiar placeholders para archivo
+        if (tituloInput) tituloInput.placeholder = 'Título del archivo (opcional)';
+        if (descripcionInput) descripcionInput.placeholder = 'Describe el archivo (opcional)';
     }
 
     // Resetear validación del botón submit
@@ -90,6 +119,14 @@ function updateSubmitButton() {
         const trackIdInput = document.querySelector('[name="itunes_track_id"]');
         const hasTrack = trackIdInput && trackIdInput.value.trim() !== '';
         canSubmit = hasTrack;
+    } else if (currentPostType === 'texto') {
+        const textoInput = document.querySelector('[name="texto"]');
+        const hasTexto = textoInput && textoInput.value.trim() !== '';
+        canSubmit = hasTexto;
+    } else if (currentPostType === 'archivo') {
+        const archivoInput = document.querySelector('[name="archivo"]');
+        const hasArchivo = archivoInput && archivoInput.value.trim() !== '';
+        canSubmit = hasArchivo;
     }
     // Habilitar/deshabilitar botón submit de forma simple
     if (submitBtn) {
@@ -465,11 +502,146 @@ function showNotification(message, type = 'info') {
         }, 300);
     }, 2500);
 }
+
+// Exponer funciones globalmente para que los componentes puedan usarlas
+window.showNotification = showNotification;
+
 // Inicialización cuando el DOM está listo
 document.addEventListener('DOMContentLoaded', function () {
     // Event listeners para tabs
     document.getElementById('tab-imagen')?.addEventListener('click', () => switchTab('imagen'));
     document.getElementById('tab-musica')?.addEventListener('click', () => switchTab('musica'));
+    document.getElementById('tab-texto')?.addEventListener('click', () => switchTab('texto'));
+    document.getElementById('tab-archivo')?.addEventListener('click', () => switchTab('archivo'));
+
+    // Event listener para el campo de texto
+    const textoInput = document.getElementById('texto');
+    if (textoInput) {
+        textoInput.addEventListener('input', updateSubmitButton);
+    }
+
+    // Exponer handleArchivoUpload globalmente para que los componentes puedan usarlo
+    window.handleArchivoUpload = handleArchivoUpload;
+
+    // Función para manejar la subida de archivos
+    function handleArchivoUpload(file) {
+        // Validar tamaño (10MB máximo)
+        const maxSize = 10 * 1024 * 1024;
+        if (file.size > maxSize) {
+            showNotification('El archivo es demasiado grande. Máximo 10MB', 'error');
+            return;
+        }
+
+        // Validar tipo de archivo
+        const allowedTypes = [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'text/plain'
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+            showNotification('Tipo de archivo no permitido. Use PDF, DOC, DOCX, XLS, XLSX o TXT', 'error');
+            return;
+        }
+
+        // Mostrar preview
+        const archivoNombre = document.getElementById('archivo-nombre');
+        const archivoTamano = document.getElementById('archivo-tamano');
+        const archivoPreview = document.getElementById('archivo-preview');
+        const archivoDropzone = document.getElementById('file-dropzone');
+
+        if (archivoNombre && archivoTamano && archivoPreview) {
+            archivoNombre.textContent = file.name;
+            archivoTamano.textContent = formatFileSize(file.size);
+            archivoPreview.classList.remove('hidden');
+            if (archivoDropzone) {
+                archivoDropzone.classList.add('hidden');
+            }
+        }
+
+        // Subir archivo al servidor
+        const formData = new FormData();
+        formData.append('archivo', file);
+
+        // Mostrar indicador de carga
+        const loadingNotification = showNotification('Subiendo archivo...', 'info');
+
+        // Deshabilitar el botón de envío mientras se sube
+        const submitButton = document.getElementById('submitButton');
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = 'Subiendo...';
+        }
+
+        fetch('/archivos', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.message || 'Error al subir el archivo');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.archivo) {
+                    // Guardar nombre del archivo en el servidor en el campo hidden
+                    const archivoHidden = document.querySelector('[name="archivo"]');
+                    const archivoNombreOriginalHidden = document.querySelector('[name="archivo_nombre_original"]');
+
+                    if (archivoHidden) {
+                        archivoHidden.value = data.archivo;
+                    }
+
+                    // Guardar el nombre original del archivo
+                    if (archivoNombreOriginalHidden && data.nombre_original) {
+                        archivoNombreOriginalHidden.value = data.nombre_original;
+                    }
+
+                    updateSubmitButton();
+                    showNotification('Archivo subido correctamente', 'success');
+                } else {
+                    throw new Error('Respuesta inválida del servidor');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification(error.message || 'Error al subir el archivo', 'error');
+                // Limpiar preview en caso de error
+                if (archivoPreview) archivoPreview.classList.add('hidden');
+                if (archivoDropzone) archivoDropzone.classList.remove('hidden');
+                const archivoHidden = document.querySelector('[name="archivo"]');
+                if (archivoHidden) archivoHidden.value = '';
+            })
+            .finally(() => {
+                // Rehabilitar el botón de envío
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Publicar';
+                }
+            });
+    }
+
+    // Función para formatear el tamaño del archivo
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+
+    // Exponer formatFileSize globalmente para que los componentes puedan usarlo
+    window.formatFileSize = formatFileSize;
+
     // Event listener para búsqueda de iTunes con debounce
     const itunesSearch = document.getElementById('itunes-search');
     if (itunesSearch) {
@@ -663,10 +835,10 @@ window.toggleMusicPreview = function (previewUrl, trackId, source) {
 };
 
 //Titulo de canción largo
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const wrappers = document.querySelectorAll(".scrollable-title-wrapper");
 
-    let waiting = new Set(); 
+    let waiting = new Set();
 
     wrappers.forEach((wrapper, index) => {
         const original = wrapper.querySelector(".track-title:not(.clone)");

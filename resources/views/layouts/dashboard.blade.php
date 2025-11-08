@@ -192,6 +192,50 @@
                                         </div>
                                     </div>
                                 </div>
+                            @elseif($post->tipo === 'texto')
+                                {{-- Post de texto --}}
+                                <div class="relative w-full rounded-xl sm:rounded-2xl overflow-hidden shadow-md hover:shadow-xl aspect-square bg-gradient-to-br from-gray-100 to-gray-200">
+                                    <div class="absolute inset-0 p-4 flex flex-col justify-center">
+                                        @if($post->titulo)
+                                            <p class="text-gray-900 font-bold text-sm mb-2 line-clamp-2">{{ $post->titulo }}</p>
+                                        @endif
+                                        <p class="text-gray-700 text-xs line-clamp-4">{{ Str::limit($post->texto, 100) }}</p>
+                                    </div>
+
+                                    {{-- Badge de tipo de contenido --}}
+                                    <div class="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-1.5 py-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+                                        <div class="flex items-center space-x-0.5">
+                                            <div class="w-1 h-1 bg-purple-400 rounded-full animate-pulse"></div>
+                                            <span class="text-white text-[10px] font-medium">Texto</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @elseif($post->tipo === 'archivo')
+                                {{-- Post de archivo --}}
+                                <div class="relative w-full rounded-xl sm:rounded-2xl overflow-hidden shadow-md hover:shadow-xl aspect-square bg-gradient-to-br from-blue-100 to-blue-200">
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center p-4">
+                                        <i class="fas fa-file-alt text-5xl text-blue-600 mb-3"></i>
+                                        <p class="text-gray-700 text-[10px] text-center line-clamp-1 w-full px-2">{{ $post->archivo_nombre_original }}</p>
+                                    </div>
+
+                                    {{-- Overlay con información del archivo --}}
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end justify-between p-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                        {{-- Información del archivo --}}
+                                        <div class="text-white flex-1 min-w-0">
+                                            @if($post->titulo)
+                                                <p class="text-xs font-medium truncate">{{ $post->titulo }}</p>
+                                            @endif
+                                        </div>                                       
+                                    </div>
+
+                                    {{-- Badge de tipo de contenido --}}
+                                    <div class="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-1.5 py-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+                                        <div class="flex items-center space-x-0.5">
+                                            <div class="w-1 h-1 bg-yellow-400 rounded-full animate-pulse"></div>
+                                            <span class="text-white text-[10px] font-medium">Archivo</span>
+                                        </div>
+                                    </div>
+                                </div>
                             @else
                                 {{-- Post de imagen - SIEMPRE CUADRADA --}}
                                 <div class="relative w-full rounded-xl sm:rounded-2xl overflow-hidden shadow-md hover:shadow-xl aspect-square">

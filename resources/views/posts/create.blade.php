@@ -244,6 +244,16 @@
                 <div id="content-musica" class="content-panel hidden">
                     @include('components.itunes.iTunes')
                 </div>
+
+                <!-- Contenido para post de texto -->
+                <div id="content-texto" class="content-panel hidden">
+                    @include('posts.text-upload-panel')
+                </div>
+
+                <!-- Contenido para post de archivo -->
+                <div id="content-archivo" class="content-panel hidden">
+                    @include('posts.file-upload-panel')
+                </div>
             </div>
 
             <!-- Formulario -->

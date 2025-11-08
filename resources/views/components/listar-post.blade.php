@@ -19,6 +19,54 @@
                                 class="w-full h-full object-cover rounded-none" width="1080" height="1080" loading="lazy">
                         </a>
                     </div>
+                @elseif ($post->tipo === 'texto')
+                    <!-- Post de texto -->
+                    <div class="w-full p-6 bg-gradient-to-br from-gray-50 to-white">
+                        <a href="{{ route('posts.show', ['user' => $post->user ? $post->user->username : 'usuario', 'post' => $post->id]) }}"
+                            class="block">
+                            <div class="prose prose-sm max-w-none">
+                                <p class="text-gray-800 text-base leading-relaxed line-clamp-6">
+                                    {{ Str::limit($post->texto, 300) }}
+                                </p>
+                                @if(strlen($post->texto) > 300)
+                                    <span class="text-blue-600 text-sm font-medium mt-2 inline-block">Ver más...</span>
+                                @endif
+                            </div>
+                        </a>
+                    </div>
+                @elseif ($post->tipo === 'archivo')
+                    <!-- Post de archivo -->
+                    <div class="w-full p-4 bg-gradient-to-br from-indigo-50 via-blue-50 to-white">
+                        <a href="{{ route('posts.show', ['user' => $post->user ? $post->user->username : 'usuario', 'post' => $post->id]) }}"
+                            class="block">
+                            <!-- Card del archivo -->
+                            <div class="bg-white rounded-xl p-4 shadow-sm border border-blue-100 hover:shadow-md transition-shadow">
+                                <div class="flex items-center gap-3">
+                                    <!-- Ícono del archivo -->
+                                    <div class="flex-shrink-0">
+                                        <div
+                                            class="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-file-alt text-2xl text-white"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Información del archivo -->
+                                    <div class="flex-1 min-w-0">
+
+                                        <p class="text-gray-700 text-xs truncate font-medium">
+                                            {{ $post->archivo_nombre_original ?? $post->archivo }}
+                                        </p>
+
+                                    </div>
+
+                                    <!-- Ícono de descarga -->
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-download text-blue-600 text-lg"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
                 @elseif ($post->tipo === 'musica')
                     <!-- Publicacion de musica -->
                     <div class="w-full relative">
@@ -57,10 +105,12 @@
                                     <div class="flex-1 min-w-0 flex flex-col justify-center">
                                         <div class="track-title-container">
                                             <div class="scrollable-title-wrapper">
-                                                <span class="track-title font-semibold text-base sm:text-lg text-white leading-tight scrollable-title">
+                                                <span
+                                                    class="track-title font-semibold text-base sm:text-lg text-white leading-tight scrollable-title">
                                                     {{ $trackName ?: 'Canción desconocida' }}
                                                 </span>
-                                                <span class="track-title font-semibold text-base sm:text-lg text-white leading-tight scrollable-title clone">
+                                                <span
+                                                    class="track-title font-semibold text-base sm:text-lg text-white leading-tight scrollable-title clone">
                                                     {{ $trackName ?: 'Canción desconocida' }}
                                                 </span>
                                             </div>
@@ -68,10 +118,12 @@
 
                                         <div class="track-title-container">
                                             <div class="scrollable-title-wrapper">
-                                                <span class="track-title text-gray-300 text-xs sm:text-sm truncate mt-1 scrollable-title">
+                                                <span
+                                                    class="track-title text-gray-300 text-xs sm:text-sm truncate mt-1 scrollable-title">
                                                     {{ $artistName ?: 'Artista desconocido' }}
                                                 </span>
-                                                <span class="track-title text-gray-300 text-xs sm:text-sm truncate mt-1 scrollable-title clone">
+                                                <span
+                                                    class="track-title text-gray-300 text-xs sm:text-sm truncate mt-1 scrollable-title clone">
                                                     {{ $artistName ?: 'Artista desconocido' }}
                                                 </span>
                                             </div>
@@ -132,6 +184,20 @@
                             @else
                                 <span></span> <!-- Espacio vacío para mantener el layout -->
                             @endif
+                        @elseif($post->tipo === 'texto')
+                            <!-- Para posts de texto: mostrar título si existe -->
+                            @if($post->titulo)
+                                <span class="font-semibold text-black text-base sm:text-lg">{{ $post->titulo }}</span>
+                            @else
+                                <span></span>
+                            @endif
+                        @elseif($post->tipo === 'archivo')
+                            <!-- Para posts de archivo: mostrar título si existe -->
+                            @if($post->titulo)
+                                <span class="font-semibold text-black text-base sm:text-lg">{{ $post->titulo }}</span>
+                            @else
+                                <span></span>
+                            @endif
                         @else
                             <!-- Para posts de imagen: solo título -->
                             @if($post->titulo)
@@ -146,8 +212,11 @@
                         </div>
                     </div>
 
-                    <!-- Descripción abajo solo para posts de música que tienen título Y descripción, o posts de imagen -->
-                    @if(($post->tipo === 'musica' && $post->titulo && $post->descripcion) || ($post->tipo === 'imagen' && $post->descripcion))
+                    <!-- Descripción abajo solo para posts de música que tienen título Y descripción, o posts de imagen/archivo -->
+                    @if(
+                            ($post->tipo === 'musica' && $post->titulo && $post->descripcion) ||
+                            (($post->tipo === 'imagen' || $post->tipo === 'archivo') && $post->descripcion)
+                        )
                         <div class="mb-3">
                             <p class="text-gray-700 text-xs sm:text-sm">{{ $post->descripcion }}</p>
                         </div>
