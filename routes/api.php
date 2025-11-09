@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\MusicSearchController;
 use App\Http\Controllers\Api\UniversidadController;
+use App\Http\Controllers\Api\FollowerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +70,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/search', [UserController::class, 'search']);
     Route::get('/users/{user}', [UserController::class, 'show']);
+
+    // Sistema de Seguimiento (Follow/Unfollow)
+    Route::post('/users/{user}/follow', [FollowerController::class, 'follow']); // Seguir usuario
+    Route::post('/users/{user}/unfollow', [FollowerController::class, 'unfollow']); // Dejar de seguir
+    Route::post('/users/{user}/follow/toggle', [FollowerController::class, 'toggle']); // Toggle follow/unfollow
+    Route::get('/users/{user}/follow/check', [FollowerController::class, 'check']); // Verificar si sigue
+    Route::get('/users/{user}/followers', [FollowerController::class, 'followers']); // Lista de seguidores
+    Route::get('/users/{user}/following', [FollowerController::class, 'following']); // Lista de seguidos
+    Route::get('/users/{user}/follow/stats', [FollowerController::class, 'stats']); // Estadísticas de seguimiento
 
     // Notificaciones (likes, comentarios, seguidores)
     Route::get('/notifications', [NotificationController::class, 'index']); // Todas las notificaciones
