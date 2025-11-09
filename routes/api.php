@@ -6,6 +6,9 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\CommentController;
+use App\Http\Controllers\Api\LikeController;
+use App\Http\Controllers\Api\MusicSearchController;
 use App\Http\Controllers\Api\UniversidadController;
 
 /*
@@ -32,6 +35,12 @@ Route::get('/carreras', [UniversidadController::class, 'getAllCarreras']);
 Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{post}', [PostController::class, 'show']);
 
+// Búsqueda de música iTunes (público)
+Route::get('/music/search', [MusicSearchController::class, 'search']);
+Route::get('/music/track', [MusicSearchController::class, 'getTrack']);
+Route::get('/music/genre', [MusicSearchController::class, 'searchByGenre']);
+Route::get('/music/popular', [MusicSearchController::class, 'getPopular']);
+
 // Rutas protegidas (requieren autenticación con token Sanctum)
 Route::middleware('auth:sanctum')->group(function () {
     // Autenticación
@@ -42,6 +51,19 @@ Route::middleware('auth:sanctum')->group(function () {
     // Posts protegidos (crear y eliminar requieren autenticación)
     Route::post('/posts', [PostController::class, 'store']);
     Route::delete('/posts/{post}', [PostController::class, 'destroy']);
+
+    // Comentarios
+    Route::get('/posts/{post}/comments', [CommentController::class, 'index']); // Listar comentarios de un post
+    Route::post('/posts/{post}/comments', [CommentController::class, 'store']); // Crear comentario
+    Route::get('/comments/{comentario}', [CommentController::class, 'show']); // Ver comentario específico
+    Route::put('/comments/{comentario}', [CommentController::class, 'update']); // Editar comentario
+    Route::delete('/comments/{comentario}', [CommentController::class, 'destroy']); // Eliminar comentario
+    Route::get('/comments/{comentario}/replies', [CommentController::class, 'replies']); // Ver respuestas
+
+    // Likes
+    Route::post('/posts/{post}/like', [LikeController::class, 'toggle']); // Dar/quitar like (toggle)
+    Route::get('/posts/{post}/likes', [LikeController::class, 'index']); // Listar usuarios que dieron like
+    Route::get('/posts/{post}/like/check', [LikeController::class, 'check']); // Verificar si el usuario dio like
 
     // Usuarios
     Route::get('/users', [UserController::class, 'index']);
