@@ -69,13 +69,52 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         try {
-            // Valido todos los campos requeridos para el registro
+            // Primera validación: campos básicos
             $request->validate([
                 'name' => 'required|string|max:255',
-                'username' => 'required|string|max:15|unique:users', // El username debe ser único
-                'email' => ['required','string','email','max:255','unique:users',new EmailDomain('itca.edu.sv')], // solo acepta correos del itca
-                'password' => 'required|string|min:8', // Mínimo 8 caracteres para la contraseña
+                'username' => 'required|string|max:15|unique:users',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8',
+                'universidad_id' => 'required|exists:universidades,id',
+                'carrera_id' => 'required|exists:carreras,id',
             ]);
+
+            // Obtener la universidad seleccionada
+            $universidad = \App\Models\Universidad::find($request->universidad_id);
+
+            // Validar que la universidad tenga un dominio configurado
+            if (!$universidad->dominio) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La universidad seleccionada no tiene un dominio de correo configurado',
+                    'errors' => [
+                        'universidad_id' => ['Esta universidad no tiene configurado un dominio de correo institucional']
+                    ]
+                ], 422);
+            }
+
+            // Validar que el email pertenezca al dominio de la universidad
+            $emailDomain = substr(strrchr($request->email, "@"), 1);
+            if ($emailDomain !== $universidad->dominio) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El correo debe pertenecer al dominio de la universidad seleccionada',
+                    'errors' => [
+                        'email' => ["El correo debe tener el dominio @{$universidad->dominio}"]
+                    ]
+                ], 422);
+            }
+
+            // Verificar que la carrera pertenezca a la universidad seleccionada
+            if (!$universidad->carreras()->where('carrera_id', $request->carrera_id)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La carrera seleccionada no pertenece a la universidad elegida',
+                    'errors' => [
+                        'carrera_id' => ['La carrera seleccionada no está disponible en esta universidad']
+                    ]
+                ], 422);
+            }
 
             // Creo el nuevo usuario con la contraseña hasheada por seguridad
             $user = User::create([
@@ -83,7 +122,12 @@ class AuthController extends Controller
                 'username' => $request->username,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
+                'universidad_id' => $request->universidad_id,
+                'carrera_id' => $request->carrera_id,
             ]);
+
+            // Cargo las relaciones de universidad y carrera para incluirlas en la respuesta
+            $user->load(['universidad', 'carrera']);
 
             // Genero un token inmediatamente para que pueda usar la app sin hacer login adicional
             $token = $user->createToken('mobile-app')->plainTextToken;
@@ -130,7 +174,7 @@ class AuthController extends Controller
     {
         // Obtengo el usuario autenticado a través del token
         $user = $request->user();
-        
+
         // Agrego la URL completa de la imagen de perfil para que la app móvil pueda mostrarla
         $user->imagen_url = $user->imagen ? asset('perfiles/' . $user->imagen) : asset('img/usuario.svg');
 

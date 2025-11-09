@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\UniversidadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +22,11 @@ use App\Http\Controllers\Api\NotificationController;
 // Rutas públicas (no requieren autenticación)
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
+
+// Universidades y Carreras (públicas para el formulario de registro)
+Route::get('/universidades', [UniversidadController::class, 'index']);
+Route::get('/universidades/{universidadId}/carreras', [UniversidadController::class, 'getCarreras']);
+Route::get('/carreras', [UniversidadController::class, 'getAllCarreras']);
 
 // Posts públicos (solo lectura)
 Route::get('/posts', [PostController::class, 'index']);
