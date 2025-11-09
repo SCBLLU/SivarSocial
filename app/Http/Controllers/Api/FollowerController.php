@@ -25,11 +25,24 @@ class FollowerController extends Controller
     /**
      * Seguir a un usuario
      * El usuario autenticado comienza a seguir al usuario especificado
+     * Acepta tanto ID como username
      */
-    public function follow(User $user)
+    public function follow($userIdentifier)
     {
         try {
             $authUser = Auth::user();
+
+            // Buscar usuario por ID o username
+            $user = is_numeric($userIdentifier)
+                ? User::find($userIdentifier)
+                : User::where('username', $userIdentifier)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado.'
+                ], 404);
+            }
 
             // Verificar que el usuario no se siga a sí mismo
             if ($user->id === $authUser->id) {
@@ -78,11 +91,24 @@ class FollowerController extends Controller
     /**
      * Dejar de seguir a un usuario
      * El usuario autenticado deja de seguir al usuario especificado
+     * Acepta tanto ID como username
      */
-    public function unfollow(User $user)
+    public function unfollow($userIdentifier)
     {
         try {
             $authUser = Auth::user();
+
+            // Buscar usuario por ID o username
+            $user = is_numeric($userIdentifier)
+                ? User::find($userIdentifier)
+                : User::where('username', $userIdentifier)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado.'
+                ], 404);
+            }
 
             // Verificar que el usuario no se dessiga a sí mismo
             if ($user->id === $authUser->id) {
@@ -128,11 +154,24 @@ class FollowerController extends Controller
     /**
      * Toggle follow/unfollow (seguir o dejar de seguir en una sola acción)
      * Si ya sigue al usuario, lo deja de seguir. Si no lo sigue, comienza a seguirlo.
+     * Acepta tanto ID como username
      */
-    public function toggle(User $user)
+    public function toggle($userIdentifier)
     {
         try {
             $authUser = Auth::user();
+
+            // Buscar usuario por ID o username
+            $user = is_numeric($userIdentifier)
+                ? User::find($userIdentifier)
+                : User::where('username', $userIdentifier)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado.'
+                ], 404);
+            }
 
             // Verificar que el usuario no se siga a sí mismo
             if ($user->id === $authUser->id) {
@@ -188,14 +227,26 @@ class FollowerController extends Controller
 
     /**
      * Verificar si el usuario autenticado sigue a un usuario específico
+     * Acepta tanto ID como username
      */
-    public function check(User $user)
+    public function check($userIdentifier)
     {
         try {
             $authUser = Auth::user();
 
-            $isFollowing = $user->followers()->where('follower_id', $authUser->id)->exists();
+            // Buscar usuario por ID o username
+            $user = is_numeric($userIdentifier)
+                ? User::find($userIdentifier)
+                : User::where('username', $userIdentifier)->first();
 
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado.'
+                ], 404);
+            }
+
+            $isFollowing = $user->followers()->where('follower_id', $authUser->id)->exists();
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -216,10 +267,23 @@ class FollowerController extends Controller
     /**
      * Obtener la lista de seguidores de un usuario
      * Incluye información básica de cada seguidor para mostrar en la app
+     * Acepta tanto ID como username
      */
-    public function followers(User $user)
+    public function followers($userIdentifier)
     {
         try {
+            // Buscar usuario por ID o username
+            $user = is_numeric($userIdentifier)
+                ? User::find($userIdentifier)
+                : User::where('username', $userIdentifier)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado.'
+                ], 404);
+            }
+
             // Cargo los seguidores con información básica y paginación
             $followers = $user->followers()
                 ->select(['users.id', 'users.name', 'users.username', 'users.imagen', 'users.insignia'])
@@ -257,10 +321,23 @@ class FollowerController extends Controller
     /**
      * Obtener la lista de usuarios que sigue un usuario
      * Incluye información básica de cada usuario seguido para mostrar en la app
+     * Acepta tanto ID como username
      */
-    public function following(User $user)
+    public function following($userIdentifier)
     {
         try {
+            // Buscar usuario por ID o username
+            $user = is_numeric($userIdentifier)
+                ? User::find($userIdentifier)
+                : User::where('username', $userIdentifier)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado.'
+                ], 404);
+            }
+
             // Cargo los usuarios que sigue con información básica y paginación
             $following = $user->following()
                 ->select(['users.id', 'users.name', 'users.username', 'users.imagen', 'users.insignia'])
@@ -298,10 +375,23 @@ class FollowerController extends Controller
     /**
      * Obtener las estadísticas de seguimiento de un usuario
      * Devuelve el conteo de seguidores y siguiendo
+     * Acepta tanto ID como username
      */
-    public function stats(User $user)
+    public function stats($userIdentifier)
     {
         try {
+            // Buscar usuario por ID o username
+            $user = is_numeric($userIdentifier)
+                ? User::find($userIdentifier)
+                : User::where('username', $userIdentifier)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado.'
+                ], 404);
+            }
+
             $followersCount = $user->followers()->count();
             $followingCount = $user->following()->count();
 
