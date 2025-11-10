@@ -42,13 +42,13 @@ class PostController extends Controller
                 }
                 // Agrego también la imagen de perfil del usuario que creó el post
                 if ($post->user && $post->user->imagen) {
-                    $post->user->setAttribute('imagen_url', url('perfiles/' . $post->user->imagen));
+                    $post->user->imagen_url = url('perfiles/' . $post->user->imagen);
                 }
                 // Agrego las imágenes de perfil de los usuarios en comentarios
                 if ($post->comentarios) {
                     $post->comentarios->transform(function ($comentario) {
                         if ($comentario->user && $comentario->user->imagen) {
-                            $comentario->user->setAttribute('imagen_url', url('perfiles/' . $comentario->user->imagen));
+                            $comentario->user->imagen_url = url('perfiles/' . $comentario->user->imagen);
                         }
                         return $comentario;
                     });
@@ -57,7 +57,7 @@ class PostController extends Controller
                 if ($post->likes) {
                     $post->likes->transform(function ($like) {
                         if ($like->user && $like->user->imagen) {
-                            $like->user->setAttribute('imagen_url', url('perfiles/' . $like->user->imagen));
+                            $like->user->imagen_url = url('perfiles/' . $like->user->imagen);
                         }
                         return $like;
                     });
@@ -240,7 +240,7 @@ class PostController extends Controller
             }
 
             if ($post->user && $post->user->imagen) {
-                $post->user->setAttribute('imagen_url', url('perfiles/' . $post->user->imagen));
+                $post->user->imagen_url = url('perfiles/' . $post->user->imagen);
             }
 
             // Devuelvo el post creado con código 201 (Created)
@@ -325,6 +325,62 @@ class PostController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error al obtener post',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Devuelve los posts de un usuario específico
+     * Parámetros: $userId (id del usuario)
+     * Retorna: posts paginados con relaciones y urls completas
+     */
+    public function userPosts($userId)
+    {
+        try {
+            $posts = Post::where('user_id', $userId)
+                ->with(['user', 'comentarios.user', 'likes.user'])
+                ->withCount(['comentarios', 'likes'])
+                ->latest()
+                ->paginate(20);
+
+            $posts->getCollection()->transform(function ($post) {
+                if ($post->imagen) {
+                    $post->imagen_url = url('uploads/' . $post->imagen);
+                }
+                if ($post->archivo) {
+                    $post->archivo_url = url('files/' . $post->archivo);
+                }
+                if ($post->user && $post->user->imagen) {
+                    $post->user->imagen_url = url('perfiles/' . $post->user->imagen);
+                }
+                if ($post->comentarios) {
+                    $post->comentarios->transform(function ($comentario) {
+                        if ($comentario->user && $comentario->user->imagen) {
+                            $comentario->user->imagen_url = url('perfiles/' . $comentario->user->imagen);
+                        }
+                        return $comentario;
+                    });
+                }
+                if ($post->likes) {
+                    $post->likes->transform(function ($like) {
+                        if ($like->user && $like->user->imagen) {
+                            $like->user->imagen_url = url('perfiles/' . $like->user->imagen);
+                        }
+                        return $like;
+                    });
+                }
+                return $post;
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $posts
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener posts del usuario',
                 'error' => $e->getMessage()
             ], 500);
         }
