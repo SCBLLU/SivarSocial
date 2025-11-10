@@ -21,6 +21,11 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\ExtendSessionLifetime::class,
             \App\Http\Middleware\UpdateUserActivity::class,
         ]);
+
+        // Agregar middleware CORS para rutas API
+        $middleware->api(prepend: [
+            \Illuminate\Http\Middleware\HandleCors::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Configurar manejo personalizado de errores HTTP
