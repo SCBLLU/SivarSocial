@@ -2,6 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\User;
+use App\Models\Follower;
+use App\Services\NotificationService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+use Dotenv\Util\Str;
+
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\NotificationService;
@@ -22,6 +30,98 @@ class FollowerController extends Controller
         $this->notificationService = $notificationService;
     }
 
+    public function followers($id)
+    {
+        // Buscar usuario por ID
+        $user = User::findOrFail($id);
+
+        // Obtener seguidores con su información necesaria (username, imagen, etc.)
+        $followers = $user->followers()
+            ->select('users.id', 'users.name', 'users.username', 'users.imagen')
+            ->get()
+            ->map(function ($follower) {
+                $follower->imagen_url = $follower->imagen ? url('perfiles/' . $follower->imagen) : null;
+                return $follower;
+            });
+
+        return response()->json([
+            'success' => true,
+            'count' => $followers->count(),
+            'followers' => $followers
+        ]);
+    }
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        //
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(User $user)
+    {
+        // El usuario autenticado sigue al usuario recibido
+        $user->followers()->attach(Auth::id());
+
+        // Crear notificación
+        $this->notificationService->createFollowNotification(Auth::user(), $user);
+
+        return back();
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Follower $follower)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Follower $follower)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Follower $follower)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(User $user)
+    {
+        // El usuario autenticado deja de seguir al usuario recibido
+        $user->followers()->detach(Auth::id());
+        return back();
+    }
+
+    /**
+     * Store a newly created resource by ID (for AJAX requests)
+     */
+    public function storeById(User $user)
+    {
+        try {
+            // Verificar que el usuario no se siga a sí mismo
+            if ($user->id === Auth::id()) {
     /**
      * Seguir a un usuario
      * El usuario autenticado comienza a seguir al usuario especificado
@@ -53,6 +153,7 @@ class FollowerController extends Controller
             }
 
             // Verificar que no ya lo esté siguiendo
+            if ($user->followers()->where('follower_id', Auth::id())->exists()) {
             if ($user->followers()->where('follower_id', $authUser->id)->exists()) {
                 return response()->json([
                     'success' => false,
@@ -61,6 +162,10 @@ class FollowerController extends Controller
             }
 
             // El usuario autenticado sigue al usuario recibido
+            $user->followers()->attach(Auth::id());
+
+            // Crear notificación
+            $this->notificationService->createFollowNotification(Auth::user(), $user);
             $user->followers()->attach($authUser->id);
 
             // Crear notificación
@@ -73,6 +178,12 @@ class FollowerController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Ahora sigues a este usuario.',
+                'action' => 'followed'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al seguir al usuario.'
                 'data' => [
                     'is_following' => true,
                     'followers_count' => $followersCount,
@@ -89,6 +200,13 @@ class FollowerController extends Controller
     }
 
     /**
+     * Remove the specified resource by ID (for AJAX requests)
+     */
+    public function destroyById(User $user)
+    {
+        try {
+            // Verificar que el usuario no se dessiga a sí mismo
+            if ($user->id === Auth::id()) {
      * Dejar de seguir a un usuario
      * El usuario autenticado deja de seguir al usuario especificado
      * Acepta tanto ID como username
@@ -119,6 +237,7 @@ class FollowerController extends Controller
             }
 
             // Verificar que lo esté siguiendo
+            if (!$user->followers()->where('follower_id', Auth::id())->exists()) {
             if (!$user->followers()->where('follower_id', $authUser->id)->exists()) {
                 return response()->json([
                     'success' => false,
@@ -127,6 +246,7 @@ class FollowerController extends Controller
             }
 
             // El usuario autenticado deja de seguir al usuario recibido
+            $user->followers()->detach(Auth::id());
             $user->followers()->detach($authUser->id);
 
             // Obtener contadores actualizados
@@ -136,6 +256,12 @@ class FollowerController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Dejaste de seguir a este usuario.',
+                'action' => 'unfollowed'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al dejar de seguir al usuario.'
                 'data' => [
                     'is_following' => false,
                     'followers_count' => $followersCount,
@@ -152,6 +278,32 @@ class FollowerController extends Controller
     }
 
     /**
+     * Mostrar la lista de seguidores de un usuario
+     */
+
+
+    /**
+     * Mostrar la lista de usuarios seguidos por un usuario
+     */
+    public function following(int $id)
+    {
+        // Buscar usuario por ID
+        $user = User::findOrFail($id);
+
+        // Obtener seguidores con su información necesaria (username, imagen, etc.)
+        $following = $user->following()
+            ->select('users.id', 'users.name', 'users.username', 'users.imagen')
+            ->get()
+            ->map(function ($follower) {
+                $follower->imagen_url = $follower->imagen ? url('perfiles/' . $follower->imagen) : null;
+                return $follower;
+            });
+
+        return response()->json([
+            'success' => true,
+            'count' => $following->count(),
+            'following' => $following
+        ]);
      * Toggle follow/unfollow (seguir o dejar de seguir en una sola acción)
      * Si ya sigue al usuario, lo deja de seguir. Si no lo sigue, comienza a seguirlo.
      * Acepta tanto ID como username

@@ -35,6 +35,7 @@ Route::get('/carreras', [UniversidadController::class, 'getAllCarreras']);
 // Posts públicos (solo lectura)
 Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{post}', [PostController::class, 'show']);
+Route::get('/posts/user/{userId}', [PostController::class, 'userPosts']);
 
 // Búsqueda de música iTunes (público)
 Route::get('/music/search', [MusicSearchController::class, 'search']);
@@ -48,6 +49,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::get('/auth/user', [AuthController::class, 'me']); // Alias para compatibilidad
+
+    //followers count
+    Route::get('/auth/followers/{id}', [FollowerController::class, 'followers']); // Alias para compatibilidad
+    Route::get('/auth/following/{id}', [FollowerController::class, 'following']);
 
     // Posts protegidos (crear y eliminar requieren autenticación)
     Route::post('/posts', [PostController::class, 'store']);
