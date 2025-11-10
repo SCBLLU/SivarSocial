@@ -77,14 +77,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/{user}', [UserController::class, 'show']);
 
     // Sistema de Seguimiento (Follow/Unfollow)
-    // Nota: {userIdentifier} puede ser ID numérico o username
-    Route::post('/users/{userIdentifier}/follow', [FollowerController::class, 'follow']); // Seguir usuario
-    Route::post('/users/{userIdentifier}/unfollow', [FollowerController::class, 'unfollow']); // Dejar de seguir
-    Route::post('/users/{userIdentifier}/follow/toggle', [FollowerController::class, 'toggle']); // Toggle follow/unfollow
-    Route::get('/users/{userIdentifier}/follow/check', [FollowerController::class, 'check']); // Verificar si sigue
-    Route::get('/users/{userIdentifier}/followers', [FollowerController::class, 'followers']); // Lista de seguidores
-    Route::get('/users/{userIdentifier}/following', [FollowerController::class, 'following']); // Lista de seguidos
-    Route::get('/users/{userIdentifier}/follow/stats', [FollowerController::class, 'stats']); // Estadísticas de seguimiento
+    Route::post('/users/{id}/follow', [FollowerController::class, 'follow']); // Seguir usuario
+    Route::post('/users/{id}/unfollow', [FollowerController::class, 'unfollow']); // Dejar de seguir
+    Route::post('/users/{id}/follow/toggle', [FollowerController::class, 'toggle']); // Toggle follow/unfollow
+    Route::get('/users/{id}/follow/check', [FollowerController::class, 'check']); // Verificar si sigue
+    Route::get('/users/{id}/followers', [FollowerController::class, 'followers']); // Lista de seguidores
+    Route::get('/users/{id}/following', [FollowerController::class, 'following']); // Lista de seguidos
+    Route::get('/users/{id}/follow/stats', [FollowerController::class, 'stats']); // Estadísticas de seguimiento
 
     // Notificaciones (likes, comentarios, seguidores)
     Route::get('/notifications', [NotificationController::class, 'index']); // Todas las notificaciones
