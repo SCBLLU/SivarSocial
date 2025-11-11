@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Exception;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -60,6 +62,34 @@ class UserController extends Controller
      * Incluye todos sus posts con interacciones y estadísticas del perfil
      * Perfecto para mostrar la pantalla de perfil de usuario en la app
      */
+    public function foreignUser($usuario_username)
+{
+ try {
+        // Busco por username (no por id)
+        $user = User::with(['universidad', 'carrera'])
+            ->where('username', $usuario_username)
+            ->select(['id', 'name', 'username', 'imagen', 'insignia', 'universidad_id', 'carrera_id'])
+            ->firstOrFail();
+
+        // Agrego URL completa de imagen (igual que en index y show)
+        if ($user->imagen) {
+            $user->imagen_url = url('perfiles/' . $user->imagen);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $user
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'No se pudo obtener el usuario',
+            'error'   => $e->getMessage()
+        ], 404);
+    }
+}
+
     public function show(User $user)
     {
         try {
@@ -102,6 +132,7 @@ class UserController extends Controller
      * Implementé búsqueda flexible que funciona con coincidencias parciales
      * Limitado a 10 resultados para mantener la respuesta rápida en la app
      */
+
     public function search(Request $request)
     {
         try {

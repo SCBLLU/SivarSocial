@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use App\Rules\EmailDomain;
+use Exception;
 
 /**
  * Controlador de autenticación para la API de SivarSocial
@@ -183,4 +184,68 @@ class AuthController extends Controller
             'data' => $user
         ]);
     }
+    public function edit(Request $request)
+{
+    try {
+        // Validación de campos
+        $request->validate([
+            'id' => 'required',
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255',
+            'profession' => 'nullable|string|max:255',
+            'univerdidad_id' => 'nullable|exists:universidades,id',
+            'carrera_id' => 'nullable|exists:carreras,id',
+            'gender' => 'nullable'
+
+        ]);
+
+        $user = User::find($request->id);
+        if (!$user) {
+            throw new Exception('Usuario no encontrado');
+        }
+        $username = User::where('username', $request->username)->first();
+        if ($username && $username->id != $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El username ya está en uso por otro usuario'
+            ], 422);
+        }
+
+        // Actualizar el campo
+        $user->name = $request->name;
+        $user->username = $request->username;
+        $user->email = $request->email;
+        if ($request->has('profession')) {
+            $user->profession = $request->profession;
+        }
+        if ($request->has('universidad_id')) {
+            $user->universidad_id = $request->universidad_id;
+        }
+        if ($request->has('carrera_id')) {
+            $user->carrera_id = $request->carrera_id;
+        }
+        if ($request->has('gender')) {
+            $user->gender = $request->gender;
+        }
+
+
+        // Guardar cambios en la base de datos
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'data' => $user, // mejor devolver el modelo actualizado
+            'message' => 'Usuario actualizado exitosamente'
+        ], 200);
+
+    } catch (Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error de validación',
+            'errors' => $e->getMessage()
+        ], 422);
+    }
+}
+
 }
