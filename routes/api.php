@@ -74,6 +74,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Usuarios
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/search', [UserController::class, 'search']);
+    Route::get('/users/{userIdentifier}/posts', [UserController::class, 'posts']); // Posts de un usuario específico
+    Route::get('/users/{userIdentifier}/stats', [UserController::class, 'stats']); // Estadísticas completas del usuario
     Route::get('/users/{user}', [UserController::class, 'show']);
 
     // Sistema de Seguimiento (Follow/Unfollow)
