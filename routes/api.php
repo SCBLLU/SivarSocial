@@ -49,6 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::get('/auth/user', [AuthController::class, 'me']); // Alias para compatibilidad
+    Route::put('/user/edit', [AuthController::class, 'edit']); // Estadísticas de seguimiento
 
     //followers count
     Route::get('/auth/followers/{id}', [FollowerController::class, 'followers']); // Alias para compatibilidad
@@ -75,6 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/search', [UserController::class, 'search']);
     Route::get('/users/{user}', [UserController::class, 'show']);
+    Route::get('/user/{usuario_username}', [UserController::class, 'foreignUser']); // Alias para compatibilidad
 
     // Sistema de Seguimiento (Follow/Unfollow)
     Route::post('/users/{id}/follow', [FollowerController::class, 'follow']); // Seguir usuario
