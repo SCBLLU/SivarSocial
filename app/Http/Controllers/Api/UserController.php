@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Post;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Controlador de Usuarios para la API de SivarSocial
@@ -166,6 +168,148 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error en búsqueda',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtiene todos los posts publicados por un usuario específico
+     * Endpoint dedicado para el feed de posts de un usuario
+     * Incluye paginación y todas las interacciones (likes, comentarios)
+     */
+    public function posts($userIdentifier)
+    {
+        try {
+            // Buscar usuario por ID o username
+            $user = is_numeric($userIdentifier)
+                ? User::find($userIdentifier)
+                : User::where('username', $userIdentifier)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado.'
+                ], 404);
+            }
+
+            // Obtengo todos los posts del usuario con sus relaciones
+            $posts = Post::where('user_id', $user->id)
+                ->with(['user', 'comentarios.user', 'likes'])
+                ->withCount(['comentarios', 'likes'])
+                ->latest()
+                ->paginate(20);
+
+            // Transformo cada post para agregar URLs completas
+            $posts->getCollection()->transform(function ($post) {
+                // URL de imagen del post
+                if ($post->imagen) {
+                    $post->imagen_url = url('uploads/' . $post->imagen);
+                }
+                // URL de archivo del post
+                if ($post->archivo) {
+                    $post->archivo_url = url('files/' . $post->archivo);
+                }
+                // Imagen de perfil del usuario
+                if ($post->user && $post->user->imagen) {
+                    $post->user->setAttribute('imagen_url', url('perfiles/' . $post->user->imagen));
+                }
+                // Imágenes de usuarios en comentarios
+                if ($post->comentarios) {
+                    $post->comentarios->transform(function ($comentario) {
+                        if ($comentario->user && $comentario->user->imagen) {
+                            $comentario->user->setAttribute('imagen_url', url('perfiles/' . $comentario->user->imagen));
+                        }
+                        return $comentario;
+                    });
+                }
+                return $post;
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $posts,
+                'user' => [
+                    'id' => $user->id,
+                    'username' => $user->username,
+                    'name' => $user->name
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener posts del usuario',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtiene las estadísticas completas de un usuario
+     * Incluye: posts totales, seguidores, siguiendo, likes recibidos
+     * Endpoint optimizado para mostrar el perfil completo del usuario
+     */
+    public function stats($userIdentifier)
+    {
+        try {
+            // Buscar usuario por ID o username
+            $user = is_numeric($userIdentifier)
+                ? User::find($userIdentifier)
+                : User::where('username', $userIdentifier)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado.'
+                ], 404);
+            }
+
+            // Cargar contadores
+            $user->loadCount(['posts', 'followers', 'following']);
+
+            // Calcular total de likes recibidos en todos sus posts
+            $totalLikes = $user->posts()->withCount('likes')->get()->sum('likes_count');
+
+            // Calcular total de comentarios recibidos en todos sus posts
+            $totalComments = $user->posts()->withCount('comentarios')->get()->sum('comentarios_count');
+
+            // Verificar si el usuario autenticado sigue a este usuario
+            $isFollowing = false;
+            if (Auth::check() && Auth::id() !== $user->id) {
+                $isFollowing = $user->followers()
+                    ->where('follower_id', Auth::id())
+                    ->exists();
+            }
+
+            // Agregar URL de imagen de perfil
+            $profileImageUrl = null;
+            if ($user->imagen) {
+                $profileImageUrl = url('perfiles/' . $user->imagen);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'user_id' => $user->id,
+                    'username' => $user->username,
+                    'name' => $user->name,
+                    'imagen' => $user->imagen,
+                    'imagen_url' => $profileImageUrl,
+                    'insignia' => $user->insignia,
+                    'posts_count' => $user->posts_count,
+                    'followers_count' => $user->followers_count,
+                    'following_count' => $user->following_count,
+                    'total_likes_received' => $totalLikes,
+                    'total_comments_received' => $totalComments,
+                    'is_following' => $isFollowing,
+                    'universidad' => $user->universidad,
+                    'carrera' => $user->carrera
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener estadísticas del usuario',
                 'error' => $e->getMessage()
             ], 500);
         }
