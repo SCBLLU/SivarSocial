@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\MusicSearchController;
 use App\Http\Controllers\Api\UniversidadController;
 use App\Http\Controllers\Api\FollowerController;
+use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\PomodoroController;
 
 /*
 |--------------------------------------------------------------------------
@@ -100,6 +102,22 @@ Route::middleware('auth:sanctum')->group(function () {
     // Push Notifications - Registro de tokens de dispositivo
     Route::post('/notifications/register-device', [NotificationController::class, 'registerDevice']); // Registrar token FCM
     Route::post('/notifications/unregister-device', [NotificationController::class, 'unregisterDevice']); // Desregistrar token FCM
+
+    // ========== TODO & POMODORO ROUTES ==========
+
+    // Tareas (Tasks)
+    Route::apiResource('tasks', TaskController::class);
+    Route::get('/tasks-stats', [TaskController::class, 'stats']); // Estadísticas de tareas
+
+    // Sesiones de Pomodoro
+    Route::prefix('pomodoro')->group(function () {
+        Route::post('/start', [PomodoroController::class, 'start']); // Iniciar sesión
+        Route::post('/complete', [PomodoroController::class, 'complete']); // Completar sesión
+        Route::post('/cancel', [PomodoroController::class, 'cancel']); // Cancelar sesión
+        Route::get('/sessions', [PomodoroController::class, 'index']); // Listar sesiones
+        Route::get('/active', [PomodoroController::class, 'active']); // Sesión activa
+        Route::get('/stats', [PomodoroController::class, 'stats']); // Estadísticas de Pomodoro
+    });
 });
 
 // Ruta de prueba de la API
