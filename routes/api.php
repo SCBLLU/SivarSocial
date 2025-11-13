@@ -114,6 +114,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/start', [PomodoroController::class, 'start']); // Iniciar sesión
         Route::post('/complete', [PomodoroController::class, 'complete']); // Completar sesión
         Route::post('/cancel', [PomodoroController::class, 'cancel']); // Cancelar sesión
+        Route::get('/leaderboard', [PomodoroController::class, 'leaderboard']); // Podio semanal/mensual
         Route::get('/sessions', [PomodoroController::class, 'index']); // Listar sesiones
         Route::get('/active', [PomodoroController::class, 'active']); // Sesión activa
         Route::get('/stats', [PomodoroController::class, 'stats']); // Estadísticas de Pomodoro
