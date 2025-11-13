@@ -221,4 +221,22 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Carrera::class);
     }
+
+    /**
+     * Relación con Tareas
+     * Un usuario tiene muchas tareas
+     */
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    /**
+     * Relación con Sesiones de Pomodoro
+     * Un usuario tiene muchas sesiones de pomodoro
+     */
+    public function pomodoroSessions()
+    {
+        return $this->hasMany(PomodoroSession::class);
+    }
 }
