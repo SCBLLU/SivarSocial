@@ -8,6 +8,9 @@ use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use App\Models\User;
 
 class PomodoroController extends Controller
 {
@@ -247,6 +250,61 @@ class PomodoroController extends Controller
         return response()->json([
             'success' => true,
             'data' => $stats,
+        ], 200);
+    }
+
+    /**
+     * Leaderboard: usuarios con más pomodoros en un periodo (week|month|custom)
+     */
+    public function leaderboard(Request $request)
+    {
+        $period = $request->query('period', 'week');
+
+        if ($period === 'week') {
+            $start = Carbon::now()->startOfWeek();
+            $end = Carbon::now()->endOfWeek();
+        } elseif ($period === 'month') {
+            $start = Carbon::now()->startOfMonth();
+            $end = Carbon::now()->endOfMonth();
+        } elseif ($period === 'custom' && $request->has(['from', 'to'])) {
+            $start = Carbon::parse($request->query('from'));
+            $end = Carbon::parse($request->query('to'));
+        } else {
+            // por defecto últimos 7 días
+            $start = Carbon::now()->subDays(7);
+            $end = Carbon::now();
+        }
+
+        $rows = DB::table('pomodoro_sessions as p')
+            ->join('users as u', 'u.id', '=', 'p.user_id')
+            ->select('u.id as user_id', 'u.name', 'u.email', 'u.imagen as imagen', DB::raw('COUNT(*) as pomodoros'))
+            ->where('p.status', 'completed')
+            ->whereBetween('p.started_at', [$start->toDateTimeString(), $end->toDateTimeString()])
+            ->groupBy('u.id', 'u.name', 'u.email', 'u.imagen')
+            ->orderByDesc('pomodoros')
+            ->limit(20)
+            ->get();
+
+        $host = request()->getSchemeAndHttpHost();
+
+        $payload = $rows->map(function ($r) use ($host) {
+            $url = $r->imagen ? $host . '/perfiles/' . $r->imagen : 'https://www.gravatar.com/avatar/?d=mp&f=y';
+
+            return [
+                'id' => $r->user_id,
+                'name' => $r->name,
+                'email' => $r->email,
+                'imagen' => $r->imagen,
+                'avatar' => $url,
+                'avatar_url' => $url,
+                'imagen_url' => $url,
+                'pomodoros' => (int) $r->pomodoros,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $payload,
         ], 200);
     }
 }
