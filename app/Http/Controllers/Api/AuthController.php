@@ -7,8 +7,11 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use App\Rules\EmailDomain;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 use Exception;
 
 /**
@@ -196,7 +199,8 @@ class AuthController extends Controller
             'profession' => 'nullable|string|max:255',
             'univerdidad_id' => 'nullable|exists:universidades,id',
             'carrera_id' => 'nullable|exists:carreras,id',
-            'gender' => 'nullable'
+            'gender' => 'nullable',
+            'imagen' => 'nullable|image|mimes:jpeg,png,jpg|max:20480' // Validar imagen de perfil
 
         ]);
 
@@ -212,7 +216,7 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Actualizar el campo
+        // Actualizar los campos de texto
         $user->name = $request->name;
         $user->username = $request->username;
         $user->email = $request->email;
@@ -229,13 +233,72 @@ class AuthController extends Controller
             $user->gender = $request->gender;
         }
 
+        // Procesar imagen de perfil si se envió una nueva
+        if ($request->hasFile('imagen')) {
+            $imagen = $request->file('imagen');
+            $nombreImagen = Str::uuid() . ".jpg";
+
+            $manager = new ImageManager(new Driver());
+
+            try {
+                // Leer la imagen
+                $imagenServidor = $manager->read($imagen);
+
+                // Obtener dimensiones originales
+                $width = $imagenServidor->width();
+                $height = $imagenServidor->height();
+
+                // Tamaño objetivo para perfiles
+                $targetSize = 400;
+
+                // Mantener proporciones originales
+                $scale = min($targetSize / $width, $targetSize / $height);
+                $newWidth = (int)($width * $scale);
+                $newHeight = (int)($height * $scale);
+
+                // Redimensionar manteniendo proporciones
+                $imagenServidor->scale($newWidth, $newHeight);
+
+                // Guardar con calidad alta para perfiles
+                $imagenPath = public_path('perfiles') . '/' . $nombreImagen;
+                $imagenServidor->save($imagenPath, 90);
+
+                // Eliminar imagen antigua si existe
+                if ($user->imagen) {
+                    $oldImagePath = public_path('perfiles/' . $user->imagen);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+
+                // Actualizar el campo imagen
+                $user->imagen = $nombreImagen;
+
+            } catch (\Exception $e) {
+                // Si falla Intervention Image, usar método tradicional
+                $imagen->move(public_path('perfiles'), $nombreImagen);
+                
+                // Eliminar imagen antigua si existe
+                if ($user->imagen) {
+                    $oldImagePath = public_path('perfiles/' . $user->imagen);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+                
+                $user->imagen = $nombreImagen;
+            }
+        }
 
         // Guardar cambios en la base de datos
         $user->save();
 
+        // Agregar URL completa de la imagen de perfil
+        $user->imagen_url = $user->imagen ? asset('perfiles/' . $user->imagen) : asset('img/usuario.svg');
+
         return response()->json([
             'success' => true,
-            'data' => $user, // mejor devolver el modelo actualizado
+            'data' => $user,
             'message' => 'Usuario actualizado exitosamente'
         ], 200);
 
