@@ -2,3 +2,6 @@
 !private/
 !public/
 !.gitignore
+
+!firebase/
+!firebase/service-account.json
