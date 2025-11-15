@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+// --- AÑADIDOS PARA EL NUEVO MÉTODO DE AUTENTICACIÓN ---
+use Illuminate\Support\Facades\Cache;
+use Google\Auth\Credentials\ServiceAccountCredentials;
+use Google\Auth\HttpHandler\HttpHandlerFactory;
+// --- FIN DE AÑADIDOS ---
+
 /**
  * Controlador de Notificaciones para la API de SivarSocial
  * Maneja todas las operaciones relacionadas con notificaciones
@@ -427,40 +433,26 @@ class NotificationController extends Controller
         try {
             $request->validate([
                 'device_token' => 'required|string',
-                'platform' => 'required|in:android,ios'
+                'platform' => 'required|in:android,ios,web' // Añadido 'web' por si acaso
             ]);
 
             $user = Auth::user();
 
-            // Verificar si el token ya existe para este usuario
-            $existingToken = DeviceToken::where('user_id', $user->id)
-                ->where('device_token', $request->device_token)
-                ->first();
-
-            if ($existingToken) {
-                // Actualizar la fecha de última actividad
-                $existingToken->touch();
-                $existingToken->update(['last_used_at' => now()]);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Token de dispositivo ya registrado',
-                    'updated' => true
-                ]);
-            }
-
-            // Crear nuevo registro de token
-            DeviceToken::create([
-                'user_id' => $user->id,
-                'device_token' => $request->device_token,
-                'platform' => $request->platform,
-                'last_used_at' => now()
-            ]);
+            // Usar updateOrCreate para simplificar la lógica
+            DeviceToken::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'device_token' => $request->device_token
+                ],
+                [
+                    'platform' => $request->platform,
+                    'last_used_at' => now()
+                ]
+            );
 
             return response()->json([
                 'success' => true,
-                'message' => 'Token de dispositivo registrado exitosamente',
-                'created' => true
+                'message' => 'Token de dispositivo registrado/actualizado exitosamente',
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -557,10 +549,15 @@ class NotificationController extends Controller
     }
 
     /**
+     * ========================================================================
+     * SECCIÓN MODIFICADA - AHORA USA LA LIBRERÍA OFICIAL DE GOOGLE
+     * ========================================================================
+     */
+
+    /**
+     * [VERSIÓN MEJORADA]
      * Enviar notificación mediante Firebase Cloud Messaging (HTTP v1 API)
-     * Método privado que maneja el envío real a FCM
-     * 
-     * @param string $deviceToken Token FCM del dispositivo
+     * * @param string $deviceToken Token FCM del dispositivo
      * @param string $title Título de la notificación
      * @param string $body Mensaje de la notificación
      * @param array $data Datos adicionales
@@ -569,70 +566,89 @@ class NotificationController extends Controller
     private static function sendFCMNotification($deviceToken, $title, $body, $data = [])
     {
         try {
-            // Verificar que el archivo de credenciales existe
+            // 1. Verificar que el archivo de credenciales existe
             $credentialsPath = storage_path('app/firebase/service-account.json');
-
             if (!file_exists($credentialsPath)) {
                 Log::warning('Firebase service account file not found. Push notifications disabled.');
                 return false;
             }
 
-            // Leer las credenciales
+            // 2. Obtener el Project ID desde las credenciales
             $credentials = json_decode(file_get_contents($credentialsPath), true);
             $projectId = $credentials['project_id'] ?? env('FIREBASE_PROJECT_ID');
 
             if (!$projectId) {
-                Log::error('Firebase project ID not found');
+                Log::error('Firebase project ID not found in service-account.json or .env');
                 return false;
             }
 
-            // Obtener el access token de OAuth2
-            $accessToken = self::getFirebaseAccessToken($credentials);
+            // 3. Obtener el Access Token (usando el nuevo método robusto)
+            $accessToken = self::getFirebaseAccessToken($credentialsPath);
 
             if (!$accessToken) {
                 Log::error('Failed to get Firebase access token');
                 return false;
             }
 
-            // Convertir todos los datos a string (requerimiento de FCM)
+            // 4. Convertir todos los datos a string (requerimiento de FCM)
             $stringData = [];
             foreach ($data as $key => $value) {
                 $stringData[$key] = (string) $value;
             }
 
-            // Preparar el payload del mensaje
+            // 5. [CLAVE] Asegurarse que el 'data' payload también contenga title y body.
+            // Esto es para que el listener 'pushNotificationReceived' (app en primer plano)
+            // pueda recibirlos y mostrarlos con LocalNotifications.
+            $dataPayload = array_merge($stringData, [
+                'title' => $title,
+                'body' => $body,
+            ]);
+
+            // 6. Preparar el payload del mensaje
             $payload = [
                 'message' => [
                     'token' => $deviceToken,
+                    
+                    // (A) Payload 'notification': Para cuando la app está en segundo plano/cerrada.
+                    // Android/iOS lo mostrarán automáticamente.
                     'notification' => [
                         'title' => $title,
                         'body' => $body,
                     ],
-                    'data' => array_merge($stringData, [
-                        'click_action' => 'NOTIFICATION_CLICK' // AGREGAR AQUÍ TAMBIÉN
-                    ]),
+
+                    // (B) Payload 'data': Para la app en primer plano (lo recibe 'pushNotificationReceived')
+                    // y para pasar datos a la app cuando se da tap (lo recibe 'pushNotificationActionPerformed')
+                    'data' => $dataPayload,
+
+                    // (C) Configuración Específica de Android
                     'android' => [
                         'priority' => 'high',
                         'notification' => [
                             'sound' => 'default',
-                            'click_action' => 'NOTIFICATION_CLICK', // Ya está bien
-                            'channel_id' => 'default',
-                            'icon' => 'push_icon',
-                            'color' => '#6200EA'
+                            'click_action' => 'NOTIFICATION_CLICK', // Importante para Capacitor
+                            'channel_id' => 'default', // Asegúrate de crear este canal en la app
+                            'icon' => 'push_icon', // Nombre del ícono en res/drawable
+                            'color' => '#6200EA' // Color del ícono
                         ]
                     ],
+
+                    // (D) Configuración Específica de iOS
                     'apns' => [
                         'payload' => [
                             'aps' => [
+                                'alert' => [
+                                    'title' => $title,
+                                    'body' => $body,
+                                ],
                                 'sound' => 'default',
-                                'badge' => 1
+                                'badge' => 1 // Actualiza el badge del ícono
                             ]
                         ]
                     ]
                 ]
             ];
 
-            // Enviar la notificación usando HTTP Client de Laravel
+            // 7. Enviar la notificación usando HTTP Client de Laravel
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $accessToken,
                 'Content-Type' => 'application/json',
@@ -641,6 +657,7 @@ class NotificationController extends Controller
                 $payload
             );
 
+            // 8. Manejar la respuesta
             if ($response->successful()) {
                 Log::info('Push notification sent successfully', [
                     'device_token' => substr($deviceToken, 0, 20) . '...',
@@ -661,92 +678,47 @@ class NotificationController extends Controller
             Log::error('Error sending FCM notification: ' . $e->getMessage(), [
                 'device_token' => substr($deviceToken, 0, 20) . '...',
                 'title' => $title,
-                'trace' => $e->getTraceAsString()
             ]);
-
             return false;
         }
     }
 
     /**
-     * Obtener access token de Firebase usando las credenciales de servicio
-     * Implementa OAuth2 con JWT para autenticarse con Firebase
-     * 
-     * @param array $credentials Credenciales del archivo service-account.json
+     * [VERSIÓN MEJORADA]
+     * Obtener access token de Firebase usando la librería google/auth y cache de Laravel
+     * * @param string $credentialsPath Ruta al archivo service-account.json
      * @return string|null
      */
-    private static function getFirebaseAccessToken($credentials)
+    private static function getFirebaseAccessToken($credentialsPath)
     {
-        try {
-            // Crear el JWT
-            $now = time();
-            $expiration = $now + 3600; // 1 hora
+        // Usamos la cache de Laravel. El token dura 1 hora, lo pedimos cada 55 min.
+        return Cache::remember('firebase_access_token', 55 * 60, function () use ($credentialsPath) {
+            try {
+                // 1. Crear credenciales desde el archivo
+                $credentials = new ServiceAccountCredentials(
+                    'https://www.googleapis.com/auth/firebase.messaging',
+                    $credentialsPath
+                );
 
-            $header = [
-                'alg' => 'RS256',
-                'typ' => 'JWT'
-            ];
+                // 2. Construir el handler de HTTP
+                $handler = HttpHandlerFactory::build();
+                
+                // 3. Obtener el token de autenticación
+                $token = $credentials->fetchAuthToken($handler);
 
-            $claimSet = [
-                'iss' => $credentials['client_email'],
-                'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
-                'aud' => 'https://oauth2.googleapis.com/token',
-                'exp' => $expiration,
-                'iat' => $now
-            ];
+                if (isset($token['access_token'])) {
+                    return $token['access_token'];
+                }
 
-            // Codificar header y claim set
-            $headerEncoded = self::base64UrlEncode(json_encode($header));
-            $claimSetEncoded = self::base64UrlEncode(json_encode($claimSet));
+                Log::error('Failed to get Firebase access token from Google Auth library (token not found)');
+                return null;
 
-            // Crear la firma
-            $signatureInput = $headerEncoded . '.' . $claimSetEncoded;
-            $signature = '';
-
-            openssl_sign(
-                $signatureInput,
-                $signature,
-                $credentials['private_key'],
-                'SHA256'
-            );
-
-            $signatureEncoded = self::base64UrlEncode($signature);
-
-            // Crear el JWT completo
-            $jwt = $signatureInput . '.' . $signatureEncoded;
-
-            // Intercambiar el JWT por un access token
-            $response = Http::asForm()->post('https://oauth2.googleapis.com/token', [
-                'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-                'assertion' => $jwt
-            ]);
-
-            if ($response->successful()) {
-                $data = $response->json();
-                return $data['access_token'] ?? null;
+            } catch (\Exception $e) {
+                Log::error('Error getting Firebase access token with Google Auth: ' . $e->getMessage());
+                return null;
             }
-
-            Log::error('Failed to exchange JWT for access token', [
-                'status' => $response->status(),
-                'response' => $response->body()
-            ]);
-
-            return null;
-        } catch (\Exception $e) {
-            Log::error('Error getting Firebase access token: ' . $e->getMessage());
-            return null;
-        }
+        });
     }
 
-    /**
-     * Base64 URL encode (sin padding)
-     * Formato especial requerido por JWT
-     * 
-     * @param string $data
-     * @return string
-     */
-    private static function base64UrlEncode($data)
-    {
-        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
-    }
+    // Las funciones 'base64UrlEncode' y la lógica JWT manual anterior ya no son necesarias.
 }
